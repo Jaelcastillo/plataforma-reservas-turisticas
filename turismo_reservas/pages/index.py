@@ -432,7 +432,7 @@ def stats_section() -> rx.Component:
                     rx.heading(
                         num,
                         color="#D4AF37",
-                        font_size="3rem",
+                        font_size="2.3rem",
                         font_weight="700",
                         font_family="'Playfair Display', serif",
                     ),
@@ -472,7 +472,7 @@ def stats_section() -> rx.Component:
         border_top="1px solid rgba(212,175,55,0.18)",
         border_bottom="1px solid rgba(212,175,55,0.18)",
 
-        padding="4rem 6rem",
+        padding="2rem 4rem",
         width="100%",
         overflow="hidden",
     )
