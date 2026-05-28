@@ -219,7 +219,7 @@ def hero_section() -> rx.Component:
             object-fit:cover;
             z-index:0;
         ">
-        <source src="/images/beach_video.mp4" type="video/mp4">
+       <source src="/images/beach_video.mp4?v=2" type="video/mp4">
     </video>
 
     <script>
@@ -651,89 +651,155 @@ def destinations_section() -> rx.Component:
 
 OFFERS = [
     {
-        "name":       "Hard Rock Hotel Punta Cana",
-        "sub":        "All-Inclusive · Punta Cana, RD",
-        "old_price":  "$1,399",
-        "new_price":  "$899",
-        "nights":     "por persona · 7 noches",
-        "rating":     "4.9",
-        "reviews":    "2,341",
-        "discount":   "-35% HOY",
-        "left":       "¡Quedan 3!",
-        "bg":         "linear-gradient(160deg,#0B5E6B,#1A9E9E,#065A4D)",
+        "name": "Hard Rock Hotel Punta Cana",
+        "sub": "All-Inclusive · Punta Cana, RD",
+        "old_price": "$1,399",
+        "new_price": "$899",
+        "nights": "por persona · 7 noches",
+        "rating": "4.9",
+        "reviews": "2,341",
+        "discount": "-35% HOY",
+        "left": "¡Quedan 3!",
+        "bg": "url('/images/offer_punta_cana.jpg') center/cover no-repeat",
     },
     {
-        "name":       "Marriott Cancún Resort",
-        "sub":        "Vista al Mar · Cancún, México",
-        "old_price":  "$1,650",
-        "new_price":  "$1,199",
-        "nights":     "por persona · 5 noches",
-        "rating":     "4.8",
-        "reviews":    "1,890",
-        "discount":   "-28% HOY",
-        "left":       "¡Quedan 5!",
-        "bg":         "linear-gradient(160deg,#0B4E8A,#1A7AC0,#0B6E3A)",
+        "name": "VIP Coco Bongo Experience",
+        "sub": "Entrada Premium · Cancún, México",
+        "old_price": "$320",
+        "new_price": "$199",
+        "nights": "por persona · VIP Night",
+        "rating": "4.9",
+        "reviews": "5,842",
+        "discount": "-38% HOY",
+        "left": "¡Full tendencia!",
+        "bg": "url('/images/offer_cancun.jpg') center/cover no-repeat",
     },
     {
-        "name":       "Disney World + Hotel Premium",
-        "sub":        "Paquete Completo · Orlando, FL",
-        "old_price":  "$3,099",
-        "new_price":  "$2,499",
-        "nights":     "por persona · 6 noches",
-        "rating":     "5.0",
-        "reviews":    "8,721",
-        "discount":   "-20% HOY",
-        "left":       "¡Popular!",
-        "bg":         "linear-gradient(160deg,#2D0E5C,#5A2A9A,#1A4A8A)",
+        "name": "Disney World + Hotel Premium",
+        "sub": "Paquete Completo · Orlando, FL",
+        "old_price": "$3,099",
+        "new_price": "$2,499",
+        "nights": "por persona · 6 noches",
+        "rating": "5.0",
+        "reviews": "8,721",
+        "discount": "-20% HOY",
+        "left": "¡Popular!",
+        "bg": "url('/images/offer_disney.jpg') center/cover no-repeat",
+    },
+    {
+        "name": "Tour Buggy Extremo",
+        "sub": "Aventura · Punta Cana, RD",
+        "old_price": "$150",
+        "new_price": "$99",
+        "nights": "por persona · 4 horas",
+        "rating": "4.7",
+        "reviews": "984",
+        "discount": "-34% HOY",
+        "left": "¡Últimos cupos!",
+        "bg": "url('/images/offer_buggy.jpg') center/cover no-repeat",
+    },
+    {
+        "name": "Islas del Rosario",
+        "sub": "Excursión · Cartagena, Colombia",
+        "old_price": "$180",
+        "new_price": "$120",
+        "nights": "por persona · 1 día",
+        "rating": "4.8",
+        "reviews": "1,204",
+        "discount": "-33% HOY",
+        "left": "¡Oferta activa!",
+        "bg": "url('/images/offer_cartagena.jpg') center/cover no-repeat",
+    },
+    {
+        "name": "San Juan Premium Escape",
+        "sub": "Hotel + Playa · Puerto Rico",
+        "old_price": "$1,250",
+        "new_price": "$950",
+        "nights": "por persona · 4 noches",
+        "rating": "4.9",
+        "reviews": "1,502",
+        "discount": "-24% HOY",
+        "left": "¡Nuevo!",
+        "bg": "url('/images/offer_pr.jpg') center/cover no-repeat",
     },
 ]
 
 
 def offer_card(offer: dict) -> rx.Component:
     return rx.box(
-        # Imagen/fondo
         rx.box(
             rx.box(
-                rx.text(offer["discount"], font_size="0.73rem", font_weight="700",
-                       color="#F8F1E7"),
-                position="absolute", top="12px", right="12px",
-                background=f"linear-gradient(135deg, {CORAL}, #C9584A)",
-                padding="4px 12px", border_radius="20px",
+                rx.text(
+                    offer["discount"],
+                    font_size="0.78rem",
+                    font_weight="800",
+                    color="white",
+                ),
+                position="absolute",
+                top="14px",
+                right="14px",
+                background=f"linear-gradient(135deg, {CORAL}, {GOLD})",
+                padding="6px 14px",
+                border_radius="20px",
+                z_index="2",
             ),
             style={"background": offer["bg"]},
-            height="160px",
+            height="220px",
             position="relative",
             overflow="hidden",
         ),
-        # Body
+
         rx.vstack(
-            rx.text(offer["name"], font_weight="600", font_size="0.96rem", color="white"),
-            rx.text(offer["sub"],  font_size="0.78rem",
-                    color="#D8C7B0"),
             rx.text(
-                f"★★★★★  {offer['rating']}  ({offer['reviews']} reseñas)",
-                font_size="0.73rem", color=GOLD,
+                offer["name"],
+                font_weight="800",
+                font_size="1.1rem",
+                color="#2A2118",
+            ),
+            rx.text(
+                offer["sub"],
+                font_size="0.86rem",
+                color="#6B5A45",
+            ),
+            rx.text(
+                f"★★★★★ {offer['rating']} ({offer['reviews']} reseñas)",
+                font_size="0.8rem",
+                color=GOLD,
             ),
             rx.hstack(
                 rx.vstack(
-                    rx.text(f"{offer['old_price']} / persona",
-                            font_size="0.72rem",
-                            color="rgba(255,255,255,0.33)",
-                            text_decoration="line-through"),
-                    rx.text(offer["new_price"],
-                            style={"fontFamily": "'Playfair Display', serif",
-                                   "fontSize": "1.45rem", "fontWeight": "700",
-                                   "color": GOLD}),
-                    rx.text(offer["nights"],
-                            font_size="0.63rem",
-                            color="#C7B8A1"),
+                    rx.text(
+                        f"{offer['old_price']} / persona",
+                        font_size="0.76rem",
+                        color="#A99882",
+                        text_decoration="line-through",
+                    ),
+                    rx.text(
+                        offer["new_price"],
+                        style={
+                            "fontFamily": "'Playfair Display', serif",
+                            "fontSize": "1.8rem",
+                            "fontWeight": "800",
+                            "color": GOLD,
+                        },
+                    ),
+                    rx.text(
+                        offer["nights"],
+                        font_size="0.72rem",
+                        color="#7A6A55",
+                    ),
                     spacing="0",
                     align="start",
                 ),
                 rx.spacer(),
-                rx.text(offer["left"], font_size="0.65rem",
-                        font_weight="700", color=CORAL),
+                rx.text(
+                    offer["left"],
+                    font_size="0.78rem",
+                    font_weight="800",
+                    color=CORAL,
+                ),
                 width="100%",
+                align="center",
             ),
             rx.button(
                 "Reservar Ahora",
@@ -741,46 +807,73 @@ def offer_card(offer: dict) -> rx.Component:
                 background=f"linear-gradient(135deg, {TEAL}, {TEAL_LT})",
                 color="white",
                 border="none",
-                border_radius="10px",
-                font_weight="600",
-                font_size="0.85rem",
-                padding="0.6rem",
+                border_radius="14px",
+                font_weight="800",
+                font_size="0.9rem",
+                padding="0.75rem",
                 cursor="pointer",
-                _hover={"opacity": "0.85"},
-                transition="opacity 0.2s",
+                _hover={
+                    "opacity": "0.9",
+                    "transform": "translateY(-2px)",
+                },
+                transition="all 0.2s",
             ),
             spacing="3",
-            padding="1.1rem",
+            padding="1.4rem",
             align="start",
             width="100%",
         ),
-        background="rgba(255,255,255,0.05)",
-        border=f"1px solid rgba(255,255,255,0.1)",
-        border_radius="18px",
+
+        min_width="360px",
+        max_width="360px",
+        background="rgba(255,255,255,0.78)",
+        border="1px solid rgba(201,168,76,0.35)",
+        border_radius="24px",
         overflow="hidden",
-        transition="transform 0.3s, border-color 0.3s",
+        box_shadow="0 20px 55px rgba(70,55,35,0.15)",
+        transition="all 0.3s",
         _hover={
-            "transform": "translateY(-5px)",
-            "border_color": "rgba(201,168,76,0.4)",
+            "transform": "translateY(-8px)",
+            "box_shadow": "0 28px 70px rgba(70,55,35,0.25)",
         },
     )
 
 
 def offers_section() -> rx.Component:
     return rx.box(
-        section_header("⚡ Tiempo limitado", "Ofertas del", "Momento"),
-        rx.grid(
-            *[offer_card(o) for o in OFFERS],
-            style={"gridTemplateColumns": "repeat(auto-fit, minmax(280px, 1fr))"},
-            gap="1.25rem",
-            max_width="1100px",
-            margin="0 auto",
+        # HEADER
+        section_header(
+            "⚡ Tiempo limitado",
+            "Ofertas del",
+            "Momento",
         ),
+
+        # CARRUSEL AUTOMÁTICO
+        rx.box(
+            rx.box(
+                *[offer_card(o) for o in OFFERS],
+                *[offer_card(o) for o in OFFERS],  # duplicamos para loop infinito
+                class_name="offers-track",
+            ),
+            overflow="hidden",
+            width="100%",
+            position="relative",
+        ),
+
         id="ofertas",
-        padding="4rem 2rem",
-        background=CREAM,
-        border_top="1px solid rgba(255,255,255,0.06)",
-        border_bottom="1px solid rgba(255,255,255,0.06)",
+
+        padding="5rem 2rem",
+
+        background="""
+            linear-gradient(
+                180deg,
+                rgba(245,240,232,0.98),
+                rgba(239,232,220,1)
+            )
+        """,
+
+        border_top="1px solid rgba(201,168,76,0.15)",
+
         width="100%",
     )
 
@@ -837,7 +930,7 @@ def disney_section() -> rx.Component:
             object-fit:cover;
             z-index:0;
         ">
-        <source src="/images/disney_video.mp4" type="video/mp4">
+        <source src="/images/disney_video.mp4?v=2" type="video/mp4">
     </video>
 
     <script>
@@ -1329,37 +1422,167 @@ def footer() -> rx.Component:
 # ─────────────────────────────────────────────────────────────────────────────
 
 GLOBAL_CSS = """
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap');
 
-*, *::before, *::after { box-sizing: border-box; }
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+html {
+    scroll-behavior: smooth;
+}
 
 body {
-    background-color: #F5EFE6;
-    color: #1B1B1B;
-    font-family: 'DM Sans', sans-serif;
     margin: 0;
+    padding: 0;
     overflow-x: hidden;
+    background: #F5EFE6;
+    color: #1F1F1F;
+    font-family: 'Inter', sans-serif;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #EFE6D8;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(
+        180deg,
+        #C9A84C,
+        #A67C2E
+    );
+    border-radius: 20px;
+}
+
+/* Selección de texto */
+::selection {
+    background: rgba(201,168,76,0.28);
+}
+
+/* Animaciones */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(45px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @keyframes fadeInDown {
-    from { opacity: 0; transform: translateY(-20px); }
-    to   { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(-45px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-@keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(30px); }
-    to   { opacity: 1; transform: translateY(0); }
+@keyframes glowPulse {
+    0% {
+        box-shadow: 0 0 0 rgba(201,168,76,0.0);
+    }
+
+    50% {
+        box-shadow: 0 0 35px rgba(201,168,76,0.35);
+    }
+
+    100% {
+        box-shadow: 0 0 0 rgba(201,168,76,0.0);
+    }
 }
 
-@keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50%       { transform: translateY(-12px); }
+/* Carrusel ofertas */
+@keyframes offersScroll {
+
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-50%);
+    }
 }
 
-/* Scrollbar estilizado */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: #0D1B2A; }
-::-webkit-scrollbar-thumb { background: #C9A84C; border-radius: 3px; }
+.offers-track {
+    display: flex;
+    gap: 1.5rem;
+    width: max-content;
+    animation: offersScroll 38s linear infinite;
+    padding: 1rem 0;
+}
+
+.offers-track:hover {
+    animation-play-state: paused;
+}
+
+/* Glass effect */
+.glass {
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+}
+
+/* Hover cards */
+.hover-lift {
+    transition:
+        transform 0.28s ease,
+        box-shadow 0.28s ease;
+}
+
+.hover-lift:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 22px 55px rgba(0,0,0,0.18);
+}
+
+/* Botones premium */
+.gold-button {
+    background: linear-gradient(
+        135deg,
+        #C9A84C,
+        #F0D080
+    );
+
+    color: white;
+
+    transition: all 0.25s ease;
+}
+
+.gold-button:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.05);
+}
+
+/* Videos */
+video {
+    object-fit: cover;
+}
+
+/* Navbar blur */
+.nav-blur {
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+
+    .offers-track {
+        animation-duration: 50s;
+    }
+
+    body {
+        overflow-x: hidden;
+    }
+}
+
 """
 
 
