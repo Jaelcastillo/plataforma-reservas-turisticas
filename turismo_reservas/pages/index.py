@@ -12,7 +12,7 @@ Uso en tu app principal (travelworld.py o similar):
 import reflex as rx
 
 # ─── Paleta de colores ────────────────────────────────────────────────────────
-DARK      = "#0D1B2A"
+DARK      = "#F5EFE6"
 TEAL      = "#0B6E6E"
 TEAL_LT   = "#1A9E9E"
 GOLD      = "#C9A84C"
@@ -203,38 +203,58 @@ def search_field(label: str, placeholder: str) -> rx.Component:
 
 def hero_section() -> rx.Component:
     return rx.box(
-        # Fondo con capas de gradiente
+        rx.html(
+            """
+            <video autoplay muted loop playsinline
+                style="
+                    position:absolute;
+                    top:0;
+                    left:0;
+                    width:100%;
+                    height:100%;
+                    object-fit:cover;
+                    z-index:0;
+                ">
+                <source src="/images/beach_video.mp4" type="video/mp4">
+            </video>
+            """
+        ),
 
-        
-       rx.box(
-    position="absolute",
-    inset="0",
-    style={
-        "background": (
-            "linear-gradient(rgba(13,27,42,0.55), rgba(13,27,42,0.78)), "
-            "url('/images/hero_bg.png') center/cover no-repeat"
-        ),
-    },
-),
-        # Overlay inferior
         rx.box(
-            position="absolute", bottom="0", left="0", right="0", height="140px",
-            style={"background": f"linear-gradient(180deg, transparent 0%, rgba(13,27,42,0.85) 100%)"},
+            position="absolute",
+            inset="0",
+            background="rgba(0,0,0,0.45)",
+            z_index="1",
         ),
-        # Contenido principal
+
+        rx.box(
+            position="absolute",
+            bottom="0",
+            left="0",
+            right="0",
+            height="140px",
+            style={
+                "background": "linear-gradient(180deg, transparent 0%, rgba(13,27,42,0.85) 100%)"
+            },
+            z_index="1",
+        ),
+
         rx.vstack(
-            # Badge superior
             rx.box(
-                rx.text("✦  Plataforma Premium de Viajes  ✦",
-                        font_size="0.72rem", font_weight="600", letter_spacing="1.5px"),
+                rx.text(
+                    " Plataforma Premium de Viajes ",
+                    font_size="0.72rem",
+                    font_weight="600",
+                    letter_spacing="1.5px",
+                ),
                 background="rgba(201,168,76,0.12)",
-                border=f"1px solid rgba(201,168,76,0.4)",
+                border="1px solid rgba(201,168,76,0.4)",
                 color=GOLD,
                 padding="0.4rem 1.3rem",
                 border_radius="25px",
                 style={"animation": "fadeInDown 0.8s ease both"},
             ),
-            # Título
+
             rx.vstack(
                 rx.heading(
                     "Descubre el Mundo",
@@ -246,34 +266,49 @@ def hero_section() -> rx.Component:
                         "lineHeight": "1.1",
                     },
                 ),
-                gold_gradient_text("Sin Límites", size="clamp(3rem, 7vw, 5rem)"),
+                gold_gradient_text(
+                    "Sin Límites",
+                    size="clamp(3rem, 7vw, 5rem)",
+                ),
                 spacing="1",
                 align="center",
                 style={"animation": "fadeInUp 0.9s ease 0.1s both"},
             ),
-            # Subtítulo
+
             rx.text(
-                "Destinos únicos, resorts de lujo, tours extremos y experiencias mágicas."
-                " Tu aventura perfecta comienza aquí.",
-                color="rgba(255,255,255,0.68)",
+                "Destinos únicos, resorts de lujo, tours extremos y experiencias mágicas. "
+                "Tu aventura perfecta comienza aquí.",
+                color="rgba(255,255,255,0.72)",
                 font_size="1.05rem",
                 text_align="center",
                 max_width="520px",
                 line_height="1.75",
                 style={"animation": "fadeInUp 0.9s ease 0.2s both"},
             ),
-            # Search box
+
             rx.box(
                 rx.hstack(
-                    search_field("Destino",  "¿A dónde quieres ir?"),
-                    rx.divider(orientation="vertical", height="44px", border_color="rgba(255,255,255,0.15)"),
-                    search_field("Llegada",  "Fecha de llegada"),
-                    rx.divider(orientation="vertical", height="44px", border_color="rgba(255,255,255,0.15)"),
-                    search_field("Salida",   "Fecha de salida"),
-                    rx.divider(orientation="vertical", height="44px", border_color="rgba(255,255,255,0.15)"),
+                    search_field("Destino", "¿A dónde quieres ir?"),
+                    rx.divider(
+                        orientation="vertical",
+                        height="44px",
+                        border_color="rgba(255,255,255,0.15)",
+                    ),
+                    search_field("Llegada", "Fecha de llegada"),
+                    rx.divider(
+                        orientation="vertical",
+                        height="44px",
+                        border_color="rgba(255,255,255,0.15)",
+                    ),
+                    search_field("Salida", "Fecha de salida"),
+                    rx.divider(
+                        orientation="vertical",
+                        height="44px",
+                        border_color="rgba(255,255,255,0.15)",
+                    ),
                     search_field("Viajeros", "2 adultos"),
                     rx.button(
-                        "🔍  Buscar",
+                        "🔍 Buscar",
                         background=f"linear-gradient(135deg, {GOLD}, {GOLD_LT})",
                         color=DARK,
                         border="none",
@@ -282,9 +317,12 @@ def hero_section() -> rx.Component:
                         font_weight="700",
                         font_size="0.85rem",
                         white_space="nowrap",
-                        align_self="flex-end",
+                        align_self="end",
                         cursor="pointer",
-                        _hover={"transform": "translateY(-2px)", "box_shadow": f"0 8px 25px rgba(201,168,76,0.4)"},
+                        _hover={
+                            "transform": "translateY(-2px)",
+                            "box_shadow": "0 8px 25px rgba(201,168,76,0.4)",
+                        },
                         transition="all 0.15s",
                     ),
                     spacing="4",
@@ -293,31 +331,38 @@ def hero_section() -> rx.Component:
                     flex_wrap="wrap",
                 ),
                 background=GLASS_BG,
-                style={"backdropFilter": "blur(20px)"},
+                style={
+                    "backdropFilter": "blur(20px)",
+                    "animation": "fadeInUp 0.9s ease 0.3s both",
+                },
                 border=f"1px solid {GLASS_BOR}",
                 border_radius="20px",
                 padding="1.4rem 1.8rem",
                 max_width="760px",
                 width="100%",
                 box_shadow="0 20px 60px rgba(0,0,0,0.45)",
-                style_={"animation": "fadeInUp 0.9s ease 0.3s both"},
             ),
+
             spacing="7",
             align="center",
+            justify="center",
             position="relative",
             z_index="2",
             padding="0 1.5rem",
             max_width="860px",
             text_align="center",
+            margin="0 auto",
         ),
-        position="relative",
-        min_height="92vh",
+
+            position="relative",
+        min_height="100vh",
         display="flex",
         align="center",
         justify="center",
         overflow="hidden",
         width="100%",
     )
+
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1098,7 +1143,7 @@ GLOBAL_CSS = """
 *, *::before, *::after { box-sizing: border-box; }
 
 body {
-    background-color: #0D1B2A;
+    background-color: #F5EFE6;
     color: white;
     font-family: 'DM Sans', sans-serif;
     margin: 0;
