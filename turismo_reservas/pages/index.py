@@ -12,16 +12,20 @@ Uso en tu app principal (travelworld.py o similar):
 import reflex as rx
 
 # ─── Paleta de colores ────────────────────────────────────────────────────────
-DARK      = "#F5EFE6"
-TEAL      = "#0B6E6E"
-TEAL_LT   = "#1A9E9E"
-GOLD      = "#C9A84C"
-GOLD_LT   = "#F0D080"
-CORAL     = "#E8735A"
-PURPLE    = "#9B7FD4"
-GLASS_BG  = "rgba(255,255,255,0.06)"
-GLASS_BOR = "rgba(255,255,255,0.12)"
-GOLD_BOR  = "rgba(201,168,76,0.25)"
+DARK = "#1F2A35"
+CREAM = "#F5EFE6"
+BEIGE = "#E8DDCF"
+TEXT_DARK = "#1B1B1B"
+TEXT_SOFT = "#5E554D"
+TEAL = "#0B6E6E"
+TEAL_LT = "#1A9E9E"
+GOLD = "#C9A84C"
+GOLD_LT = "#F0D080"
+CORAL = "#C9785B"
+PURPLE = "#8B6FC7"
+GLASS_BG = "rgba(255,255,255,0.16)"
+GLASS_BOR = "rgba(255,255,255,0.28)"
+GOLD_BOR = "rgba(201,168,76,0.35)"
 
 # ─── Estilos compartidos ──────────────────────────────────────────────────────
 NAV_LINK = dict(
@@ -112,7 +116,7 @@ def navbar() -> rx.Component:
                     "fontFamily": "'Playfair Display', serif",
                     "fontSize": "1.5rem",
                     "fontWeight": "900",
-                    "background": f"linear-gradient(135deg, {GOLD}, {GOLD_LT}, {GOLD})",
+                    "background": "linear-gradient(135deg, #8B6A2E, #C9A84C, #A8753B)",
                     "WebkitBackgroundClip": "text",
                     "WebkitTextFillColor": "transparent",
                     "backgroundClip": "text",
@@ -156,7 +160,7 @@ def navbar() -> rx.Component:
         position="sticky",
         top="0",
         z_index="100",
-        background="rgba(13,27,42,0.9)",
+        background="rgba(245,239,230,0.72)",
         style={"backdropFilter": "blur(20px)"},
         border_bottom=f"1px solid {GOLD_BOR}",
         height="64px",
@@ -204,21 +208,29 @@ def search_field(label: str, placeholder: str) -> rx.Component:
 def hero_section() -> rx.Component:
     return rx.box(
         rx.html(
-            """
-            <video autoplay muted loop playsinline
-                style="
-                    position:absolute;
-                    top:0;
-                    left:0;
-                    width:100%;
-                    height:100%;
-                    object-fit:cover;
-                    z-index:0;
-                ">
-                <source src="/images/beach_video.mp4" type="video/mp4">
-            </video>
-            """
-        ),
+    """
+    <video id="heroVideo" autoplay muted loop playsinline preload="auto"
+        style="
+            position:absolute;
+            top:0;
+            left:0;
+            width:100%;
+            height:100%;
+            object-fit:cover;
+            z-index:0;
+        ">
+        <source src="/images/beach_video.mp4" type="video/mp4">
+    </video>
+
+    <script>
+        const heroVideo = document.getElementById("heroVideo");
+        if (heroVideo) {
+            heroVideo.muted = true;
+            heroVideo.play().catch(() => {});
+        }
+    </script>
+    """
+),
 
         rx.box(
             position="absolute",
@@ -276,9 +288,9 @@ def hero_section() -> rx.Component:
             ),
 
             rx.text(
-                "Destinos únicos, resorts de lujo, tours extremos y experiencias mágicas. "
-                "Tu aventura perfecta comienza aquí.",
-                color="rgba(255,255,255,0.72)",
+    "Destinos únicos, resorts de lujo, tours extremos y experiencias mágicas. "
+    "Tu aventura perfecta comienza aquí.",
+    color="#F8F1E7",
                 font_size="1.05rem",
                 text_align="center",
                 max_width="520px",
@@ -308,9 +320,9 @@ def hero_section() -> rx.Component:
                     ),
                     search_field("Viajeros", "2 adultos"),
                     rx.button(
-                        "🔍 Buscar",
-                        background=f"linear-gradient(135deg, {GOLD}, {GOLD_LT})",
-                        color=DARK,
+                        "Buscar",
+                        background=f"linear-gradient(135deg, {CORAL}, {GOLD})",
+                        color="white",
                         border="none",
                         padding="0.75rem 1.75rem",
                         border_radius="12px",
@@ -392,23 +404,78 @@ def stat_item(number: str, label: str) -> rx.Component:
     )
 
 
-def stats_bar() -> rx.Component:
-    return rx.flex(
-        stat_item("1,200+", "Destinos disponibles"),
-        stat_item("98%",    "Clientes satisfechos"),
-        stat_item("50K+",   "Reservas realizadas"),
-        stat_item("24/7",   "Soporte premium"),
-        justify="center",
-        gap="3rem",
-        flex_wrap="wrap",
-        padding="1.4rem 2rem",
-        background=f"linear-gradient(135deg, rgba(11,110,110,0.25), rgba(201,168,76,0.08))",
-        border_top=f"1px solid {GOLD_BOR}",
-        border_bottom=f"1px solid {GOLD_BOR}",
+def stats_section() -> rx.Component:
+    stats = [
+        ("1,200+", "DESTINOS DISPONIBLES"),
+        ("98%", "CLIENTES SATISFECHOS"),
+        ("50K+", "RESERVAS REALIZADAS"),
+        ("24/7", "SOPORTE PREMIUM"),
+    ]
+
+    return rx.box(
+
+        # Glow elegante detrás
+        rx.box(
+            position="absolute",
+            top="-120px",
+            left="50%",
+            transform="translateX(-50%)",
+            width="700px",
+            height="250px",
+            background="radial-gradient(circle, rgba(212,175,55,0.18) 0%, transparent 70%)",
+            filter="blur(70px)",
+        ),
+
+        rx.hstack(
+            *[
+                rx.vstack(
+                    rx.heading(
+                        num,
+                        color="#D4AF37",
+                        font_size="3rem",
+                        font_weight="700",
+                        font_family="'Playfair Display', serif",
+                    ),
+
+                    rx.text(
+                        label,
+                        color="rgba(255,255,255,0.75)",
+                        font_size="0.85rem",
+                        letter_spacing="3px",
+                        text_align="center",
+                    ),
+
+                    spacing="1",
+                    align="center",
+                )
+
+                for num, label in stats
+            ],
+
+            justify="between",
+            align="center",
+            width="100%",
+            flex_wrap="wrap",
+        ),
+
+        position="relative",
+
+        background="""
+        linear-gradient(
+            135deg,
+            rgba(7,24,38,0.96),
+            rgba(11,38,53,0.94),
+            rgba(8,28,43,0.97)
+        )
+        """,
+
+        border_top="1px solid rgba(212,175,55,0.18)",
+        border_bottom="1px solid rgba(212,175,55,0.18)",
+
+        padding="4rem 6rem",
         width="100%",
+        overflow="hidden",
     )
-
-
 # ─────────────────────────────────────────────────────────────────────────────
 #  TARJETAS DE DESTINOS
 # ─────────────────────────────────────────────────────────────────────────────
@@ -481,7 +548,7 @@ def destination_card(dest: dict) -> rx.Component:
                 dest["name"],
                 style={"fontFamily": "'Playfair Display', serif",
                        "fontSize": "1.2rem", "fontWeight": "700",
-                       "color": "white", "lineHeight": "1.2"},
+                      "color": TEXT_DARK, "lineHeight": "1.2"},
             ),
             rx.text(dest["country"], font_size="0.72rem",
                     color="rgba(255,255,255,0.62)", margin_top="2px"),
@@ -506,18 +573,75 @@ def destination_card(dest: dict) -> rx.Component:
 
 def destinations_section() -> rx.Component:
     return rx.box(
-        section_header("✦ Explora el mundo ✦", "Destinos", "Exclusivos"),
-        rx.grid(
-            *[destination_card(d) for d in DESTINATIONS],
-            columns="5",
-            spacing="4",
-            max_width="1100px",
-            margin="0 auto",
-            style={"gridTemplateColumns": "repeat(auto-fit, minmax(185px, 1fr))"},
+
+        # VIDEO DE FONDO
+        rx.html(
+            """
+            <video autoplay muted loop playsinline preload="auto"
+                style="
+                    position:absolute;
+                    top:0;
+                    left:0;
+                    width:100%;
+                    height:100%;
+                    object-fit:cover;
+                    z-index:0;
+                ">
+                <source src="/images/world_video.mp4" type="video/mp4">
+            </video>
+            """
         ),
+
+        # OVERLAY OSCURO
+        rx.box(
+            position="absolute",
+            inset="0",
+            background="""
+            linear-gradient(
+                rgba(5,15,25,0.82),
+                rgba(5,15,25,0.88)
+            )
+            """,
+            z_index="1",
+        ),
+
+        # CONTENIDO
+        rx.box(
+
+            section_header(
+                "✦ Explora el mundo ✦",
+                "Destinos",
+                "Exclusivos"
+            ),
+
+            rx.grid(
+                *[destination_card(d) for d in DESTINATIONS],
+
+                columns="5",
+                spacing="4",
+
+                max_width="1200px",
+                margin="0 auto",
+
+                style={
+                    "gridTemplateColumns":
+                    "repeat(auto-fit, minmax(210px, 1fr))"
+                },
+            ),
+
+            position="relative",
+            z_index="2",
+        ),
+
         id="destinos",
-        padding="4rem 2rem",
+
+        padding="5rem 3rem",
+
         width="100%",
+
+        position="relative",
+
+        overflow="hidden",
     )
 
 
@@ -571,7 +695,7 @@ def offer_card(offer: dict) -> rx.Component:
         rx.box(
             rx.box(
                 rx.text(offer["discount"], font_size="0.73rem", font_weight="700",
-                        color="white"),
+                       color="#F8F1E7"),
                 position="absolute", top="12px", right="12px",
                 background=f"linear-gradient(135deg, {CORAL}, #C9584A)",
                 padding="4px 12px", border_radius="20px",
@@ -585,7 +709,7 @@ def offer_card(offer: dict) -> rx.Component:
         rx.vstack(
             rx.text(offer["name"], font_weight="600", font_size="0.96rem", color="white"),
             rx.text(offer["sub"],  font_size="0.78rem",
-                    color="rgba(255,255,255,0.52)"),
+                    color="#D8C7B0"),
             rx.text(
                 f"★★★★★  {offer['rating']}  ({offer['reviews']} reseñas)",
                 font_size="0.73rem", color=GOLD,
@@ -602,7 +726,7 @@ def offer_card(offer: dict) -> rx.Component:
                                    "color": GOLD}),
                     rx.text(offer["nights"],
                             font_size="0.63rem",
-                            color="rgba(255,255,255,0.4)"),
+                            color="#C7B8A1"),
                     spacing="0",
                     align="start",
                 ),
@@ -654,7 +778,7 @@ def offers_section() -> rx.Component:
         ),
         id="ofertas",
         padding="4rem 2rem",
-        background="rgba(255,255,255,0.02)",
+        background=CREAM,
         border_top="1px solid rgba(255,255,255,0.06)",
         border_bottom="1px solid rgba(255,255,255,0.06)",
         width="100%",
@@ -684,7 +808,7 @@ DISNEY_FEATURES = [
 def disney_park_card(name: str, bg: str) -> rx.Component:
     return rx.flex(
         rx.text(name, font_size="0.73rem", font_weight="600",
-                text_align="center", color="white",
+                text_align="center", color="#6B4F2A",
                 padding="0 0.5rem", line_height="1.3"),
         style={"background": bg},
         border_radius="14px",
@@ -701,25 +825,66 @@ def disney_park_card(name: str, bg: str) -> rx.Component:
 
 def disney_section() -> rx.Component:
     return rx.box(
+      rx.html(
+    """
+    <video id="disneyVideo" autoplay muted loop playsinline preload="auto"
+        style="
+            position:absolute;
+            top:0;
+            left:0;
+            width:100%;
+            height:100%;
+            object-fit:cover;
+            z-index:0;
+        ">
+        <source src="/images/disney_video.mp4" type="video/mp4">
+    </video>
+
+    <script>
+        const disneyVideo = document.getElementById("disneyVideo");
+        if (disneyVideo) {
+            disneyVideo.muted = true;
+            disneyVideo.play().catch(() => {});
+        }
+    </script>
+    """
+),
+
+        rx.box(
+            position="absolute",
+            inset="0",
+            background="rgba(20, 10, 40, 0.72)",
+            z_index="1",
+        ),
+
         rx.grid(
-            # Texto izquierdo
             rx.vstack(
-                rx.text("✦  La magia te espera  ✦",
-                        style={**SECTION_TAG_STYLE, "color": PURPLE}),
+                rx.text(
+                    "✦  La magia te espera  ✦",
+                    color=GOLD,
+                    font_size="0.75rem",
+                    text_transform="uppercase",
+                    letter_spacing="2px",
+                    font_weight="700",
+                ),
+
                 rx.hstack(
                     rx.heading(
                         "Vive la Magia de ",
-                        style={"fontFamily": "'Playfair Display', serif",
-                               "fontSize": "clamp(1.8rem,4vw,2.4rem)",
-                               "fontWeight": "700", "color": "white"},
+                        style={
+                            "fontFamily": "'Playfair Display', serif",
+                            "fontSize": "clamp(2rem,4vw,2.8rem)",
+                            "fontWeight": "700",
+                            "color": "white",
+                        },
                     ),
                     rx.text(
                         "Disney World",
                         style={
                             "fontFamily": "'Playfair Display', serif",
-                            "fontSize": "clamp(1.8rem,4vw,2.4rem)",
+                            "fontSize": "clamp(2rem,4vw,2.8rem)",
                             "fontWeight": "700",
-                            "background": f"linear-gradient(135deg, {PURPLE}, {GOLD})",
+                            "background": f"linear-gradient(135deg, {GOLD_LT}, {GOLD}, {CORAL})",
                             "WebkitBackgroundClip": "text",
                             "WebkitTextFillColor": "transparent",
                             "backgroundClip": "text",
@@ -729,59 +894,85 @@ def disney_section() -> rx.Component:
                     spacing="0",
                     align="baseline",
                 ),
+
                 rx.text(
                     "Paquetes completos con hotel, boletos y experiencias exclusivas. "
                     "La aventura más mágica del mundo te espera en Orlando, Florida.",
-                    color="rgba(255,255,255,0.6)", font_size="0.9rem",
-                    line_height="1.8", max_width="440px",
+                    color="rgba(255,255,255,0.86)",
+                    font_size="1rem",
+                    line_height="1.8",
+                    max_width="480px",
                 ),
+
                 rx.vstack(
                     *[
                         rx.hstack(
-                            rx.text("✦", color=GOLD, font_size="0.7rem"),
-                            rx.text(feat, font_size="0.88rem",
-                                    color="rgba(255,255,255,0.8)"),
-                            spacing="2", align="center",
+                            rx.text("✦", color=GOLD, font_size="0.8rem"),
+                            rx.text(
+                                feat,
+                                font_size="0.95rem",
+                                color="rgba(255,255,255,0.92)",
+                            ),
+                            spacing="2",
+                            align="center",
                         )
                         for feat in DISNEY_FEATURES
                     ],
                     spacing="3",
                     align="start",
                 ),
+
                 rx.button(
                     "Ver Paquetes Disney ✨",
-                    background=f"linear-gradient(135deg, {PURPLE}, {GOLD})",
-                    color="white", border="none",
-                    padding="0.75rem 2rem", border_radius="30px",
-                    font_weight="700", font_size="0.9rem",
-                    letter_spacing="0.5px", cursor="pointer",
-                    _hover={"opacity": "0.9", "transform": "translateY(-2px)"},
+                    background=f"linear-gradient(135deg, {GOLD}, {CORAL})",
+                    color="white",
+                    border="none",
+                    padding="0.8rem 2.2rem",
+                    border_radius="30px",
+                    font_weight="800",
+                    font_size="0.95rem",
+                    letter_spacing="0.5px",
+                    cursor="pointer",
+                    box_shadow="0 12px 30px rgba(0,0,0,0.35)",
+                    _hover={
+                        "opacity": "0.92",
+                        "transform": "translateY(-2px)",
+                    },
                     transition="all 0.2s",
                 ),
-                spacing="5", align="start",
+
+                spacing="5",
+                align="start",
+                position="relative",
+                z_index="2",
             ),
-            # Grid parques derecho
+
             rx.grid(
                 *[disney_park_card(name, bg) for name, bg in DISNEY_PARKS],
                 columns="2",
-                gap="0.75rem",
+                gap="0.9rem",
+                position="relative",
+                z_index="2",
             ),
+
             columns="2",
             gap="3rem",
             align="center",
             max_width="1100px",
             margin="0 auto",
+            position="relative",
+            z_index="2",
         ),
+
         id="disney",
-        padding="4rem 2rem",
-        style={
-            "background": f"linear-gradient(135deg, {DARK}, #1A1040, #2D0E5C, #0B3D5E)",
-        },
+        padding="5rem 2rem",
         border_top=f"1px solid {GOLD_BOR}",
         border_bottom=f"1px solid {GOLD_BOR}",
         width="100%",
+        position="relative",
+        overflow="hidden",
+        min_height="650px",
     )
-
 
 # ─────────────────────────────────────────────────────────────────────────────
 #  TOURS BUGGY
@@ -1144,7 +1335,7 @@ GLOBAL_CSS = """
 
 body {
     background-color: #F5EFE6;
-    color: white;
+    color: #1B1B1B;
     font-family: 'DM Sans', sans-serif;
     margin: 0;
     overflow-x: hidden;
@@ -1178,12 +1369,10 @@ body {
 
 def index() -> rx.Component:
     return rx.box(
-        # CSS global
         rx.html(f"<style>{GLOBAL_CSS}</style>"),
-        # Componentes
         navbar(),
         hero_section(),
-        stats_bar(),
+        stats_section(),
         destinations_section(),
         offers_section(),
         disney_section(),
