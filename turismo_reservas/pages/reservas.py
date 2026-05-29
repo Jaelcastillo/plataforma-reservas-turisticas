@@ -25,11 +25,12 @@ TEXT_MUTED = "#6E6254"
 
 # ─── Catálogo de destinos y ofertas ──────────────────────────────────────────
 PAISES = [
-    {"id": "rd",  "nombre": "República Dominicana", "bandera": "🇩🇴", "imagen": "/images/punta_cana.png"},
-    {"id": "pr",  "nombre": "Puerto Rico",           "bandera": "🇵🇷", "imagen": "/images/puerto_rico.jpg"},
-    {"id": "co",  "nombre": "Colombia",              "bandera": "🇨🇴", "imagen": "/images/cartagena.jpg"},
-    {"id": "mx",  "nombre": "México",                "bandera": "🇲🇽", "imagen": "/images/cancun.jpg.jpg"},
-    {"id": "us",  "nombre": "Estados Unidos",        "bandera": "🇺🇸", "imagen": "/images/disney.jpg"},
+    {"id": "rd", "nombre": "República Dominicana", "bandera": "🇩🇴", "imagen": "/images/punta_cana.png"},
+    {"id": "pr", "nombre": "Puerto Rico", "bandera": "🇵🇷", "imagen": "/images/puerto_rico.jpg"},
+    {"id": "co", "nombre": "Colombia", "bandera": "🇨🇴", "imagen": "/images/cartagena.jpg"},
+    {"id": "mx", "nombre": "México", "bandera": "🇲🇽", "imagen": "/images/cancun.jpg.jpg"},
+    {"id": "us", "nombre": "Estados Unidos", "bandera": "🇺🇸", "imagen": "/images/disney.jpg"},
+
 ]
 
 OFERTAS_POR_PAIS = {
@@ -106,8 +107,8 @@ body {
 
 /* Cards de país */
 .country-card {
-    background: rgba(255,255,255,0.04);
-    border: 1.5px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.78);
+    border: 1.5px solid rgba(139,106,46,0.18);
     border-radius: 18px;
     padding: 1.1rem 1.4rem;
     cursor: pointer;
@@ -115,26 +116,28 @@ body {
     display: flex;
     align-items: center;
     gap: 1rem;
+    box-shadow: 0 12px 30px rgba(43,36,26,0.06);
 }
 .country-card:hover {
-    border-color: rgba(201,168,76,0.55);
-    background: rgba(201,168,76,0.07);
+    border-color: rgba(201,168,76,0.7);
+    background: rgba(255,255,255,0.95);
     transform: translateY(-2px);
 }
 .country-card.selected {
     border-color: #C9A84C;
-    background: rgba(201,168,76,0.12);
-    box-shadow: 0 8px 30px rgba(201,168,76,0.2);
+    background: #FFF8E8;
+    box-shadow: 0 12px 35px rgba(201,168,76,0.22);
 }
 
 /* Cards de oferta */
 .offer-card {
-    background: rgba(255,255,255,0.04);
-    border: 1.5px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.92);
+    border: 1.5px solid rgba(139,106,46,0.15);
     border-radius: 20px;
     overflow: hidden;
     cursor: pointer;
     transition: all 0.3s ease;
+    box-shadow: 0 12px 35px rgba(43,36,26,0.07);
 }
 .offer-card:hover {
     border-color: rgba(201,168,76,0.55);
@@ -399,7 +402,7 @@ def paso_indicator(num: int, label: str, activo: bool, completado: bool) -> rx.C
         completado,
         rx.text(
             "✓",
-            color="white",
+            color=TEXT_DARK,
             font_weight="900",
             font_size="1rem",
             line_height="1",
@@ -477,117 +480,166 @@ def progress_bar() -> rx.Component:
 #  PANEL RESUMEN (derecha) — con imagen dinámica
 # ─────────────────────────────────────────────────────────────────────────────
 
-def summary_panel() -> rx.Component:
+def summary_panel():
+    img = rx.cond(
+        CheckoutState.oferta_imagen != "",
+        CheckoutState.oferta_imagen,
+        CheckoutState.pais_imagen,
+    )
+
     return rx.box(
-        # Imagen dinámica del destino/oferta
-        rx.cond(
-            CheckoutState.oferta_imagen != "",
+        rx.box(
             rx.box(
-                rx.box(
-                    position="absolute",
-                    inset="0",
-                    background="linear-gradient(180deg, rgba(13,27,42,0.3) 0%, rgba(13,27,42,0.85) 100%)",
-                    z_index="1",
-                ),
-                rx.box(
-                    rx.text(
+                position="absolute",
+                inset="0",
+                background="linear-gradient(180deg, rgba(0,0,0,.10), rgba(0,0,0,.65))",
+            ),
+            rx.vstack(
+                rx.text(
+                    rx.cond(
+                        CheckoutState.oferta_nombre != "",
                         CheckoutState.oferta_nombre,
-                        color="white",
-                        font_size="1.05rem",
-                        font_weight="800",
-                        font_family="'Playfair Display', serif",
-                        position="relative",
-                        z_index="2",
-                    ),
-                    rx.text(
                         CheckoutState.pais_nombre,
-                        color="rgba(255,255,255,0.65)",
-                        font_size="0.8rem",
-                        position="relative",
-                        z_index="2",
                     ),
-                    position="absolute",
-                    bottom="0",
-                    left="0",
-                    right="0",
-                    padding="1.2rem",
-                    z_index="2",
+                    color="white",
+                    font_size="1.15rem",
+                    font_weight="900",
+                    font_family="'Playfair Display', serif",
                 ),
-                style={"backgroundImage": "url(" + CheckoutState.oferta_imagen + ")", "backgroundSize": "cover", "backgroundPosition": "center"},
-                height="200px",
-                position="relative",
-                border_radius="16px 16px 0 0",
-                overflow="hidden",
+                rx.text(
+                    rx.cond(
+                        CheckoutState.pais_nombre != "",
+                        CheckoutState.pais_nombre,
+                        "TravelWorld Premium",
+                    ),
+                    color=GOLD_LT,
+                    font_size=".85rem",
+                ),
+                position="absolute",
+                bottom="20px",
+                left="20px",
+                spacing="1",
             ),
-            rx.cond(
-                CheckoutState.pais_imagen != "",
-                rx.box(
-                    rx.box(
-                        position="absolute",
-                        inset="0",
-                        background="linear-gradient(180deg, rgba(13,27,42,0.2) 0%, rgba(13,27,42,0.8) 100%)",
-                        z_index="1",
-                    ),
-                    rx.box(
-                        rx.text(
-                            CheckoutState.pais_nombre,
-                            color="white",
-                            font_size="1.1rem",
-                            font_weight="800",
-                            font_family="'Playfair Display', serif",
-                            position="relative",
-                            z_index="2",
-                        ),
-                        rx.text(
-                            "Selecciona una oferta →",
-                            color=GOLD,
-                            font_size="0.75rem",
-                            position="relative",
-                            z_index="2",
-                        ),
-                        position="absolute",
-                        bottom="0",
-                        left="0",
-                        right="0",
-                        padding="1.2rem",
-                        z_index="2",
-                    ),
-                    style={"backgroundImage": "url(" + CheckoutState.pais_imagen + ")", "backgroundSize": "cover", "backgroundPosition": "center"},
-                    height="200px",
-                    position="relative",
-                    border_radius="16px 16px 0 0",
-                    overflow="hidden",
-                ),
-                rx.box(
-                    rx.vstack(
-                        rx.text("✦", color=GOLD, font_size="2rem"),
-                        rx.text(
-                            "TravelWorld",
-                            style={
-                                "fontFamily": "'Playfair Display', serif",
-                                "fontSize": "1.3rem",
-                                "fontWeight": "900",
-                                "background": f"linear-gradient(135deg, {GOLD}, {GOLD_LT})",
-                                "WebkitBackgroundClip": "text",
-                                "WebkitTextFillColor": "transparent",
-                                "backgroundClip": "text",
-                            },
-                        ),
-                        rx.text("Premium Travel", color="rgba(255,255,255,0.35)", font_size="0.75rem", letter_spacing="2px"),
-                        spacing="2",
-                        align="center",
-                    ),
-                    height="200px",
-                    background=f"linear-gradient(135deg, {DARK}, #0a1830)",
-                    border_radius="16px 16px 0 0",
-                    display="flex",
-                    align="center",
-                    justify="center",
-                    border_bottom=f"1px solid {GOLD_BOR}",
-                ),
-            ),
+            style={
+                "backgroundImage": "url(" + img + ")",
+                "backgroundSize": "cover",
+                "backgroundPosition": "center",
+            },
+            height="220px",
+            position="relative",
         ),
 
+        rx.vstack(
+            rx.text(
+                "Resumen de tu reserva",
+                color=TEXT_DARK,
+                font_weight="900",
+                letter_spacing="2px",
+                text_transform="uppercase",
+            ),
+
+            rx.text("📍 Destino", color=TEXT_MUTED),
+            rx.text(
+                rx.cond(
+                    CheckoutState.pais_nombre != "",
+                    CheckoutState.pais_nombre,
+                    "Selecciona un país",
+                ),
+                color=TEXT_DARK,
+                font_weight="800",
+            ),
+
+            rx.cond(
+                CheckoutState.oferta_nombre != "",
+                rx.vstack(
+                    rx.text("🎯 Oferta", color=TEXT_MUTED),
+                    rx.text(
+                        CheckoutState.oferta_nombre,
+                        color=TEXT_DARK,
+                        font_weight="800",
+                    ),
+
+                    rx.text("⏱ Duración", color=TEXT_MUTED),
+                    rx.text(
+                        CheckoutState.oferta_duracion,
+                        color=TEXT_DARK,
+                        font_weight="800",
+                    ),
+
+                    rx.hstack(
+                        rx.text("Precio base / persona", color=TEXT_MUTED),
+                        rx.spacer(),
+                        rx.text(
+                            "$" + CheckoutState.oferta_precio.to_string(),
+                            color=TEXT_DARK,
+                            font_weight="900",
+                        ),
+                        width="100%",
+                    ),
+
+                    rx.hstack(
+                        rx.text("Precio original", color=TEXT_MUTED),
+                        rx.spacer(),
+                        rx.text(
+                            "$" + CheckoutState.oferta_original.to_string(),
+                            color=TEXT_MUTED,
+                            text_decoration="line-through",
+                        ),
+                        width="100%",
+                    ),
+
+                    rx.hstack(
+                        rx.text("Descuento", color=CORAL, font_weight="900"),
+                        rx.spacer(),
+                        rx.text(
+                            "-" + CheckoutState.descuento_pct.to_string() + "% OFF",
+                            color=CORAL,
+                            font_weight="900",
+                        ),
+                        width="100%",
+                    ),
+
+                    rx.box(height="1px", width="100%", background="rgba(139,106,46,.18)"),
+
+                    rx.text("TOTAL", color=TEXT_MUTED, font_weight="800"),
+                    rx.text(
+                        "$" + CheckoutState.precio_total.to_string(),
+                        color=GOLD,
+                        font_size="2rem",
+                        font_weight="900",
+                    ),
+
+                    spacing="3",
+                    align="start",
+                    width="100%",
+                ),
+                rx.text(
+                    "Selecciona una oferta para ver el precio.",
+                    color=TEXT_MUTED,
+                ),
+            ),
+
+            rx.box(height="1px", width="100%", background="rgba(139,106,46,.18)"),
+
+            rx.text("🔒 Pago 100% seguro", color=TEXT_MUTED),
+            rx.text("✅ Cancelación flexible", color=TEXT_MUTED),
+            rx.text("⭐ Soporte 24/7 en español", color=TEXT_MUTED),
+
+            spacing="3",
+            align="start",
+            padding="1.5rem",
+        ),
+
+        background="white",
+        border=f"1px solid {GOLD_BOR}",
+        border_radius="24px",
+        overflow="hidden",
+        box_shadow="0 18px 45px rgba(43,36,26,.08)",
+        width="100%",
+        max_width="380px",
+        position="sticky",
+        top="95px",
+    )
         # Contenido del resumen
         rx.vstack(
             rx.text(
@@ -606,7 +658,7 @@ def summary_panel() -> rx.Component:
                     rx.text("📍", font_size="0.85rem"),
                     rx.vstack(
                         rx.text("Destino", color="rgba(255,255,255,0.4)", font_size="0.65rem", font_weight="600", letter_spacing="0.5px"),
-                        rx.text(CheckoutState.pais_nombre, color="white", font_size="0.9rem", font_weight="700"),
+                        rx.text(CheckoutState.pais_nombre,color=TEXT_DARK,  font_size="0.9rem", font_weight="700"),
                         spacing="0",
                         align="start",
                     ),
@@ -625,7 +677,7 @@ def summary_panel() -> rx.Component:
                         rx.text("🎯", font_size="0.85rem"),
                         rx.vstack(
                             rx.text("Oferta", color="rgba(255,255,255,0.4)", font_size="0.65rem", font_weight="600", letter_spacing="0.5px"),
-                            rx.text(CheckoutState.oferta_nombre, color="white", font_size="0.88rem", font_weight="700"),
+                            rx.text(CheckoutState.oferta_nombre, color=TEXT_DARK,font_size="0.88rem", font_weight="700"),
                             spacing="0",
                             align="start",
                         ),
@@ -637,7 +689,7 @@ def summary_panel() -> rx.Component:
                         rx.text("⏱️", font_size="0.85rem"),
                         rx.vstack(
                             rx.text("Duración", color="rgba(255,255,255,0.4)", font_size="0.65rem", font_weight="600", letter_spacing="0.5px"),
-                            rx.text(CheckoutState.oferta_duracion, color="white", font_size="0.88rem", font_weight="700"),
+                            rx.text(CheckoutState.oferta_duracion, color=TEXT_DARK, font_size="0.88rem", font_weight="700"),
                             spacing="0",
                             align="start",
                         ),
@@ -653,7 +705,7 @@ def summary_panel() -> rx.Component:
                         rx.text(
                             rx.text.span("$", font_size="0.8rem"),
                             rx.text.span(CheckoutState.oferta_precio.to_string()),
-                            color="white", font_size="0.9rem", font_weight="700",
+                            color=TEXT_DARK, font_size="0.9rem", font_weight="700",
                         ),
                         width="100%",
                     ),
@@ -686,7 +738,7 @@ def summary_panel() -> rx.Component:
                             rx.text("TOTAL", color="rgba(255,255,255,0.4)", font_size="0.65rem", letter_spacing="2px"),
                             rx.text(
                                 rx.text.span(CheckoutState.personas, " pax × $", font_size="0.78rem", color="rgba(255,255,255,0.4)"),
-                                color="white", font_size="0.8rem",
+                                color=TEXT_DARK, font_size="0.8rem",
                             ),
                             spacing="0",
                         ),
@@ -717,18 +769,18 @@ def summary_panel() -> rx.Component:
             rx.box(
                 rx.vstack(
                     rx.hstack(
-                        rx.text("🔒", font_size="0.8rem"),
-                        rx.text("Pago 100% seguro", color="rgba(255,255,255,0.45)", font_size="0.72rem"),
+                        rx.text("", font_size="0.8rem"),
+                        rx.text("Pago 100% seguro", color=TEXT_MUTED, font_size="0.72rem"),
                         spacing="2",
                     ),
                     rx.hstack(
                         rx.text("✅", font_size="0.8rem"),
-                        rx.text("Cancelación flexible", color="rgba(255,255,255,0.45)", font_size="0.72rem"),
+                        rx.text("Cancelación flexible", color=TEXT_MUTED, font_size="0.72rem"),
                         spacing="2",
                     ),
                     rx.hstack(
                         rx.text("⭐", font_size="0.8rem"),
-                        rx.text("Soporte 24/7 en español", color="rgba(255,255,255,0.45)", font_size="0.72rem"),
+                        rx.text("Soporte 24/7 en español", color=TEXT_MUTED, font_size="0.72rem"),
                         spacing="2",
                     ),
                     spacing="2",
@@ -767,10 +819,10 @@ def pais_card(p: dict) -> rx.Component:
     is_selected = CheckoutState.pais_id == p["id"]
     return rx.box(
         rx.hstack(
-            rx.text(p["bandera"], font_size="1.8rem"),
+            rx.text(p["bandera"], font_size="2rem"),
             rx.text(
                 p["nombre"],
-                color=rx.cond(is_selected, GOLD_LT, "white"),
+                color=rx.cond(is_selected, GOLD, TEXT_DARK),
                 font_size="1rem",
                 font_weight=rx.cond(is_selected, "700", "500"),
             ),
@@ -824,12 +876,12 @@ def paso1() -> rx.Component:
                     "fontFamily": "'Playfair Display', serif",
                     "fontSize": "clamp(1.6rem, 3vw, 2.2rem)",
                     "fontWeight": "800",
-                    "color": "white",
+                    "color": TEXT_DARK,
                 },
             ),
             rx.text(
                 "Selecciona tu destino para ver las mejores experiencias disponibles",
-                color="rgba(255,255,255,0.45)",
+                color=TEXT_MUTED,
                 font_size="0.9rem",
             ),
             spacing="2",
@@ -865,7 +917,7 @@ def oferta_card_item(o: dict) -> rx.Component:
             rx.box(
                 rx.text(
                     o["icono"] + " " + o["duracion"],
-                    color="white",
+                    color=TEXT_DARK,
                     font_size="0.72rem",
                     font_weight="600",
                 ),
@@ -900,7 +952,7 @@ def oferta_card_item(o: dict) -> rx.Component:
         rx.vstack(
             rx.text(
                 o["nombre"],
-                color="white",
+                color=TEXT_DARK,
                 font_size="0.95rem",
                 font_weight="800",
                 font_family="'Playfair Display', serif",
@@ -985,7 +1037,7 @@ def paso2() -> rx.Component:
                         "fontFamily": "'Playfair Display', serif",
                         "fontSize": "clamp(1.5rem, 3vw, 2rem)",
                         "fontWeight": "800",
-                        "color": "white",
+                        "color": TEXT_DARK,
                     },
                 ),
                 spacing="1",
@@ -998,7 +1050,7 @@ def paso2() -> rx.Component:
 
         rx.text(
             CheckoutState.pais_nombre,
-            color="rgba(255,255,255,0.45)",
+            color=TEXT_MUTED,
             font_size="0.85rem",
         ),
 
@@ -1083,7 +1135,7 @@ def styled_input(placeholder: str, value, on_change, input_type: str = "text") -
             "background": "rgba(255,255,255,0.05)",
             "border": "1.5px solid rgba(255,255,255,0.1)",
             "borderRadius": "12px",
-            "color": "white",
+          "color": TEXT_DARK,
             "padding": "0.8rem 1.1rem",
             "fontSize": "0.92rem",
             "width": "100%",
@@ -1120,7 +1172,7 @@ def paso3() -> rx.Component:
                         "fontFamily": "'Playfair Display', serif",
                         "fontSize": "clamp(1.5rem, 3vw, 2rem)",
                         "fontWeight": "800",
-                        "color": "white",
+                       "color": TEXT_DARK,
                     },
                 ),
                 spacing="1",
@@ -1153,7 +1205,7 @@ def paso3() -> rx.Component:
                         "background": "rgba(255,255,255,0.05)",
                         "border": "1.5px solid rgba(255,255,255,0.1)",
                         "borderRadius": "12px",
-                        "color": "white",
+                        "color": TEXT_DARK,
                         "padding": "0.8rem 1.1rem",
                         "fontSize": "0.92rem",
                         "width": "100%",
@@ -1174,7 +1226,7 @@ def paso3() -> rx.Component:
                     "background": "rgba(255,255,255,0.05)",
                     "border": "1.5px solid rgba(255,255,255,0.1)",
                     "borderRadius": "12px",
-                    "color": "white",
+                    "color": TEXT_DARK,
                     "padding": "0.8rem 1.1rem",
                     "fontSize": "0.88rem",
                     "width": "100%",
@@ -1189,7 +1241,7 @@ def paso3() -> rx.Component:
             on_click=CheckoutState.ir_paso(4),
             style={
                 "background": f"linear-gradient(135deg, {TEAL}, {TEAL_LT})",
-                "color": "white",
+                "color": TEXT_DARK,
                 "border": "none",
                 "borderRadius": "14px",
                 "padding": "0.9rem 2rem",
@@ -1262,7 +1314,7 @@ def card_form() -> rx.Component:
                                     CheckoutState.card_name,
                                     "NOMBRE APELLIDO",
                                 ),
-                                color="white", font_size="0.78rem", font_weight="600",
+                               color=TEXT_DARK, font_size="0.78rem", font_weight="600",
                             ),
                             spacing="0",
                         ),
@@ -1271,7 +1323,7 @@ def card_form() -> rx.Component:
                             rx.text("VENCE", color="rgba(255,255,255,0.4)", font_size="0.55rem", letter_spacing="1px"),
                             rx.text(
                                 rx.cond(CheckoutState.card_exp != "", CheckoutState.card_exp, "MM/AA"),
-                                color="white", font_size="0.78rem", font_weight="600",
+                               color=TEXT_DARK, font_size="0.78rem", font_weight="600",
                             ),
                             spacing="0",
                         ),
@@ -1365,20 +1417,20 @@ def transfer_form() -> rx.Component:
     return rx.box(
         rx.vstack(
             rx.text("🏦", font_size="2rem"),
-            rx.text("Transferencia Bancaria", color="white", font_weight="700", font_size="1rem"),
+            rx.text("Transferencia Bancaria", color=TEXT_DARK, font_weight="700", font_size="1rem"),
             rx.box(
                 rx.vstack(
                     rx.hstack(
                         rx.text("Banco:", color="rgba(255,255,255,0.4)", font_size="0.82rem", width="100px"),
-                        rx.text("Banco Popular Dominicano", color="white", font_size="0.82rem", font_weight="600"),
+                        rx.text("Banco Popular Dominicano",color=TEXT_DARK, font_size="0.82rem", font_weight="600"),
                     ),
                     rx.hstack(
                         rx.text("Cuenta:", color="rgba(255,255,255,0.4)", font_size="0.82rem", width="100px"),
-                        rx.text("000-000000-0", color="white", font_size="0.82rem", font_weight="600"),
+                        rx.text("000-000000-0", color=TEXT_DARK, font_size="0.82rem", font_weight="600"),
                     ),
                     rx.hstack(
                         rx.text("Titular:", color="rgba(255,255,255,0.4)", font_size="0.82rem", width="100px"),
-                        rx.text("TravelWorld SRL", color="white", font_size="0.82rem", font_weight="600"),
+                        rx.text("TravelWorld SRL", color=TEXT_DARK, font_size="0.82rem", font_weight="600"),
                     ),
                     spacing="2",
                     align="start",
@@ -1432,7 +1484,7 @@ def paso4() -> rx.Component:
                         "fontFamily": "'Playfair Display', serif",
                         "fontSize": "clamp(1.5rem, 3vw, 2rem)",
                         "fontWeight": "800",
-                        "color": "white",
+                        "color": TEXT_DARK,
                     },
                 ),
                 spacing="1",
@@ -1468,7 +1520,7 @@ def paso4() -> rx.Component:
             on_click=CheckoutState.ir_paso(5),
             style={
                 "background": f"linear-gradient(135deg, {TEAL}, {TEAL_LT})",
-                "color": "white",
+                "color": TEXT_DARK,
                 "border": "none",
                 "borderRadius": "14px",
                 "padding": "0.9rem 2rem",
@@ -1494,7 +1546,7 @@ def paso4() -> rx.Component:
 def resumen_row(label: str, value) -> rx.Component:
     return rx.hstack(
         rx.text(label, color="rgba(255,255,255,0.4)", font_size="0.82rem", min_width="120px"),
-        rx.text(value, color="white", font_size="0.88rem", font_weight="600"),
+        rx.text(value, color=TEXT_DARK, font_size="0.88rem", font_weight="600"),
         width="100%",
         spacing="3",
         align="start",
@@ -1530,7 +1582,7 @@ def paso5() -> rx.Component:
                         "fontFamily": "'Playfair Display', serif",
                         "fontSize": "clamp(1.5rem, 3vw, 2rem)",
                         "fontWeight": "800",
-                        "color": "white",
+                        "color": TEXT_DARK,
                     },
                 ),
                 spacing="1",
@@ -1564,7 +1616,7 @@ def paso5() -> rx.Component:
                 resumen_row("Método de pago", CheckoutState.metodo_pago),
                 rx.box(height="1px", width="100%", background="rgba(255,255,255,0.07)"),
                 rx.hstack(
-                    rx.text("TOTAL A PAGAR", color="rgba(255,255,255,0.45)", font_size="0.75rem", font_weight="700", letter_spacing="1px"),
+                    rx.text("TOTAL A PAGAR", color=TEXT_MUTED, font_size="0.75rem", font_weight="700", letter_spacing="1px"),
                     rx.spacer(),
                     rx.text(
                         "$",
@@ -1649,7 +1701,7 @@ def paso6_success() -> rx.Component:
     return rx.center(
         rx.vstack(
             rx.box(
-                rx.text("✓", color="white", font_size="2rem", font_weight="900"),
+                rx.text("✓", color=TEXT_DARK, font_size="2rem", font_weight="900"),
                 width="72px",
                 height="72px",
                 border_radius="50%",
@@ -1683,15 +1735,15 @@ def paso6_success() -> rx.Component:
                 rx.vstack(
                     rx.hstack(
                         rx.text("Destino", color="rgba(255,255,255,0.4)", font_size="0.8rem", min_width="90px"),
-                        rx.text(CheckoutState.pais_nombre, color="white", font_size="0.88rem", font_weight="700"),
+                        rx.text(CheckoutState.pais_nombre, color=TEXT_DARK, font_size="0.88rem", font_weight="700"),
                     ),
                     rx.hstack(
                         rx.text("Paquete", color="rgba(255,255,255,0.4)", font_size="0.8rem", min_width="90px"),
-                        rx.text(CheckoutState.oferta_nombre, color="white", font_size="0.88rem", font_weight="700"),
+                        rx.text(CheckoutState.oferta_nombre, color=TEXT_DARK, font_size="0.88rem", font_weight="700"),
                     ),
                     rx.hstack(
                         rx.text("Fecha", color="rgba(255,255,255,0.4)", font_size="0.8rem", min_width="90px"),
-                        rx.text(CheckoutState.fecha_viaje, color="white", font_size="0.88rem", font_weight="700"),
+                        rx.text(CheckoutState.fecha_viaje, color=TEXT_DARK, font_size="0.88rem", font_weight="700"),
                     ),
                     rx.hstack(
                         rx.text("Total", color="rgba(255,255,255,0.4)", font_size="0.8rem", min_width="90px"),
@@ -1796,10 +1848,67 @@ def checkout_navbar() -> rx.Component:
 #  PÁGINA COMPLETA
 # ─────────────────────────────────────────────────────────────────────────────
 
+def hero_reservas() -> rx.Component:
+    return rx.box(
+        rx.box(
+            position="absolute",
+            inset="0",
+            background="linear-gradient(90deg, rgba(43,36,26,0.62), rgba(43,36,26,0.18))",
+            z_index="1",
+        ),
+        rx.vstack(
+            rx.text(
+                "✦ Experiencias familiares premium ✦",
+                color=GOLD_LT,
+                font_size="0.8rem",
+                text_transform="uppercase",
+                letter_spacing="3px",
+                font_weight="800",
+            ),
+            rx.heading(
+                "Reserva el viaje perfecto para tu familia",
+                color="white",
+                font_size="clamp(2rem, 5vw, 4.2rem)",
+                font_family="'Playfair Display', serif",
+                font_weight="900",
+                max_width="700px",
+                line_height="0.95",
+            ),
+            rx.text(
+                "Hoteles, resorts, Disney, playas y aventuras inolvidables en un solo lugar.",
+                color="rgba(255,255,255,0.9)",
+                font_size="1.05rem",
+                max_width="620px",
+            ),
+            spacing="3",
+            align="start",
+            position="relative",
+            z_index="2",
+            padding="5rem 4rem",
+        ),
+        style={
+            "backgroundImage": "url('/images/familia_viajando.jpg')",
+            "backgroundSize": "cover",
+            "backgroundPosition": "center",
+        },
+        min_height="380px",
+        position="relative",
+        width="100%",
+    )
+
+
+
+
+
+
+
+
+
 def reservas() -> rx.Component:
     return rx.box(
         rx.html(f"<style>{CHECKOUT_CSS}</style>"),
         checkout_navbar(),
+        hero_reservas(),
 
         rx.cond(
             CheckoutState.paso == 6,
