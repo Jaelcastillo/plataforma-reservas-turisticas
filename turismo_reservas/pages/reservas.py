@@ -946,14 +946,14 @@ def field(label: str, component: rx.Component) -> rx.Component:
     return rx.vstack(
         rx.text(
             label,
-            color="rgba(255,255,255,0.5)",
-            font_size="0.7rem",
-            font_weight="600",
+            color=TEXT_MUTED,
+            font_size="0.75rem",
+            font_weight="900",
             text_transform="uppercase",
             letter_spacing="0.8px",
         ),
         component,
-        spacing="1",
+        spacing="2",
         width="100%",
         align="start",
     )
@@ -965,15 +965,15 @@ def styled_input(placeholder: str, value, on_change, input_type: str = "text") -
         value=value,
         on_change=on_change,
         type=input_type,
-        class_name="premium-input",
         style={
-            "background": "rgba(255,255,255,0.05)",
-            "border": "1.5px solid rgba(255,255,255,0.1)",
-            "borderRadius": "12px",
-          "color": TEXT_DARK,
-            "padding": "0.8rem 1.1rem",
-            "fontSize": "0.92rem",
+            "background": "#FFFFFF",
+            "border": "1.5px solid #D8CBB6",
+            "borderRadius": "14px",
+            "color": TEXT_DARK,
+            "padding": "0.9rem 1.1rem",
+            "fontSize": "0.95rem",
             "width": "100%",
+            "boxShadow": "0 8px 22px rgba(43,36,26,0.04)",
         },
     )
 
@@ -981,32 +981,32 @@ def styled_input(placeholder: str, value, on_change, input_type: str = "text") -
 def paso3() -> rx.Component:
     return rx.vstack(
         rx.hstack(
-           rx.button(
-    "← Volver",
-    on_click=CheckoutState.ir_paso(2),
-    background="white",
-    color=TEXT_DARK,
-    border=f"1px solid {GOLD_BOR}",
-    border_radius="999px",
-    padding="0.5rem 1rem",
-    font_weight="800",
-),
+            rx.button(
+                "← Volver",
+                on_click=CheckoutState.ir_paso(2),
+                background="white",
+                color=TEXT_DARK,
+                border=f"1px solid {GOLD_BOR}",
+                border_radius="999px",
+                padding="0.5rem 1rem",
+                font_weight="800",
+            ),
             rx.vstack(
                 rx.text(
                     "Paso 3 de 5",
                     color=GOLD,
-                    font_size="0.7rem",
+                    font_size="0.75rem",
                     text_transform="uppercase",
                     letter_spacing="2px",
-                    font_weight="700",
+                    font_weight="900",
                 ),
                 rx.heading(
                     "Datos del viajero",
                     style={
                         "fontFamily": "'Playfair Display', serif",
-                        "fontSize": "clamp(1.5rem, 3vw, 2rem)",
-                        "fontWeight": "800",
-                       "color": TEXT_DARK,
+                        "fontSize": "clamp(1.8rem, 3vw, 2.6rem)",
+                        "fontWeight": "900",
+                        "color": TEXT_DARK,
                     },
                 ),
                 spacing="1",
@@ -1018,32 +1018,53 @@ def paso3() -> rx.Component:
         ),
 
         rx.grid(
-            field("Nombre completo *",
-                styled_input("Ej: Juan García", CheckoutState.nombre, CheckoutState.set_nombre)
+            field(
+                "Nombre completo *",
+                styled_input(
+                    "Ej: Juan García",
+                    CheckoutState.nombre,
+                    CheckoutState.set_nombre,
+                ),
             ),
-            field("Correo electrónico *",
-                styled_input("tu@email.com", CheckoutState.email, CheckoutState.set_email, "email")
+            field(
+                "Correo electrónico *",
+                styled_input(
+                    "tu@email.com",
+                    CheckoutState.email,
+                    CheckoutState.set_email,
+                    "email",
+                ),
             ),
-            field("Teléfono",
-                styled_input("+1 (000) 000-0000", CheckoutState.telefono, CheckoutState.set_telefono, "tel")
+            field(
+                "Teléfono",
+                styled_input(
+                    "+1 (000) 000-0000",
+                    CheckoutState.telefono,
+                    CheckoutState.set_telefono,
+                    "tel",
+                ),
             ),
-            field("Fecha de viaje *",
-                styled_input("", CheckoutState.fecha_viaje, CheckoutState.set_fecha, "date")
+            field(
+                "Fecha de viaje *",
+                styled_input(
+                    "",
+                    CheckoutState.fecha_viaje,
+                    CheckoutState.set_fecha,
+                    "date",
+                ),
             ),
-            field("Cantidad de personas",
+            field(
+                "Cantidad de personas",
                 rx.select(
                     ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
                     value=CheckoutState.personas,
                     on_change=CheckoutState.set_personas,
-                    style={
-                        "background": "rgba(255,255,255,0.05)",
-                        "border": "1.5px solid rgba(255,255,255,0.1)",
-                        "borderRadius": "12px",
-                        "color": TEXT_DARK,
-                        "padding": "0.8rem 1.1rem",
-                        "fontSize": "0.92rem",
-                        "width": "100%",
-                    },
+                    background="white",
+                    color=TEXT_DARK,
+                    border="1.5px solid #D8CBB6",
+                    border_radius="14px",
+                    padding="0.8rem 1rem",
+                    width="100%",
                 ),
             ),
             style={"gridTemplateColumns": "1fr 1fr"},
@@ -1051,21 +1072,23 @@ def paso3() -> rx.Component:
             width="100%",
         ),
 
-        field("Comentarios adicionales",
+        field(
+            "Comentarios adicionales",
             rx.text_area(
                 placeholder="Peticiones especiales, alergias, necesidades...",
                 value=CheckoutState.comentarios,
                 on_change=CheckoutState.set_comentarios,
                 style={
-                    "background": "rgba(255,255,255,0.05)",
-                    "border": "1.5px solid rgba(255,255,255,0.1)",
-                    "borderRadius": "12px",
+                    "background": "#FFFFFF",
+                    "border": "1.5px solid #D8CBB6",
+                    "borderRadius": "14px",
                     "color": TEXT_DARK,
-                    "padding": "0.8rem 1.1rem",
-                    "fontSize": "0.88rem",
+                    "padding": "0.9rem 1.1rem",
+                    "fontSize": "0.95rem",
                     "width": "100%",
-                    "minHeight": "100px",
+                    "minHeight": "120px",
                     "resize": "vertical",
+                    "boxShadow": "0 8px 22px rgba(43,36,26,0.04)",
                 },
             ),
         ),
@@ -1073,26 +1096,21 @@ def paso3() -> rx.Component:
         rx.button(
             "Continuar al pago →",
             on_click=CheckoutState.ir_paso(4),
-            style={
-                "background": f"linear-gradient(135deg, {TEAL}, {TEAL_LT})",
-                "color": TEXT_DARK,
-                "border": "none",
-                "borderRadius": "14px",
-                "padding": "0.9rem 2rem",
-                "fontWeight": "800",
-                "fontSize": "0.95rem",
-                "cursor": "pointer",
-                "width": "100%",
-                "transition": "all 0.25s",
-            },
+            background=f"linear-gradient(135deg, {GOLD}, {GOLD_LT})",
+            color=TEXT_DARK,
+            border="none",
+            border_radius="999px",
+            padding="0.95rem 2rem",
+            font_weight="900",
+            font_size="1rem",
+            cursor="pointer",
+            width="100%",
         ),
 
-        class_name="step-panel",
         spacing="5",
         width="100%",
         align="start",
     )
-
 
 # ─────────────────────────────────────────────────────────────────────────────
 #  PASO 4 – MÉTODO DE PAGO
