@@ -392,10 +392,14 @@ def paso_indicator(num: int, label: str, activo: bool, completado: bool) -> rx.C
         "rgba(255,255,255,0.3)",
     )
     label_color = rx.cond(
-        activo,
-        "white",
-        rx.cond(completado, "rgba(255,255,255,0.6)", "rgba(255,255,255,0.25)"),
-    )
+    activo,
+    TEXT_DARK,
+    rx.cond(
+        completado,
+        GOLD,
+        TEXT_MUTED,
+    ),
+)
     return rx.vstack(
        rx.box(
     rx.cond(
@@ -640,175 +644,7 @@ def summary_panel():
         position="sticky",
         top="95px",
     )
-        # Contenido del resumen
-        rx.vstack(
-            rx.text(
-                "Resumen de tu reserva",
-                color="rgba(255,255,255,0.5)",
-                font_size="0.68rem",
-                text_transform="uppercase",
-                letter_spacing="2px",
-                font_weight="600",
-            ),
-
-            # Fila destino
-            rx.cond(
-                CheckoutState.pais_nombre != "",
-                rx.hstack(
-                    rx.text("📍", font_size="0.85rem"),
-                    rx.vstack(
-                        rx.text("Destino", color="rgba(255,255,255,0.4)", font_size="0.65rem", font_weight="600", letter_spacing="0.5px"),
-                        rx.text(CheckoutState.pais_nombre,color=TEXT_DARK,  font_size="0.9rem", font_weight="700"),
-                        spacing="0",
-                        align="start",
-                    ),
-                    spacing="3",
-                    align="center",
-                    width="100%",
-                ),
-                rx.box(),
-            ),
-
-            # Fila oferta
-            rx.cond(
-                CheckoutState.oferta_nombre != "",
-                rx.vstack(
-                    rx.hstack(
-                        rx.text("🎯", font_size="0.85rem"),
-                        rx.vstack(
-                            rx.text("Oferta", color="rgba(255,255,255,0.4)", font_size="0.65rem", font_weight="600", letter_spacing="0.5px"),
-                            rx.text(CheckoutState.oferta_nombre, color=TEXT_DARK,font_size="0.88rem", font_weight="700"),
-                            spacing="0",
-                            align="start",
-                        ),
-                        spacing="3",
-                        align="start",
-                        width="100%",
-                    ),
-                    rx.hstack(
-                        rx.text("⏱️", font_size="0.85rem"),
-                        rx.vstack(
-                            rx.text("Duración", color="rgba(255,255,255,0.4)", font_size="0.65rem", font_weight="600", letter_spacing="0.5px"),
-                            rx.text(CheckoutState.oferta_duracion, color=TEXT_DARK, font_size="0.88rem", font_weight="700"),
-                            spacing="0",
-                            align="start",
-                        ),
-                        spacing="3",
-                        align="center",
-                        width="100%",
-                    ),
-                    rx.box(height="1px", width="100%", background="rgba(255,255,255,0.07)"),
-                    # Precios
-                    rx.hstack(
-                        rx.text("Precio base / persona", color="rgba(255,255,255,0.4)", font_size="0.78rem"),
-                        rx.spacer(),
-                        rx.text(
-                            rx.text.span("$", font_size="0.8rem"),
-                            rx.text.span(CheckoutState.oferta_precio.to_string()),
-                            color=TEXT_DARK, font_size="0.9rem", font_weight="700",
-                        ),
-                        width="100%",
-                    ),
-                    rx.hstack(
-                        rx.text("Precio original", color="rgba(255,255,255,0.3)", font_size="0.78rem"),
-                        rx.spacer(),
-                        rx.text(
-                            rx.text.span("$", font_size="0.75rem"),
-                            rx.text.span(CheckoutState.oferta_original.to_string()),
-                            color="rgba(255,255,255,0.3)",
-                            text_decoration="line-through",
-                            font_size="0.85rem",
-                        ),
-                        width="100%",
-                    ),
-                    rx.hstack(
-                        rx.text("Descuento", color=CORAL, font_size="0.78rem", font_weight="600"),
-                        rx.spacer(),
-                        rx.text(
-                            "-",
-                            CheckoutState.descuento_pct.to_string(),
-                            "% OFF",
-                            color=CORAL, font_size="0.85rem", font_weight="700",
-                        ),
-                        width="100%",
-                    ),
-                    rx.box(height="1px", width="100%", background="rgba(255,255,255,0.07)"),
-                    rx.hstack(
-                        rx.vstack(
-                            rx.text("TOTAL", color="rgba(255,255,255,0.4)", font_size="0.65rem", letter_spacing="2px"),
-                            rx.text(
-                                rx.text.span(CheckoutState.personas, " pax × $", font_size="0.78rem", color="rgba(255,255,255,0.4)"),
-                                color=TEXT_DARK, font_size="0.8rem",
-                            ),
-                            spacing="0",
-                        ),
-                        rx.spacer(),
-                        rx.text(
-                            "$",
-                            CheckoutState.precio_total.to_string(),
-                            style={
-                                "fontFamily": "'Playfair Display', serif",
-                                "fontSize": "1.9rem",
-                                "fontWeight": "900",
-                                "background": f"linear-gradient(135deg, {GOLD}, {GOLD_LT})",
-                                "WebkitBackgroundClip": "text",
-                                "WebkitTextFillColor": "transparent",
-                                "backgroundClip": "text",
-                            },
-                        ),
-                        width="100%",
-                        align="end",
-                    ),
-                    spacing="3",
-                    width="100%",
-                ),
-                rx.box(),
-            ),
-
-            # Garantías
-            rx.box(
-                rx.vstack(
-                    rx.hstack(
-                        rx.text("", font_size="0.8rem"),
-                        rx.text("Pago 100% seguro", color=TEXT_MUTED, font_size="0.72rem"),
-                        spacing="2",
-                    ),
-                    rx.hstack(
-                        rx.text("✅", font_size="0.8rem"),
-                        rx.text("Cancelación flexible", color=TEXT_MUTED, font_size="0.72rem"),
-                        spacing="2",
-                    ),
-                    rx.hstack(
-                        rx.text("⭐", font_size="0.8rem"),
-                        rx.text("Soporte 24/7 en español", color=TEXT_MUTED, font_size="0.72rem"),
-                        spacing="2",
-                    ),
-                    spacing="2",
-                    align="start",
-                ),
-                background="rgba(255,255,255,0.03)",
-                border="1px solid rgba(255,255,255,0.06)",
-                border_radius="12px",
-                padding="1rem",
-                width="100%",
-            ),
-
-            spacing="4",
-            align="start",
-            width="100%",
-            padding="1.5rem",
-        ),
-
-        background="rgba(255,255,255,0.04)",
-        border=f"1px solid {GLASS_BOR}",
-        border_radius="20px",
-        overflow="hidden",
-        class_name="summary-panel",
-        width="100%",
-        max_width="360px",
-        position="sticky",
-        top="100px",
-    )
+        
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1012,16 +848,15 @@ def paso2() -> rx.Component:
     return rx.vstack(
         rx.hstack(
             rx.button(
-                "← Volver",
-                on_click=CheckoutState.ir_paso(1),
-                background="transparent",
-                color="rgba(255,255,255,0.4)",
-                border="1px solid rgba(255,255,255,0.1)",
-                border_radius="8px",
-                font_size="0.8rem",
-                cursor="pointer",
-                padding="0.4rem 0.8rem",
-            ),
+    "← Volver",
+    on_click=CheckoutState.ir_paso(1),
+    background="white",
+    color=TEXT_DARK,
+    border=f"1px solid {GOLD_BOR}",
+    border_radius="999px",
+    padding="0.5rem 1rem",
+    font_weight="800",
+),
             rx.vstack(
                 rx.text(
                     "Paso 2 de 5",
@@ -1146,17 +981,16 @@ def styled_input(placeholder: str, value, on_change, input_type: str = "text") -
 def paso3() -> rx.Component:
     return rx.vstack(
         rx.hstack(
-            rx.button(
-                "← Volver",
-                on_click=CheckoutState.ir_paso(2),
-                background="transparent",
-                color="rgba(255,255,255,0.4)",
-                border="1px solid rgba(255,255,255,0.1)",
-                border_radius="8px",
-                font_size="0.8rem",
-                cursor="pointer",
-                padding="0.4rem 0.8rem",
-            ),
+           rx.button(
+    "← Volver",
+    on_click=CheckoutState.ir_paso(2),
+    background="white",
+    color=TEXT_DARK,
+    border=f"1px solid {GOLD_BOR}",
+    border_radius="999px",
+    padding="0.5rem 1rem",
+    font_weight="800",
+),
             rx.vstack(
                 rx.text(
                     "Paso 3 de 5",
@@ -1459,16 +1293,15 @@ def paso4() -> rx.Component:
     return rx.vstack(
         rx.hstack(
             rx.button(
-                "← Volver",
-                on_click=CheckoutState.ir_paso(3),
-                background="transparent",
-                color="rgba(255,255,255,0.4)",
-                border="1px solid rgba(255,255,255,0.1)",
-                border_radius="8px",
-                font_size="0.8rem",
-                cursor="pointer",
-                padding="0.4rem 0.8rem",
-            ),
+    "← Volver",
+    on_click=CheckoutState.ir_paso(3),
+    background="white",
+    color=TEXT_DARK,
+    border=f"1px solid {GOLD_BOR}",
+    border_radius="999px",
+    padding="0.5rem 1rem",
+    font_weight="800",
+),
             rx.vstack(
                 rx.text(
                     "Paso 4 de 5",
@@ -1557,16 +1390,15 @@ def paso5() -> rx.Component:
     return rx.vstack(
         rx.hstack(
             rx.button(
-                "← Volver",
-                on_click=CheckoutState.ir_paso(4),
-                background="transparent",
-                color="rgba(255,255,255,0.4)",
-                border="1px solid rgba(255,255,255,0.1)",
-                border_radius="8px",
-                font_size="0.8rem",
-                cursor="pointer",
-                padding="0.4rem 0.8rem",
-            ),
+    "← Volver",
+    on_click=CheckoutState.ir_paso(4),
+    background="white",
+    color=TEXT_DARK,
+    border=f"1px solid {GOLD_BOR}",
+    border_radius="999px",
+    padding="0.5rem 1rem",
+    font_weight="800",
+),
             rx.vstack(
                 rx.text(
                     "Paso 5 de 5",
