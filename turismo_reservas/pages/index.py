@@ -109,7 +109,6 @@ def section_header(tag: str, title_plain: str, title_accent: str) -> rx.Componen
 def navbar() -> rx.Component:
     return rx.box(
         rx.hstack(
-            # Logo
             rx.text(
                 "TravelWorld",
                 style={
@@ -124,39 +123,43 @@ def navbar() -> rx.Component:
                     "cursor": "pointer",
                 },
             ),
+
             rx.spacer(),
-            # Links
+
             rx.hstack(
-                rx.link("Destinos",   href="#destinos",   style=NAV_LINK),
-                rx.link("Ofertas",    href="#ofertas",    style=NAV_LINK),
-                rx.link("Resorts",    href="#resorts",    style=NAV_LINK),
-                rx.link("Tours",      href="#tours",      style=NAV_LINK),
-                rx.link("Disney",     href="#disney",     style=NAV_LINK),
+                rx.link("Destinos", href="#destinos", style=NAV_LINK),
+                rx.link("Ofertas", href="#ofertas", style=NAV_LINK),
+                rx.link("Resorts", href="#resorts", style=NAV_LINK),
+                rx.link("Tours", href="#tours", style=NAV_LINK),
+                rx.link("Disney", href="#disney", style=NAV_LINK),
                 spacing="7",
                 display=["none", "none", "flex"],
             ),
+
             rx.spacer(),
-            # CTA
-            rx.button(
-                "Reservar Ahora",
-                background=f"linear-gradient(135deg, {GOLD}, {GOLD_LT})",
-                color=DARK,
-                border="none",
-                padding="0.5rem 1.4rem",
-                border_radius="25px",
-                font_weight="700",
-                font_size="0.8rem",
-                letter_spacing="0.5px",
-                cursor="pointer",
-                _hover={"opacity": "0.9", "transform": "translateY(-1px)"},
-                transition="all 0.2s",
+
+            rx.link(
+                rx.button(
+                    "Reservar Ahora",
+                    background=f"linear-gradient(135deg, {GOLD}, {GOLD_LT})",
+                    color=DARK,
+                    border="none",
+                    padding="0.5rem 1.4rem",
+                    border_radius="25px",
+                    font_weight="700",
+                    font_size="0.8rem",
+                    cursor="pointer",
+                ),
+                href="/reservas",
             ),
+
             width="100%",
             align="center",
             max_width="1200px",
             margin="0 auto",
             padding="0 1rem",
         ),
+
         position="sticky",
         top="0",
         z_index="100",
@@ -168,8 +171,6 @@ def navbar() -> rx.Component:
         align="center",
         width="100%",
     )
-
-
 # ─────────────────────────────────────────────────────────────────────────────
 #  HERO
 # ─────────────────────────────────────────────────────────────────────────────
