@@ -219,7 +219,7 @@ def hero_section() -> rx.Component:
             object-fit:cover;
             z-index:0;
         ">
-       <source src="/images/beach_video.mp4?v=2" type="video/mp4">
+       <source src="/images/beach_video.mp4?v=1000" type="video/mp4">
     </video>
 
     <script>
@@ -883,11 +883,24 @@ def offers_section() -> rx.Component:
 # ─────────────────────────────────────────────────────────────────────────────
 
 DISNEY_PARKS = [
-    ("Magic Kingdom",    "linear-gradient(135deg,#2D0E5C,#5A2A9A)"),
-    ("EPCOT",            "linear-gradient(135deg,#1A3A8A,#2D5CAA)"),
-    ("Hollywood Studios","linear-gradient(135deg,#3A1A5C,#6A3A9A)"),
-    ("Animal Kingdom",   "linear-gradient(135deg,#1A5C2A,#3A9A4A)"),
+    {
+        "name": "Magic Kingdom",
+        "image": "url('/images/magic_kingdom.jpg') center/cover no-repeat",
+    },
+    {
+        "name": "EPCOT",
+        "image": "url('/images/epcot.jpg') center/cover no-repeat",
+    },
+    {
+        "name": "Hollywood Studios",
+        "image": "url('/images/hollywood_studios.jpg') center/cover no-repeat",
+    },
+    {
+        "name": "Animal Kingdom",
+        "image": "url('/images/animal_kingdom.jpg') center/cover no-repeat",
+    },
 ]
+
 
 DISNEY_FEATURES = [
     "Acceso a todos los 4 parques principales",
@@ -898,21 +911,45 @@ DISNEY_FEATURES = [
 ]
 
 
-def disney_park_card(name: str, bg: str) -> rx.Component:
-    return rx.flex(
-        rx.text(name, font_size="0.73rem", font_weight="600",
-                text_align="center", color="#6B4F2A",
-                padding="0 0.5rem", line_height="1.3"),
-        style={"background": bg},
-        border_radius="14px",
-        border=f"1px solid rgba(155,127,212,0.3)",
-        aspect_ratio="16/10",
-        align="end",
-        justify="center",
-        padding_bottom="0.75rem",
+def disney_park_card(park: dict) -> rx.Component:
+    return rx.box(
+        rx.box(
+            position="absolute",
+            inset="0",
+            background="linear-gradient(180deg, transparent 30%, rgba(0,0,0,0.85) 100%)",
+            z_index="1",
+        ),
+
+        rx.text(
+            park.get("name"),
+            color="white",
+            font_size="1rem",
+            font_weight="700",
+            position="absolute",
+            bottom="1rem",
+            left="0",
+            right="0",
+            text_align="center",
+            z_index="2",
+        ),
+
+        style={
+            "background": park.get("image"),
+        },
+
+        border_radius="18px",
+        overflow="hidden",
+        height="220px",
+        position="relative",
         cursor="pointer",
-        transition="transform 0.25s",
-        _hover={"transform": "scale(1.04)"},
+        border="1px solid rgba(255,255,255,0.22)",
+
+        _hover={
+            "transform": "scale(1.04)",
+            "box_shadow": "0 20px 50px rgba(0,0,0,0.4)",
+        },
+
+        transition="all 0.3s",
     )
 
 
@@ -920,18 +957,19 @@ def disney_section() -> rx.Component:
     return rx.box(
       rx.html(
     """
-    <video id="disneyVideo" autoplay muted loop playsinline preload="auto"
-        style="
-            position:absolute;
-            top:0;
-            left:0;
-            width:100%;
-            height:100%;
-            object-fit:cover;
-            z-index:0;
-        ">
-        <source src="/images/disney_video.mp4?v=2" type="video/mp4">
-    </video>
+   <video id="disneyVideo" autoplay muted loop playsinline preload="auto"
+    oncanplay="this.muted=true; this.play();"
+    style="
+        position:absolute;
+        top:0;
+        left:0;
+        width:100%;
+        height:100%;
+        object-fit:cover;
+        z-index:0;
+    ">
+    <source src="/images/disney_video.mp4?v=100" type="video/mp4">
+</video>
 
     <script>
         const disneyVideo = document.getElementById("disneyVideo");
@@ -1041,7 +1079,7 @@ def disney_section() -> rx.Component:
             ),
 
             rx.grid(
-                *[disney_park_card(name, bg) for name, bg in DISNEY_PARKS],
+                *[disney_park_card(park) for park in DISNEY_PARKS],
                 columns="2",
                 gap="0.9rem",
                 position="relative",
@@ -1071,233 +1109,377 @@ def disney_section() -> rx.Component:
 #  TOURS BUGGY
 # ─────────────────────────────────────────────────────────────────────────────
 
-def buggy_main_card() -> rx.Component:
+class BuggyState(rx.State):
+    selected: int = 1
+
+    def select_buggy(self, index: int):
+        self.selected = index
+
+
+BUGGY_TOURS = [
+    {
+        "label": "Tour Ecológico",
+        "name": "Buggy Cenotes",
+        "location": "Cancún · 6 horas",
+        "price": "$79 / persona",
+        "image": "buggy_cenotes.jpg",
+    },
+    {
+        "label": "Más Vendido",
+        "name": "Safari Buggy Punta Cana",
+        "location": "Punta Cana · 8 horas · Todo incluido",
+        "price": "$89 / persona",
+        "image": "buggy_punta_cana.jpg",
+    },
+    {
+        "label": "Aventura Nocturna",
+        "name": "Buggy Night Tour",
+        "location": "Punta Cana · 4 horas",
+        "price": "$65 / persona",
+        "image": "buggy_night.jpg",
+    },
+]
+
+
+def buggy_tour_card(tour: dict, index: int) -> rx.Component:
+    is_selected = BuggyState.selected == index
+
     return rx.box(
         rx.box(
-            position="absolute", inset="0",
-            style={"background": "linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.82) 100%)"},
+            position="absolute",
+            inset="0",
+            background=rx.cond(
+                is_selected,
+                "linear-gradient(180deg, rgba(0,0,0,0.08) 15%, rgba(0,0,0,0.72) 100%)",
+                "linear-gradient(180deg, rgba(0,0,0,0.18) 15%, rgba(0,0,0,0.82) 100%)",
+            ),
+            z_index="1",
         ),
+
         rx.vstack(
             rx.box(
-                rx.text("⚡  MÁS VENDIDO", font_size="0.63rem",
-                        font_weight="700", color="white",
-                        letter_spacing="1px", text_transform="uppercase"),
-                background=f"rgba(232,115,90,0.9)",
-                padding="4px 12px", border_radius="20px",
-                display="inline-block",
+                rx.text(
+                    tour["label"].upper(),
+                    font_size="0.72rem",
+                    font_weight="800",
+                    color="white",
+                    letter_spacing="1px",
+                ),
+                background=f"linear-gradient(135deg, {CORAL}, {GOLD})",
+                padding="6px 14px",
+                border_radius="20px",
             ),
+
             rx.heading(
-                "Safari Buggy Punta Cana",
-                style={"fontFamily": "'Playfair Display', serif",
-                       "fontSize": "1.5rem", "fontWeight": "700",
-                       "color": "white"},
+                tour["name"],
+                style={
+                    "fontFamily": "'Playfair Display', serif",
+                    "fontSize": rx.cond(is_selected, "2.35rem", "1.35rem"),
+                    "fontWeight": "800",
+                    "color": "white",
+                    "lineHeight": "1.1",
+                },
             ),
-            rx.text("8 horas · Todo incluido · Guía bilingüe",
-                    color="rgba(255,255,255,0.6)", font_size="0.8rem"),
-            rx.hstack(
-                rx.text("$89",
-                        style={"fontFamily": "'Playfair Display', serif",
-                               "fontSize": "1.7rem", "fontWeight": "700",
-                               "color": GOLD}),
-                rx.text("por persona",
-                        font_size="0.7rem", color="rgba(255,255,255,0.45)",
-                        align_self="flex-end", margin_bottom="0.3rem"),
+
+            rx.text(
+                tour["location"],
+                color="rgba(255,255,255,0.9)",
+                font_size=rx.cond(is_selected, "1rem", "0.86rem"),
+            ),
+
+            rx.text(
+                tour["price"],
+                color=GOLD,
+                font_weight="900",
+                font_size=rx.cond(is_selected, "1.65rem", "1.15rem"),
+            ),
+
+            rx.cond(
+                is_selected,
                 rx.button(
-                    "Reservar",
-                    background="rgba(201,168,76,0.9)",
-                    color=DARK, border="none",
-                    padding="0.5rem 1.3rem", border_radius="20px",
-                    font_weight="700", font_size="0.8rem",
+                    "Reservar ahora",
+                    background=f"linear-gradient(135deg, {GOLD}, {GOLD_LT})",
+                    color="#1F2A35",
+                    border="none",
+                    padding="0.7rem 1.7rem",
+                    border_radius="26px",
+                    font_weight="900",
                     cursor="pointer",
                 ),
-                spacing="3", align="end",
+                rx.box(),
             ),
-            spacing="3", align="start",
-            position="relative", z_index="2",
-            padding="1.5rem",
+
+            spacing="3",
+            align="start",
+            position="relative",
+            z_index="2",
+            padding=rx.cond(is_selected, "2rem", "1.4rem"),
         ),
+
+        background=f"url('/images/{tour['image']}') center/cover no-repeat",
+        border_radius="30px",
+        overflow="hidden",
         position="relative",
-        border_radius="20px",
-        overflow="hidden",
-        style={"background": "linear-gradient(135deg,#2A1800,#5C3800,#8B5E00)"},
-        min_height="320px",
+        height=rx.cond(is_selected, "430px", "340px"),
+        width="100%",
         display="flex",
         align="end",
-        border=f"1px solid rgba(201,168,76,0.2)",
-        **CARD_HOVER,
-    )
-
-
-def buggy_side_card(label: str, name: str, location: str,
-                    price: str, bg: str) -> rx.Component:
-    return rx.box(
-        rx.vstack(
-            rx.text(label, font_size="0.63rem", text_transform="uppercase",
-                    letter_spacing="1px", color="rgba(255,255,255,0.45)"),
-            rx.text(name, font_weight="600", font_size="0.9rem", color="white"),
-            rx.text(location, font_size="0.7rem",
-                    color="rgba(255,255,255,0.45)"),
-            rx.text(price, color=GOLD, font_weight="700"),
-            spacing="2", align="start",
-            position="relative", z_index="2",
+        border=rx.cond(
+            is_selected,
+            "2px solid rgba(201,168,76,0.7)",
+            "1px solid rgba(255,255,255,0.18)",
         ),
-        border_radius="16px",
-        overflow="hidden",
-        style={"background": bg},
-        display="flex",
-        align="end",
-        padding="1rem",
-        border="1px solid rgba(255,255,255,0.09)",
-        min_height="320px",
+        box_shadow=rx.cond(
+            is_selected,
+            "0 30px 90px rgba(0,0,0,0.55)",
+            "0 18px 45px rgba(0,0,0,0.28)",
+        ),
+        transform=rx.cond(is_selected, "scale(1.04)", "scale(0.92)"),
+        transition="all 0.35s ease",
         cursor="pointer",
-        transition="transform 0.25s",
-        _hover={"transform": "translateY(-4px)"},
+        on_click=lambda: BuggyState.select_buggy(index),
     )
 
 
 def tours_section() -> rx.Component:
     return rx.box(
-        section_header("🏎 Aventura extrema", "Tours Extremos", "en Buggy"),
-        rx.grid(
-            buggy_main_card(),
-            buggy_side_card(
-                "Tour Ecológico", "Buggy Cenotes",
-                "Cancún · 6 horas", "$79 / persona",
-                "linear-gradient(135deg,#1A3A2A,#2D6A4A)",
+        rx.box(
+            position="absolute",
+            inset="0",
+            background="""
+            linear-gradient(
+                rgba(8,16,24,0.58),
+                rgba(8,16,24,0.78)
             ),
-            buggy_side_card(
-                "Aventura Nocturna", "Buggy Night Tour",
-                "Punta Cana · 4 horas", "$65 / persona",
-                "linear-gradient(135deg,#3A1A00,#8B4500)",
-            ),
-            style={"gridTemplateColumns": "2fr 1fr 1fr"},
-            gap="1rem",
-            max_width="1100px",
-            margin="0 auto",
+            url('/images/buggy_bg.jpg') center/cover no-repeat
+            """,
+            z_index="0",
         ),
+
+        rx.box(
+            section_header("🏎 Aventura extrema", "Tours Extremos", "en Buggy"),
+
+            rx.grid(
+                buggy_tour_card(BUGGY_TOURS[0], 0),
+                buggy_tour_card(BUGGY_TOURS[1], 1),
+                buggy_tour_card(BUGGY_TOURS[2], 2),
+
+                style={
+                    "gridTemplateColumns": "0.8fr 1.35fr 0.8fr",
+                    "alignItems": "center",
+                },
+                gap="1.4rem",
+                max_width="1250px",
+                margin="0 auto",
+            ),
+
+            position="relative",
+            z_index="2",
+        ),
+
         id="tours",
-        padding="4rem 2rem",
+        padding="5rem 2rem",
         width="100%",
+        position="relative",
+        overflow="hidden",
     )
-
-
 # ─────────────────────────────────────────────────────────────────────────────
 #  RESORTS PREMIUM
 # ─────────────────────────────────────────────────────────────────────────────
 
 RESORTS = [
     {
-        "name":     "Sanctuary Cap Cana",
+        "name": "Sanctuary Cap Cana",
         "location": "Cap Cana, Rep. Dominicana",
-        "score":    "9.8  Excepcional",
-        "price":    "$420",
-        "type":     "All-Inclusive",
-        "amenities":["🏊 Infinity Pool", "🍽 Gourmet"],
-        "bg":       "linear-gradient(160deg,#0B3E3E,#1A6E6E,#0B2E4E)",
+        "score": "9.8 Excepcional",
+        "price": "$420",
+        "type": "All-Inclusive",
+        "amenities": ["🏊 Infinity Pool", "🍽 Gourmet"],
+        "image": "url('/images/resort_cap_cana.jpg') center/cover no-repeat",
     },
     {
-        "name":     "Hard Rock Cancún",
+        "name": "Hard Rock Cancún",
         "location": "Zona Hotelera, Cancún",
-        "score":    "9.5  Excepcional",
-        "price":    "$380",
-        "type":     "All-Inclusive",
-        "amenities":["🎰 Casino", "🎵 Shows"],
-        "bg":       "linear-gradient(160deg,#2A1800,#6B4500,#1A0B00)",
+        "score": "9.5 Excepcional",
+        "price": "$380",
+        "type": "All-Inclusive",
+        "amenities": ["🎰 Casino", "🎵 Shows"],
+        "image": "url('/images/resort_hardrock.jpg') center/cover no-repeat",
     },
     {
-        "name":     "Dorado Beach, Ritz-Carlton",
+        "name": "Dorado Beach, Ritz-Carlton",
         "location": "Dorado, Puerto Rico",
-        "score":    "9.9  Excepcional",
-        "price":    "$850",
-        "type":     "Ultra Premium",
-        "amenities":["⛳ Golf", "🧖 Spa"],
-        "bg":       "linear-gradient(160deg,#0B1A3E,#1A3A8A,#0B0E2A)",
+        "score": "9.9 Excepcional",
+        "price": "$850",
+        "type": "Ultra Premium",
+        "amenities": ["⛳ Golf", "🧖 Spa"],
+        "image": "url('/images/resort_ritz.jpg') center/cover no-repeat",
     },
 ]
 
 
 def resort_card(resort: dict) -> rx.Component:
     return rx.box(
-        # Imagen / fondo
         rx.box(
             rx.hstack(
                 *[
                     rx.box(
-                        rx.text(a, font_size="0.6rem", color="white"),
-                        background="rgba(0,0,0,0.68)",
-                        style={"backdropFilter": "blur(8px)"},
-                        padding="3px 8px",
-                        border_radius="10px",
-                        border="1px solid rgba(255,255,255,0.18)",
+                        rx.text(a, font_size="0.7rem", color="white"),
+                        background="rgba(0,0,0,0.55)",
+                        padding="5px 10px",
+                        border_radius="999px",
+                        border="1px solid rgba(255,255,255,0.25)",
                     )
                     for a in resort["amenities"]
                 ],
-                position="absolute", top="10px", left="10px",
-                spacing="1",
+                position="absolute",
+                top="14px",
+                left="14px",
+                spacing="2",
+                z_index="2",
             ),
-            style={"background": resort["bg"]},
-            height="180px",
-            position="relative",
-        ),
-        # Cuerpo
-        rx.vstack(
-            rx.text(resort["name"], font_weight="600", font_size="0.94rem",
-                    color="white"),
-            rx.text(f"📍  {resort['location']}", font_size="0.73rem",
-                    color="rgba(255,255,255,0.48)"),
-            rx.hstack(
-                rx.text("★★★★★", color=GOLD, font_size="0.7rem"),
-                rx.box(
-                    rx.text(resort["score"], font_size="0.68rem",
-                            font_weight="600", color="white"),
-                    background=TEAL, padding="2px 8px", border_radius="8px",
+
+            rx.box(
+                position="absolute",
+                inset="0",
+                background="linear-gradient(180deg, transparent 35%, rgba(0,0,0,0.82) 100%)",
+                z_index="1",
+            ),
+
+            rx.vstack(
+                rx.text(
+                    resort["name"],
+                    font_weight="800",
+                    font_size="1.25rem",
+                    color="white",
                 ),
-                spacing="2", align="center",
+                rx.text(
+                    f"📍 {resort['location']}",
+                    font_size="0.82rem",
+                    color="rgba(255,255,255,0.78)",
+                ),
+                position="absolute",
+                bottom="16px",
+                left="18px",
+                right="18px",
+                spacing="1",
+                z_index="2",
+                align="start",
             ),
+
+            background=resort["image"],
+            height="260px",
+            position="relative",
+            overflow="hidden",
+        ),
+
+        rx.vstack(
             rx.hstack(
-                rx.text(resort["price"],
-                        style={"fontFamily": "'Playfair Display', serif",
-                               "fontSize": "1.25rem", "fontWeight": "700",
-                               "color": GOLD}),
-                rx.text(f"/ noche · {resort['type']}",
-                        font_size="0.63rem",
-                        color="rgba(255,255,255,0.38)",
-                        align_self="flex-end",
-                        margin_bottom="2px"),
+                rx.text("★★★★★", color=GOLD, font_size="0.85rem"),
+                rx.box(
+                    rx.text(
+                        resort["score"],
+                        font_size="0.75rem",
+                        font_weight="800",
+                        color="white",
+                    ),
+                    background=TEAL,
+                    padding="3px 10px",
+                    border_radius="999px",
+                ),
+                spacing="2",
+                align="center",
+            ),
+
+            rx.hstack(
+                rx.text(
+                    resort["price"],
+                    style={
+                        "fontFamily": "'Playfair Display', serif",
+                        "fontSize": "2rem",
+                        "fontWeight": "800",
+                        "color": GOLD,
+                    },
+                ),
+                rx.text(
+                    f"/ noche · {resort['type']}",
+                    font_size="0.78rem",
+                    color="#D8C7B0",
+                    align_self="end",
+                    margin_bottom="0.35rem",
+                ),
                 spacing="1",
                 align="end",
             ),
-            spacing="2",
+
+            rx.button(
+                "Ver disponibilidad",
+                width="100%",
+                background=f"linear-gradient(135deg, {GOLD}, {CORAL})",
+                color="white",
+                border="none",
+                border_radius="14px",
+                padding="0.75rem",
+                font_weight="800",
+                cursor="pointer",
+            ),
+
+            spacing="3",
+            padding="1.3rem",
             align="start",
-            padding="1rem",
         ),
-        background="rgba(255,255,255,0.04)",
-        border="1px solid rgba(255,255,255,0.09)",
-        border_radius="18px",
+
+        background="rgba(255,255,255,0.08)",
+        border="1px solid rgba(255,255,255,0.12)",
+        border_radius="24px",
         overflow="hidden",
-        transition="transform 0.3s",
-        _hover={"transform": "translateY(-6px)"},
-        cursor="pointer",
+        box_shadow="0 20px 60px rgba(0,0,0,0.35)",
+        transition="all 0.3s",
+        _hover={
+            "transform": "translateY(-10px)",
+            "box_shadow": "0 32px 80px rgba(0,0,0,0.5)",
+        },
     )
 
 
 def resorts_section() -> rx.Component:
     return rx.box(
-        section_header("👑 Lujo absoluto", "Resorts", "Premium"),
-        rx.grid(
-            *[resort_card(r) for r in RESORTS],
-            style={"gridTemplateColumns": "repeat(auto-fit, minmax(270px, 1fr))"},
-            gap="1.25rem",
-            max_width="1100px",
-            margin="0 auto",
+        rx.box(
+            position="absolute",
+            inset="0",
+            background="""
+            linear-gradient(
+                rgba(10,18,25,0.82),
+                rgba(10,18,25,0.90)
+            ),
+            url('/images/resort_bg.jpg') center/cover no-repeat
+            """,
+            z_index="0",
         ),
-        id="resorts",
-        padding="4rem 2rem",
-        background="rgba(0,0,0,0.18)",
-        border_top="1px solid rgba(255,255,255,0.06)",
-        width="100%",
-    )
 
+        rx.box(
+            section_header("👑 Lujo absoluto", "Resorts", "Premium"),
+
+            rx.grid(
+                *[resort_card(r) for r in RESORTS],
+                style={
+                    "gridTemplateColumns": "repeat(auto-fit, minmax(300px, 1fr))"
+                },
+                gap="1.5rem",
+                max_width="1200px",
+                margin="0 auto",
+            ),
+
+            position="relative",
+            z_index="2",
+        ),
+
+        id="resorts",
+        padding="5rem 2rem",
+        width="100%",
+        position="relative",
+        overflow="hidden",
+    )
 
 # ─────────────────────────────────────────────────────────────────────────────
 #  FOOTER
