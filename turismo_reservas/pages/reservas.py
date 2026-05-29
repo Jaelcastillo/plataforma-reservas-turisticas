@@ -1112,10 +1112,6 @@ def paso3() -> rx.Component:
         align="start",
     )
 
-# ─────────────────────────────────────────────────────────────────────────────
-#  PASO 4 – MÉTODO DE PAGO
-# ─────────────────────────────────────────────────────────────────────────────
-
 def pay_method_btn(label: str, icon: str, value: str) -> rx.Component:
     is_selected = CheckoutState.metodo_pago == value
     return rx.box(
@@ -1123,108 +1119,50 @@ def pay_method_btn(label: str, icon: str, value: str) -> rx.Component:
             rx.text(icon, font_size="1.2rem"),
             rx.text(
                 label,
-                color=rx.cond(is_selected, GOLD_LT, "rgba(255,255,255,0.65)"),
-                font_size="0.88rem",
-                font_weight=rx.cond(is_selected, "700", "500"),
+                color=rx.cond(is_selected, TEXT_DARK, TEXT_MUTED),
+                font_size="0.9rem",
+                font_weight=rx.cond(is_selected, "900", "700"),
             ),
             spacing="2",
             align="center",
         ),
-        class_name=rx.cond(is_selected, "pay-btn selected", "pay-btn"),
         on_click=CheckoutState.set_metodo(value),
         flex="1",
         justify="center",
         display="flex",
+        background=rx.cond(is_selected, "#FFF8E8", "white"),
+        border=rx.cond(is_selected, f"2px solid {GOLD}", "1.5px solid #D8CBB6"),
+        border_radius="16px",
+        padding="1rem",
+        cursor="pointer",
     )
 
 
 def card_form() -> rx.Component:
     return rx.vstack(
-        # Tarjeta visual preview
         rx.box(
-            rx.hstack(
-                rx.vstack(
-                    rx.text("TRAVELWORLD CARD", color=GOLD, font_size="0.6rem", letter_spacing="2px", font_weight="700"),
+            rx.vstack(
+                rx.text("TRAVELWORLD CARD", color=GOLD, font_weight="900", letter_spacing="2px"),
+                rx.text("••••  ••••  ••••  ••••", color="white", font_size="1.4rem"),
+                rx.hstack(
+                    rx.text("NOMBRE APELLIDO", color="white", font_weight="800"),
                     rx.spacer(),
-                    rx.text(
-                        rx.cond(
-                            CheckoutState.card_num != "",
-                            CheckoutState.card_num,
-                            "•••• •••• •••• ••••",
-                        ),
-                        color="rgba(255,255,255,0.9)",
-                        font_size="1.15rem",
-                        letter_spacing="3px",
-                        font_family="monospace",
-                    ),
-                    rx.hstack(
-                        rx.vstack(
-                            rx.text("TITULAR", color="rgba(255,255,255,0.4)", font_size="0.55rem", letter_spacing="1px"),
-                            rx.text(
-                                rx.cond(
-                                    CheckoutState.card_name != "",
-                                    CheckoutState.card_name,
-                                    "NOMBRE APELLIDO",
-                                ),
-                               color=TEXT_DARK, font_size="0.78rem", font_weight="600",
-                            ),
-                            spacing="0",
-                        ),
-                        rx.spacer(),
-                        rx.vstack(
-                            rx.text("VENCE", color="rgba(255,255,255,0.4)", font_size="0.55rem", letter_spacing="1px"),
-                            rx.text(
-                                rx.cond(CheckoutState.card_exp != "", CheckoutState.card_exp, "MM/AA"),
-                               color=TEXT_DARK, font_size="0.78rem", font_weight="600",
-                            ),
-                            spacing="0",
-                        ),
-                        width="100%",
-                        align="center",
-                    ),
-                    spacing="2",
-                    flex="1",
-                    height="100%",
-                    justify="between",
+                    rx.text("VISA", color=GOLD_LT, font_size="1.5rem", font_weight="900"),
+                    width="100%",
                 ),
-                rx.text(
-                    "VISA",
-                    style={
-                        "fontFamily": "'Playfair Display', serif",
-                        "fontSize": "1.4rem",
-                        "fontWeight": "900",
-                        "background": f"linear-gradient(135deg, {GOLD_LT}, {GOLD})",
-                        "WebkitBackgroundClip": "text",
-                        "WebkitTextFillColor": "transparent",
-                        "backgroundClip": "text",
-                        "fontStyle": "italic",
-                    },
-                    align_self="end",
-                ),
-                width="100%",
-                height="100%",
-                padding="1.5rem",
-                align="start",
+                spacing="5",
             ),
-            class_name="credit-card-preview",
-            height="170px",
+            background="linear-gradient(135deg,#0D1B2A,#123D33)",
+            border_radius="24px",
+            padding="2rem",
             width="100%",
         ),
 
-        # Campos de tarjeta
         rx.grid(
-            field("Número de tarjeta",
-                styled_input("0000 0000 0000 0000", CheckoutState.card_num, CheckoutState.set_card_num)
-            ),
-            field("Nombre del titular",
-                styled_input("Como aparece en la tarjeta", CheckoutState.card_name, CheckoutState.set_card_name)
-            ),
-            field("Fecha de vencimiento",
-                styled_input("MM/AA", CheckoutState.card_exp, CheckoutState.set_card_exp)
-            ),
-            field("CVV",
-                styled_input("•••", CheckoutState.card_cvv, CheckoutState.set_card_cvv)
-            ),
+            field("Número de tarjeta", styled_input("0000 0000 0000 0000", CheckoutState.card_num, CheckoutState.set_card_num)),
+            field("Nombre del titular", styled_input("Como aparece en la tarjeta", CheckoutState.card_name, CheckoutState.set_card_name)),
+            field("Fecha de vencimiento", styled_input("MM/AA", CheckoutState.card_exp, CheckoutState.set_card_exp)),
+            field("CVV", styled_input("•••", CheckoutState.card_cvv, CheckoutState.set_card_cvv)),
             style={"gridTemplateColumns": "1fr 1fr"},
             gap="1.1rem",
             width="100%",
@@ -1239,29 +1177,22 @@ def paypal_form() -> rx.Component:
     return rx.box(
         rx.vstack(
             rx.text("🅿️", font_size="3rem"),
-            rx.text("PayPal", style={
-                "fontFamily": "'Playfair Display', serif",
-                "fontSize": "1.5rem",
-                "fontWeight": "700",
-                "color": "#003087",
-            }),
+            rx.text("PayPal", color=TEXT_DARK, font_size="1.5rem", font_weight="900"),
             rx.text(
                 "Serás redirigido a PayPal para completar el pago de forma segura.",
-                color="rgba(255,255,255,0.5)",
-                font_size="0.85rem",
+                color=TEXT_MUTED,
+                font_size="0.9rem",
                 text_align="center",
-                max_width="280px",
+                max_width="320px",
             ),
             spacing="3",
             align="center",
         ),
-        background="rgba(0,48,135,0.1)",
-        border="1px solid rgba(0,48,135,0.3)",
-        border_radius="16px",
+        background="white",
+        border="1.5px solid #D8CBB6",
+        border_radius="18px",
         padding="2rem",
         width="100%",
-        display="flex",
-        justify="center",
     )
 
 
@@ -1269,40 +1200,30 @@ def transfer_form() -> rx.Component:
     return rx.box(
         rx.vstack(
             rx.text("🏦", font_size="2rem"),
-            rx.text("Transferencia Bancaria", color=TEXT_DARK, font_weight="700", font_size="1rem"),
+            rx.text("Transferencia Bancaria", color=TEXT_DARK, font_weight="900", font_size="1.1rem"),
             rx.box(
                 rx.vstack(
-                    rx.hstack(
-                        rx.text("Banco:", color="rgba(255,255,255,0.4)", font_size="0.82rem", width="100px"),
-                        rx.text("Banco Popular Dominicano",color=TEXT_DARK, font_size="0.82rem", font_weight="600"),
-                    ),
-                    rx.hstack(
-                        rx.text("Cuenta:", color="rgba(255,255,255,0.4)", font_size="0.82rem", width="100px"),
-                        rx.text("000-000000-0", color=TEXT_DARK, font_size="0.82rem", font_weight="600"),
-                    ),
-                    rx.hstack(
-                        rx.text("Titular:", color="rgba(255,255,255,0.4)", font_size="0.82rem", width="100px"),
-                        rx.text("TravelWorld SRL", color=TEXT_DARK, font_size="0.82rem", font_weight="600"),
-                    ),
+                    rx.hstack(rx.text("Banco:", color=TEXT_MUTED, width="100px"), rx.text("Banco Popular Dominicano", color=TEXT_DARK, font_weight="800")),
+                    rx.hstack(rx.text("Cuenta:", color=TEXT_MUTED, width="100px"), rx.text("586-365236-8", color=TEXT_DARK, font_weight="800")),
+                    rx.hstack(rx.text("Titular:", color=TEXT_MUTED, width="100px"), rx.text("TravelWorld SRL", color=TEXT_DARK, font_weight="800")),
                     spacing="2",
                     align="start",
                 ),
-                background="rgba(255,255,255,0.04)",
-                border="1px solid rgba(255,255,255,0.08)",
-                border_radius="12px",
+                background="#FFF8E8",
+                border=f"1px solid {GOLD_BOR}",
+                border_radius="14px",
                 padding="1rem",
                 width="100%",
             ),
-            rx.text(
-                "Envía el comprobante a reservas@travelworld.com",
-                color=GOLD,
-                font_size="0.78rem",
-                text_align="center",
-            ),
+            rx.text("Envía el comprobante a reservas@travelworld.com luego de verificarlo te enviaremos la confirmacion de tu reserva", color=GOLD, font_weight="800"),
             spacing="3",
             align="center",
             width="100%",
         ),
+        background="white",
+        border="1.5px solid #D8CBB6",
+        border_radius="18px",
+        padding="2rem",
         width="100%",
     )
 
@@ -1311,30 +1232,23 @@ def paso4() -> rx.Component:
     return rx.vstack(
         rx.hstack(
             rx.button(
-    "← Volver",
-    on_click=CheckoutState.ir_paso(3),
-    background="white",
-    color=TEXT_DARK,
-    border=f"1px solid {GOLD_BOR}",
-    border_radius="999px",
-    padding="0.5rem 1rem",
-    font_weight="800",
-),
+                "← Volver",
+                on_click=CheckoutState.ir_paso(3),
+                background="white",
+                color=TEXT_DARK,
+                border=f"1px solid {GOLD_BOR}",
+                border_radius="999px",
+                padding="0.5rem 1rem",
+                font_weight="800",
+            ),
             rx.vstack(
-                rx.text(
-                    "Paso 4 de 5",
-                    color=GOLD,
-                    font_size="0.7rem",
-                    text_transform="uppercase",
-                    letter_spacing="2px",
-                    font_weight="700",
-                ),
+                rx.text("Paso 4 de 5", color=GOLD, font_size="0.75rem", text_transform="uppercase", letter_spacing="2px", font_weight="900"),
                 rx.heading(
                     "Método de pago",
                     style={
                         "fontFamily": "'Playfair Display', serif",
-                        "fontSize": "clamp(1.5rem, 3vw, 2rem)",
-                        "fontWeight": "800",
+                        "fontSize": "clamp(1.8rem, 3vw, 2.6rem)",
+                        "fontWeight": "900",
                         "color": TEXT_DARK,
                     },
                 ),
@@ -1346,7 +1260,6 @@ def paso4() -> rx.Component:
             width="100%",
         ),
 
-        # Selector de método
         rx.hstack(
             pay_method_btn("Tarjeta", "💳", "Tarjeta"),
             pay_method_btn("PayPal", "🅿️", "PayPal"),
@@ -1355,7 +1268,6 @@ def paso4() -> rx.Component:
             width="100%",
         ),
 
-        # Formulario dinámico por método
         rx.cond(
             CheckoutState.metodo_pago == "Tarjeta",
             card_form(),
@@ -1369,26 +1281,21 @@ def paso4() -> rx.Component:
         rx.button(
             "Revisar y confirmar →",
             on_click=CheckoutState.ir_paso(5),
-            style={
-                "background": f"linear-gradient(135deg, {TEAL}, {TEAL_LT})",
-                "color": TEXT_DARK,
-                "border": "none",
-                "borderRadius": "14px",
-                "padding": "0.9rem 2rem",
-                "fontWeight": "800",
-                "fontSize": "0.95rem",
-                "cursor": "pointer",
-                "width": "100%",
-                "transition": "all 0.25s",
-            },
+            background=f"linear-gradient(135deg, {GOLD}, {GOLD_LT})",
+            color=TEXT_DARK,
+            border="none",
+            border_radius="999px",
+            padding="0.95rem 2rem",
+            font_weight="900",
+            font_size="1rem",
+            cursor="pointer",
+            width="100%",
         ),
 
-        class_name="step-panel",
         spacing="5",
         width="100%",
         align="start",
     )
-
 
 # ─────────────────────────────────────────────────────────────────────────────
 #  PASO 5 – CONFIRMACIÓN FINAL
