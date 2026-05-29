@@ -946,11 +946,11 @@ def field(label: str, component: rx.Component) -> rx.Component:
     return rx.vstack(
         rx.text(
             label,
-            color=TEXT_MUTED,
-            font_size="0.75rem",
-            font_weight="900",
+            color="#6B5D4D",
+            font_size="0.85rem",
+            font_weight="800",
             text_transform="uppercase",
-            letter_spacing="0.8px",
+            letter_spacing="1px",
         ),
         component,
         spacing="2",
@@ -959,7 +959,12 @@ def field(label: str, component: rx.Component) -> rx.Component:
     )
 
 
-def styled_input(placeholder: str, value, on_change, input_type: str = "text") -> rx.Component:
+def styled_input(
+    placeholder: str,
+    value,
+    on_change,
+    input_type: str = "text",
+) -> rx.Component:
     return rx.input(
         placeholder=placeholder,
         value=value,
@@ -969,9 +974,14 @@ def styled_input(placeholder: str, value, on_change, input_type: str = "text") -
             "background": "#FFFFFF",
             "border": "1.5px solid #D8CBB6",
             "borderRadius": "14px",
-            "color": TEXT_DARK,
-            "padding": "0.9rem 1.1rem",
-            "fontSize": "0.95rem",
+            "color": "#2B241A",
+            "WebkitTextFillColor": "#2B241A",
+            "caretColor": "#2B241A",
+            "fontSize": "1.15rem",
+            "fontWeight": "700",
+            "lineHeight": "1.5",
+            "padding": "1rem 1.2rem",
+            "height": "58px",
             "width": "100%",
             "boxShadow": "0 8px 22px rgba(43,36,26,0.04)",
         },
@@ -988,7 +998,7 @@ def paso3() -> rx.Component:
                 color=TEXT_DARK,
                 border=f"1px solid {GOLD_BOR}",
                 border_radius="999px",
-                padding="0.5rem 1rem",
+                padding="0.7rem 1.3rem",
                 font_weight="800",
             ),
             rx.vstack(
@@ -1004,7 +1014,7 @@ def paso3() -> rx.Component:
                     "Datos del viajero",
                     style={
                         "fontFamily": "'Playfair Display', serif",
-                        "fontSize": "clamp(1.8rem, 3vw, 2.6rem)",
+                        "fontSize": "clamp(2rem, 4vw, 3rem)",
                         "fontWeight": "900",
                         "color": TEXT_DARK,
                     },
@@ -1020,38 +1030,19 @@ def paso3() -> rx.Component:
         rx.grid(
             field(
                 "Nombre completo *",
-                styled_input(
-                    "Ej: Juan García",
-                    CheckoutState.nombre,
-                    CheckoutState.set_nombre,
-                ),
+                styled_input("Ej: Juan García", CheckoutState.nombre, CheckoutState.set_nombre),
             ),
             field(
                 "Correo electrónico *",
-                styled_input(
-                    "tu@email.com",
-                    CheckoutState.email,
-                    CheckoutState.set_email,
-                    "email",
-                ),
+                styled_input("tu@email.com", CheckoutState.email, CheckoutState.set_email, "email"),
             ),
             field(
                 "Teléfono",
-                styled_input(
-                    "+1 (000) 000-0000",
-                    CheckoutState.telefono,
-                    CheckoutState.set_telefono,
-                    "tel",
-                ),
+                styled_input("+1 (000) 000-0000", CheckoutState.telefono, CheckoutState.set_telefono, "tel"),
             ),
             field(
                 "Fecha de viaje *",
-                styled_input(
-                    "",
-                    CheckoutState.fecha_viaje,
-                    CheckoutState.set_fecha,
-                    "date",
-                ),
+                styled_input("", CheckoutState.fecha_viaje, CheckoutState.set_fecha, "date"),
             ),
             field(
                 "Cantidad de personas",
@@ -1059,12 +1050,17 @@ def paso3() -> rx.Component:
                     ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
                     value=CheckoutState.personas,
                     on_change=CheckoutState.set_personas,
-                    background="white",
-                    color=TEXT_DARK,
-                    border="1.5px solid #D8CBB6",
-                    border_radius="14px",
-                    padding="0.8rem 1rem",
-                    width="100%",
+                    style={
+                        "background": "#FFFFFF",
+                        "border": "1.5px solid #D8CBB6",
+                        "borderRadius": "14px",
+                        "color": "#2B241A",
+                        "fontSize": "1.1rem",
+                        "fontWeight": "700",
+                        "height": "58px",
+                        "padding": "0 1rem",
+                        "width": "100%",
+                    },
                 ),
             ),
             style={"gridTemplateColumns": "1fr 1fr"},
@@ -1082,12 +1078,14 @@ def paso3() -> rx.Component:
                     "background": "#FFFFFF",
                     "border": "1.5px solid #D8CBB6",
                     "borderRadius": "14px",
-                    "color": TEXT_DARK,
-                    "padding": "0.9rem 1.1rem",
-                    "fontSize": "0.95rem",
+                    "color": "#2B241A",
+                    "WebkitTextFillColor": "#2B241A",
+                    "caretColor": "#2B241A",
+                    "fontSize": "1.1rem",
+                    "fontWeight": "600",
+                    "padding": "1rem 1.2rem",
                     "width": "100%",
-                    "minHeight": "120px",
-                    "resize": "vertical",
+                    "minHeight": "150px",
                     "boxShadow": "0 8px 22px rgba(43,36,26,0.04)",
                 },
             ),
@@ -1100,7 +1098,7 @@ def paso3() -> rx.Component:
             color=TEXT_DARK,
             border="none",
             border_radius="999px",
-            padding="0.95rem 2rem",
+            padding="1rem 2rem",
             font_weight="900",
             font_size="1rem",
             cursor="pointer",
@@ -1112,29 +1110,27 @@ def paso3() -> rx.Component:
         align="start",
     )
 
-def pay_method_btn(label: str, icon: str, value: str) -> rx.Component:
-    is_selected = CheckoutState.metodo_pago == value
-    return rx.box(
-        rx.hstack(
-            rx.text(icon, font_size="1.2rem"),
-            rx.text(
-                label,
-                color=rx.cond(is_selected, TEXT_DARK, TEXT_MUTED),
-                font_size="0.9rem",
-                font_weight=rx.cond(is_selected, "900", "700"),
-            ),
-            spacing="2",
-            align="center",
-        ),
-        on_click=CheckoutState.set_metodo(value),
-        flex="1",
-        justify="center",
-        display="flex",
-        background=rx.cond(is_selected, "#FFF8E8", "white"),
-        border=rx.cond(is_selected, f"2px solid {GOLD}", "1.5px solid #D8CBB6"),
-        border_radius="16px",
-        padding="1rem",
-        cursor="pointer",
+
+
+
+def payment_input(placeholder: str, value, on_change) -> rx.Component:
+    return rx.input(
+        placeholder=placeholder,
+        value=value,
+        on_change=on_change,
+        style={
+            "background": "#FFFFFF",
+            "border": "1.5px solid #D8CBB6",
+            "borderRadius": "14px",
+            "color": "#2B241A",
+            "WebkitTextFillColor": "#2B241A",
+            "caretColor": "#2B241A",
+            "fontSize": "1.15rem",
+            "fontWeight": "700",
+            "height": "58px",
+            "padding": "1rem 1.2rem",
+            "width": "100%",
+        },
     )
 
 
@@ -1142,10 +1138,18 @@ def card_form() -> rx.Component:
     return rx.vstack(
         rx.box(
             rx.vstack(
-                rx.text("TRAVELWORLD CARD", color=GOLD, font_weight="900", letter_spacing="2px"),
-                rx.text("••••  ••••  ••••  ••••", color="white", font_size="1.4rem"),
+                rx.text("TRAVELWORLD CARD", color=GOLD, font_weight="900"),
+                rx.text(
+                    rx.cond(CheckoutState.card_num != "", CheckoutState.card_num, "••••  ••••  ••••  ••••"),
+                    color="white",
+                    font_size="1.4rem",
+                ),
                 rx.hstack(
-                    rx.text("NOMBRE APELLIDO", color="white", font_weight="800"),
+                    rx.text(
+                        rx.cond(CheckoutState.card_name != "", CheckoutState.card_name, "NOMBRE APELLIDO"),
+                        color="white",
+                        font_weight="800",
+                    ),
                     rx.spacer(),
                     rx.text("VISA", color=GOLD_LT, font_size="1.5rem", font_weight="900"),
                     width="100%",
@@ -1159,10 +1163,10 @@ def card_form() -> rx.Component:
         ),
 
         rx.grid(
-            field("Número de tarjeta", styled_input("0000 0000 0000 0000", CheckoutState.card_num, CheckoutState.set_card_num)),
-            field("Nombre del titular", styled_input("Como aparece en la tarjeta", CheckoutState.card_name, CheckoutState.set_card_name)),
-            field("Fecha de vencimiento", styled_input("MM/AA", CheckoutState.card_exp, CheckoutState.set_card_exp)),
-            field("CVV", styled_input("•••", CheckoutState.card_cvv, CheckoutState.set_card_cvv)),
+            field("Número de tarjeta", payment_input("0000 0000 0000 0000", CheckoutState.card_num, CheckoutState.set_card_num)),
+            field("Nombre del titular", payment_input("Como aparece en la tarjeta", CheckoutState.card_name, CheckoutState.set_card_name)),
+            field("Fecha de vencimiento", payment_input("MM/AA", CheckoutState.card_exp, CheckoutState.set_card_exp)),
+            field("CVV", payment_input("•••", CheckoutState.card_cvv, CheckoutState.set_card_cvv)),
             style={"gridTemplateColumns": "1fr 1fr"},
             gap="1.1rem",
             width="100%",
@@ -1171,7 +1175,6 @@ def card_form() -> rx.Component:
         spacing="4",
         width="100%",
     )
-
 
 def paypal_form() -> rx.Component:
     return rx.box(
@@ -1227,6 +1230,35 @@ def transfer_form() -> rx.Component:
         width="100%",
     )
 
+def pay_method_btn(label: str, icon: str, value: str) -> rx.Component:
+    is_selected = CheckoutState.metodo_pago == value
+
+    return rx.box(
+        rx.hstack(
+            rx.text(icon, font_size="1.2rem"),
+            rx.text(
+                label,
+                color=rx.cond(is_selected, TEXT_DARK, TEXT_MUTED),
+                font_size="0.9rem",
+                font_weight=rx.cond(is_selected, "900", "700"),
+            ),
+            spacing="2",
+            align="center",
+        ),
+        on_click=CheckoutState.set_metodo(value),
+        flex="1",
+        justify="center",
+        display="flex",
+        background=rx.cond(is_selected, "#FFF8E8", "white"),
+        border=rx.cond(
+            is_selected,
+            f"2px solid {GOLD}",
+            "1.5px solid #D8CBB6",
+        ),
+        border_radius="16px",
+        padding="1rem",
+        cursor="pointer",
+    )
 
 def paso4() -> rx.Component:
     return rx.vstack(
@@ -1303,8 +1335,19 @@ def paso4() -> rx.Component:
 
 def resumen_row(label: str, value) -> rx.Component:
     return rx.hstack(
-        rx.text(label, color="rgba(255,255,255,0.4)", font_size="0.82rem", min_width="120px"),
-        rx.text(value, color=TEXT_DARK, font_size="0.88rem", font_weight="600"),
+        rx.text(
+            label,
+            color=TEXT_MUTED,
+            font_size="0.9rem",
+            font_weight="700",
+            min_width="150px",
+        ),
+        rx.text(
+            value,
+            color=TEXT_DARK,
+            font_size="0.95rem",
+            font_weight="800",
+        ),
         width="100%",
         spacing="3",
         align="start",
@@ -1315,32 +1358,30 @@ def paso5() -> rx.Component:
     return rx.vstack(
         rx.hstack(
             rx.button(
-    "← Volver",
-    on_click=CheckoutState.ir_paso(4),
-    background="white",
-    color=TEXT_DARK,
-    border=f"1px solid {GOLD_BOR}",
-    border_radius="999px",
-    padding="0.5rem 1rem",
-    font_weight="800",
-),
+                "← Volver",
+                on_click=CheckoutState.ir_paso(4),
+                background="white",
+                color=TEXT_DARK,
+                border=f"1px solid {GOLD_BOR}",
+                border_radius="999px",
+                padding="0.5rem 1rem",
+                font_weight="800",
+            ),
             rx.vstack(
                 rx.text(
                     "Paso 5 de 5",
                     color=GOLD,
-                    font_size="0.7rem",
+                    font_size="0.75rem",
                     text_transform="uppercase",
                     letter_spacing="2px",
-                    font_weight="700",
+                    font_weight="900",
                 ),
                 rx.heading(
                     "Confirma tu reserva",
-                    style={
-                        "fontFamily": "'Playfair Display', serif",
-                        "fontSize": "clamp(1.5rem, 3vw, 2rem)",
-                        "fontWeight": "800",
-                        "color": TEXT_DARK,
-                    },
+                    color=TEXT_DARK,
+                    font_family="'Playfair Display', serif",
+                    font_size="clamp(1.8rem, 3vw, 2.6rem)",
+                    font_weight="900",
                 ),
                 spacing="1",
                 align="start",
@@ -1350,18 +1391,19 @@ def paso5() -> rx.Component:
             width="100%",
         ),
 
-        # Resumen completo
         rx.box(
             rx.vstack(
                 rx.text(
                     "Detalle de tu reserva",
-                    color="rgba(255,255,255,0.4)",
-                    font_size="0.68rem",
+                    color=TEXT_DARK,
+                    font_size="0.8rem",
                     text_transform="uppercase",
                     letter_spacing="2px",
-                    font_weight="600",
+                    font_weight="900",
                 ),
-                rx.box(height="1px", width="100%", background="rgba(255,255,255,0.07)"),
+
+                rx.box(height="1px", width="100%", background="rgba(139,106,46,.18)"),
+
                 resumen_row("Destino", CheckoutState.pais_nombre),
                 resumen_row("Oferta", CheckoutState.oferta_nombre),
                 resumen_row("Duración", CheckoutState.oferta_duracion),
@@ -1371,85 +1413,74 @@ def paso5() -> rx.Component:
                 resumen_row("Fecha de viaje", CheckoutState.fecha_viaje),
                 resumen_row("Personas", CheckoutState.personas),
                 resumen_row("Método de pago", CheckoutState.metodo_pago),
-                rx.box(height="1px", width="100%", background="rgba(255,255,255,0.07)"),
+
+                rx.box(height="1px", width="100%", background="rgba(139,106,46,.18)"),
+
                 rx.hstack(
-                    rx.text("TOTAL A PAGAR", color=TEXT_MUTED, font_size="0.75rem", font_weight="700", letter_spacing="1px"),
+                    rx.text(
+                        "TOTAL A PAGAR",
+                        color=TEXT_DARK,
+                        font_size="0.85rem",
+                        font_weight="900",
+                        letter_spacing="1px",
+                    ),
                     rx.spacer(),
                     rx.text(
-                        "$",
-                        CheckoutState.precio_total.to_string(),
-                        " USD",
-                        style={
-                            "fontFamily": "'Playfair Display', serif",
-                            "fontSize": "2rem",
-                            "fontWeight": "900",
-                            "background": f"linear-gradient(135deg, {GOLD}, {GOLD_LT})",
-                            "WebkitBackgroundClip": "text",
-                            "WebkitTextFillColor": "transparent",
-                            "backgroundClip": "text",
-                        },
+                        "$" + CheckoutState.precio_total.to_string() + " USD",
+                        color=GOLD,
+                        font_size="2rem",
+                        font_weight="900",
+                        font_family="'Playfair Display', serif",
                     ),
                     width="100%",
                     align="end",
                 ),
-                spacing="3",
+
+                spacing="4",
                 align="start",
                 width="100%",
             ),
-            background="rgba(255,255,255,0.04)",
-            border=f"1px solid {GLASS_BOR}",
-            border_radius="18px",
-            padding="1.5rem",
+            background="white",
+            border=f"1px solid {GOLD_BOR}",
+            border_radius="24px",
+            padding="2rem",
             width="100%",
+            box_shadow="0 16px 40px rgba(43,36,26,0.07)",
         ),
 
-        # Mensaje de error si hay
         rx.cond(
             CheckoutState.mensaje != "",
-            rx.text(CheckoutState.mensaje, color=CORAL, font_size="0.88rem"),
+            rx.text(CheckoutState.mensaje, color=CORAL, font_size="0.9rem", font_weight="800"),
             rx.box(),
         ),
 
-        # Botón confirmar
-        rx.box(
-            rx.button(
-                "🔒  Confirmar y Reservar Ahora",
-                on_click=CheckoutState.confirmar_reserva,
-                class_name="confirm-btn",
-                style={
-                    "background": f"linear-gradient(135deg, {GOLD}, {GOLD_LT}, {GOLD})",
-                    "backgroundSize": "200% 100%",
-                    "color": DARK,
-                    "border": "none",
-                    "borderRadius": "16px",
-                    "padding": "1.1rem 2rem",
-                    "fontWeight": "900",
-                    "fontSize": "1rem",
-                    "cursor": "pointer",
-                    "width": "100%",
-                    "letterSpacing": "0.5px",
-                    "boxShadow": f"0 12px 40px rgba(201,168,76,0.3)",
-                    "transition": "all 0.3s",
-                },
-            ),
+        rx.button(
+            "🔒 Confirmar y Reservar Ahora",
+            on_click=CheckoutState.confirmar_reserva,
+            background=f"linear-gradient(135deg, {GOLD}, {GOLD_LT})",
+            color=TEXT_DARK,
+            border="none",
+            border_radius="999px",
+            padding="1rem 2rem",
+            font_weight="900",
+            font_size="1rem",
+            cursor="pointer",
             width="100%",
+            box_shadow="0 12px 35px rgba(201,168,76,0.28)",
         ),
 
         rx.text(
             "🔒 Pago seguro SSL · Datos encriptados · Cancelación flexible",
-            color="rgba(255,255,255,0.25)",
-            font_size="0.7rem",
+            color=TEXT_MUTED,
+            font_size="0.75rem",
             text_align="center",
             width="100%",
         ),
 
-        class_name="step-panel",
         spacing="5",
         width="100%",
         align="start",
     )
-
-
 # ─────────────────────────────────────────────────────────────────────────────
 #  PASO 6 – ÉXITO
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1458,96 +1489,154 @@ def paso6_success() -> rx.Component:
     return rx.center(
         rx.vstack(
             rx.box(
-                rx.text("✓", color=TEXT_DARK, font_size="2rem", font_weight="900"),
-                width="72px",
-                height="72px",
+                rx.text("✓", color="white", font_size="2rem", font_weight="900"),
+                width="76px",
+                height="76px",
                 border_radius="50%",
-                background=f"linear-gradient(135deg, {TEAL}, {TEAL_LT})",
+                background=f"linear-gradient(135deg, {GOLD}, {GOLD_LT})",
                 display="flex",
-                align="center",
-                justify="center",
-                box_shadow=f"0 0 40px rgba(11,110,110,0.5)",
-                style={"animation": "glowPulse 2s infinite"},
+                align_items="center",
+                justify_content="center",
+                box_shadow="0 18px 45px rgba(201,168,76,0.35)",
             ),
+
             rx.heading(
                 "¡Reserva Confirmada!",
-                style={
-                    "fontFamily": "'Playfair Display', serif",
-                    "fontSize": "clamp(1.8rem, 4vw, 2.5rem)",
-                    "fontWeight": "900",
-                    "background": f"linear-gradient(135deg, {GOLD}, {GOLD_LT})",
-                    "WebkitBackgroundClip": "text",
-                    "WebkitTextFillColor": "transparent",
-                    "backgroundClip": "text",
-                },
+                color=GOLD,
+                font_family="'Playfair Display', serif",
+                font_size="clamp(2.2rem, 5vw, 4rem)",
+                font_weight="900",
+                text_align="center",
             ),
+
             rx.text(
                 CheckoutState.mensaje,
-                color="rgba(255,255,255,0.65)",
-                font_size="0.95rem",
+                color=TEXT_MUTED,
+                font_size="1rem",
                 text_align="center",
-                max_width="400px",
             ),
+
             rx.box(
                 rx.vstack(
-                    rx.hstack(
-                        rx.text("Destino", color="rgba(255,255,255,0.4)", font_size="0.8rem", min_width="90px"),
-                        rx.text(CheckoutState.pais_nombre, color=TEXT_DARK, font_size="0.88rem", font_weight="700"),
+                    rx.image(
+                        src=CheckoutState.oferta_imagen,
+                        width="100%",
+                        height="250px",
+                        object_fit="cover",
+                        border_radius="18px",
                     ),
-                    rx.hstack(
-                        rx.text("Paquete", color="rgba(255,255,255,0.4)", font_size="0.8rem", min_width="90px"),
-                        rx.text(CheckoutState.oferta_nombre, color=TEXT_DARK, font_size="0.88rem", font_weight="700"),
+
+                    rx.heading(
+                        CheckoutState.oferta_nombre,
+                        color=TEXT_DARK,
+                        font_size="1.6rem",
+                        font_weight="900",
+                        font_family="'Playfair Display', serif",
                     ),
-                    rx.hstack(
-                        rx.text("Fecha", color="rgba(255,255,255,0.4)", font_size="0.8rem", min_width="90px"),
-                        rx.text(CheckoutState.fecha_viaje, color=TEXT_DARK, font_size="0.88rem", font_weight="700"),
+
+                    rx.text(
+                        CheckoutState.pais_nombre,
+                        color=TEXT_MUTED,
+                        font_size="1rem",
                     ),
+
+                    rx.box(
+                        height="1px",
+                        width="100%",
+                        background="rgba(139,106,46,.18)",
+                    ),
+
+                    resumen_row("Nombre", CheckoutState.nombre),
+                    resumen_row("Email", CheckoutState.email),
+                    resumen_row("Teléfono", CheckoutState.telefono),
+                    resumen_row("Destino", CheckoutState.pais_nombre),
+                    resumen_row("Paquete", CheckoutState.oferta_nombre),
+                    resumen_row("Fecha", CheckoutState.fecha_viaje),
+                    resumen_row("Personas", CheckoutState.personas),
+                    resumen_row("Método de pago", CheckoutState.metodo_pago),
+
+                    rx.cond(
+                        CheckoutState.comentarios != "",
+                        resumen_row("Comentarios", CheckoutState.comentarios),
+                        rx.box(),
+                    ),
+
+                    rx.box(
+                        height="1px",
+                        width="100%",
+                        background="rgba(139,106,46,.18)",
+                    ),
+
                     rx.hstack(
-                        rx.text("Total", color="rgba(255,255,255,0.4)", font_size="0.8rem", min_width="90px"),
                         rx.text(
-                            "$",
-                            CheckoutState.precio_total.to_string(),
-                            " USD",
+                            "TOTAL PAGADO",
+                            color=TEXT_MUTED,
+                            font_weight="800",
+                        ),
+                        rx.spacer(),
+                        rx.text(
+                            "$" + CheckoutState.precio_total.to_string() + " USD",
                             color=GOLD,
-                            font_size="1rem",
+                            font_size="2rem",
                             font_weight="900",
                             font_family="'Playfair Display', serif",
                         ),
+                        width="100%",
                     ),
-                    spacing="3",
+
+                    spacing="4",
                     align="start",
+                    width="100%",
                 ),
-                background="rgba(255,255,255,0.05)",
+
+                background="white",
                 border=f"1px solid {GOLD_BOR}",
-                border_radius="16px",
-                padding="1.5rem 2rem",
-                min_width="320px",
+                border_radius="24px",
+                padding="1.5rem",
+                width="100%",
+                max_width="720px",
+                box_shadow="0 16px 40px rgba(43,36,26,0.08)",
             ),
+
+            rx.button(
+                "📧 Enviar datos de la reserva al correo",
+                background=f"linear-gradient(135deg, {GOLD}, {GOLD_LT})",
+                color=TEXT_DARK,
+                border="none",
+                border_radius="999px",
+                padding="1rem 2rem",
+                font_weight="900",
+                font_size="1rem",
+                width="100%",
+                max_width="720px",
+                cursor="pointer",
+            ),
+
             rx.link(
                 rx.button(
                     "← Volver al inicio",
-                    style={
-                        "background": f"linear-gradient(135deg, {GOLD}, {GOLD_LT})",
-                        "color": DARK,
-                        "border": "none",
-                        "borderRadius": "14px",
-                        "padding": "0.9rem 2.5rem",
-                        "fontWeight": "800",
-                        "fontSize": "0.95rem",
-                        "cursor": "pointer",
-                    },
+                    background="white",
+                    color=TEXT_DARK,
+                    border=f"1px solid {GOLD_BOR}",
+                    border_radius="999px",
+                    padding="1rem 2rem",
+                    font_weight="900",
+                    width="100%",
+                    cursor="pointer",
                 ),
                 href="/",
+                width="100%",
+                max_width="720px",
             ),
-            spacing="6",
+
+            spacing="5",
             align="center",
-            class_name="step-panel",
+            width="100%",
+            padding="4rem 2rem",
         ),
         min_height="70vh",
         width="100%",
     )
-
-
 # ─────────────────────────────────────────────────────────────────────────────
 #  NAVBAR
 # ─────────────────────────────────────────────────────────────────────────────
