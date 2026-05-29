@@ -1,6 +1,7 @@
 import reflex as rx
 
 from turismo_reservas.pages.index import index
+from turismo_reservas.pages.reservas import reservas
 
 
 app = rx.App(
@@ -13,4 +14,10 @@ app.add_page(
     index,
     route="/",
     title="TravelWorld - Plataforma Turística Premium",
+)
+
+app.add_page(
+    reservas,
+    route="/reservas",
+    title="Reservas - TravelWorld",
 )
