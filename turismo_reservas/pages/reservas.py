@@ -9,17 +9,19 @@ import reflex as rx
 from turismo_reservas.states.reservation_state import ReservationState
 
 # ─── Paleta (igual que index.py) ──────────────────────────────────────────────
-DARK       = "#0D1B2A"
-DARK2      = "#111E2D"
-TEAL       = "#0B6E6E"
-TEAL_LT    = "#1A9E9E"
+DARK       = "#FDF9F3"
+DARK2      = "#F5EFE6"
+TEAL       = "#8B6A2E"
+TEAL_LT    = "#C9A84C"
 GOLD       = "#C9A84C"
-GOLD_LT    = "#F0D080"
-CORAL      = "#C9785B"
-CREAM      = "#F5EFE6"
-GLASS_BG   = "rgba(255,255,255,0.06)"
-GLASS_BOR  = "rgba(255,255,255,0.12)"
+GOLD_LT    = "#E8CF84"
+CORAL      = "#B86B55"
+CREAM      = "#FDF9F3"
+GLASS_BG   = "rgba(255,255,255,0.72)"
+GLASS_BOR  = "rgba(139,106,46,0.18)"
 GOLD_BOR   = "rgba(201,168,76,0.35)"
+TEXT_DARK  = "#2B241A"
+TEXT_MUTED = "#6E6254"
 
 # ─── Catálogo de destinos y ofertas ──────────────────────────────────────────
 PAISES = [
@@ -65,7 +67,7 @@ body {
     margin: 0;
     padding: 0;
     font-family: 'Inter', sans-serif;
-    background: #0D1B2A;
+    background: #FDF9F3;
     overflow-x: hidden;
 }
 
@@ -776,14 +778,23 @@ def pais_card(p: dict) -> rx.Component:
             rx.cond(
                 is_selected,
                 rx.box(
-                    rx.text("✓", color=DARK, font_size="0.75rem", font_weight="900"),
-                    background=f"linear-gradient(135deg, {GOLD}, {GOLD_LT})",
-                    width="24px", height="24px",
-                    border_radius="50%",
-                    display="flex",
-                    align="center",
-                    justify="center",
-                ),
+    rx.text(
+        "✓",
+        color=DARK,
+        font_size="0.9rem",
+        font_weight="900",
+        line_height="1",
+    ),
+    background=f"linear-gradient(135deg, {GOLD}, {GOLD_LT})",
+    width="32px",
+    height="32px",
+    min_width="32px",
+    min_height="32px",
+    border_radius="50%",
+    display="flex",
+    align_items="center",
+    justify_content="center",
+),
                 rx.box(),
             ),
             spacing="4",
@@ -1754,7 +1765,11 @@ def checkout_navbar() -> rx.Component:
             rx.spacer(),
             rx.hstack(
                 rx.text("🔒", font_size="0.8rem"),
-                rx.text("Checkout seguro", color="rgba(255,255,255,0.4)", font_size="0.8rem"),
+                rx.text(
+                    "Checkout seguro",
+                    color=TEXT_MUTED,
+                    font_size="0.8rem",
+                ),
                 spacing="1",
                 align="center",
             ),
@@ -1767,7 +1782,7 @@ def checkout_navbar() -> rx.Component:
         position="sticky",
         top="0",
         z_index="100",
-        background="rgba(13,27,42,0.95)",
+        background="rgba(253,249,243,0.92)",
         style={"backdropFilter": "blur(20px)"},
         border_bottom=f"1px solid {GOLD_BOR}",
         height="64px",
@@ -1784,14 +1799,12 @@ def checkout_navbar() -> rx.Component:
 def reservas() -> rx.Component:
     return rx.box(
         rx.html(f"<style>{CHECKOUT_CSS}</style>"),
-
         checkout_navbar(),
 
         rx.cond(
             CheckoutState.paso == 6,
             paso6_success(),
             rx.box(
-                # Header de página
                 rx.box(
                     rx.vstack(
                         rx.text(
@@ -1808,10 +1821,7 @@ def reservas() -> rx.Component:
                                 "fontFamily": "'Playfair Display', serif",
                                 "fontSize": "clamp(1.5rem, 3vw, 2.2rem)",
                                 "fontWeight": "900",
-                                "background": f"linear-gradient(135deg, white, rgba(255,255,255,0.7))",
-                                "WebkitBackgroundClip": "text",
-                                "WebkitTextFillColor": "transparent",
-                                "backgroundClip": "text",
+                                "color": TEXT_DARK,
                             },
                         ),
                         progress_bar(),
@@ -1823,13 +1833,11 @@ def reservas() -> rx.Component:
                         width="100%",
                     ),
                     padding="2.5rem 0",
-                    border_bottom=f"1px solid rgba(255,255,255,0.05)",
+                    border_bottom="1px solid rgba(139,106,46,0.12)",
                     width="100%",
                 ),
 
-                # Layout principal: form + summary
                 rx.hstack(
-                    # Panel izquierdo – wizard
                     rx.box(
                         rx.cond(CheckoutState.paso == 1, paso1(), rx.box()),
                         rx.cond(CheckoutState.paso == 2, paso2(), rx.box()),
@@ -1839,15 +1847,12 @@ def reservas() -> rx.Component:
                         flex="1",
                         min_width="0",
                     ),
-
-                    # Panel derecho – resumen
                     rx.box(
                         summary_panel(),
                         width="360px",
                         flex_shrink="0",
                         display=["none", "none", "block"],
                     ),
-
                     spacing="8",
                     align="start",
                     width="100%",
@@ -1855,7 +1860,6 @@ def reservas() -> rx.Component:
                     margin="0 auto",
                     padding="3rem 2rem",
                 ),
-
                 width="100%",
             ),
         ),
