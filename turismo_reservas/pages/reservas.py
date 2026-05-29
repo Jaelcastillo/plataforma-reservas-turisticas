@@ -392,22 +392,34 @@ def paso_indicator(num: int, label: str, activo: bool, completado: bool) -> rx.C
         rx.cond(completado, "rgba(255,255,255,0.6)", "rgba(255,255,255,0.25)"),
     )
     return rx.vstack(
-        rx.box(
-            rx.cond(
-                completado,
-                rx.text("✓", color="white", font_weight="900", font_size="0.9rem"),
-                rx.text(str(num), color=circle_color, font_weight="800", font_size="0.85rem"),
-            ),
-            width="36px",
-            height="36px",
-            border_radius="50%",
-            style={"background": circle_bg},
-            display="flex",
-            align="center",
-            justify="center",
-            box_shadow=rx.cond(activo, f"0 0 20px rgba(201,168,76,0.5)", "none"),
-            transition="all 0.3s",
+       rx.box(
+    rx.cond(
+        completado,
+        rx.text(
+            "✓",
+            color="white",
+            font_weight="900",
+            font_size="1rem",
+            line_height="1",
         ),
+        rx.text(
+            str(num),
+            color=circle_color,
+            font_weight="800",
+            font_size="1rem",
+            line_height="1",
+        ),
+    ),
+    width="42px",
+    height="42px",
+    border_radius="50%",
+    style={"background": circle_bg},
+    display="flex",
+    align_items="center",
+    justify_content="center",
+    box_shadow=rx.cond(activo, f"0 0 20px rgba(201,168,76,0.5)", "none"),
+    transition="all 0.3s",
+),
         rx.text(
             label,
             font_size="0.65rem",
