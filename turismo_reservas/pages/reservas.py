@@ -4,7 +4,7 @@ Archivo: pages/reservas.py
 
 Reemplaza completamente tu reservas.py actual con este archivo.
 """
-
+from utils.pdf_generator import generar_pdf_reserva
 import reflex as rx
 from turismo_reservas.states.reservation_state import ReservationState
 
@@ -282,6 +282,7 @@ class CheckoutState(rx.State):
     # Resultado
     mensaje: str = ""
     reserva_ok: bool = False
+    pdf_url: str = ""
 
     # ── Setters simples ──────────────────────────────────────────────────────
     def set_nombre(self, v):    self.nombre = v
@@ -316,37 +317,68 @@ class CheckoutState(rx.State):
     def ir_paso(self, p: int):
         self.paso = p
 
-    # ── Confirmar reserva ────────────────────────────────────────────────────
+   # ── Confirmar reserva ────────────────────────────────────────────────────
     def confirmar_reserva(self):
         from datetime import datetime
         from api.services import crear_reserva
+        from utils.pdf_generator import generar_pdf_reserva
+
         try:
             if not self.nombre or not self.email or not self.fecha_viaje:
                 self.mensaje = "❌ Completa los campos obligatorios."
                 return
+
             crear_reserva(
-                nombre      = self.nombre,
-                email       = self.email,
-                telefono    = self.telefono,
-                pais_destino= self.pais_nombre,
-                oferta      = self.oferta_nombre,
-                fecha_viaje = datetime.strptime(self.fecha_viaje, "%Y-%m-%d").date(),
-                personas    = int(self.personas),
-                metodo_pago = self.metodo_pago,
-                comentarios = self.comentarios,
+                nombre=self.nombre,
+                email=self.email,
+                telefono=self.telefono,
+                pais_destino=self.pais_nombre,
+                oferta=self.oferta_nombre,
+                fecha_viaje=datetime.strptime(
+                    self.fecha_viaje, "%Y-%m-%d"
+                ).date(),
+                personas=int(self.personas),
+                metodo_pago=self.metodo_pago,
+                comentarios=self.comentarios,
             )
+
+            codigo = f"TW-{datetime.now().strftime('%Y%m%d%H%M%S')}"
+
+            self.pdf_url = generar_pdf_reserva({
+                "codigo_reserva": codigo,
+                "fecha_emision": datetime.now().strftime("%d/%m/%Y"),
+                "nombre_paquete": self.oferta_nombre,
+                "destino": self.pais_nombre,
+                "duracion": self.oferta_duracion,
+                "categoria": "Reserva TravelWorld",
+                "url_imagen": self.oferta_imagen,
+                "cliente_nombre": self.nombre,
+                "cliente_email": self.email,
+                "cliente_telefono": self.telefono,
+                "viajeros": int(self.personas),
+                "fecha_viaje": self.fecha_viaje,
+                "metodo_pago": self.metodo_pago,
+                "comentarios": self.comentarios,
+                "precio_base": float(self.oferta_precio) * int(self.personas),
+                "descuento": 0,
+                "impuestos": 0,
+                "total_pagado": float(self.oferta_precio) * int(self.personas),
+                "moneda": "USD",
+            })
+
             self.reserva_ok = True
-            self.mensaje = "✅ ¡Reserva confirmada! Te enviamos los detalles por email."
+            self.mensaje = "✅ ¡Reserva confirmada! Descarga tu comprobante PDF."
             self.paso = 6
+
         except Exception as e:
             self.mensaje = f"❌ Error: {str(e)}"
 
-    # ── Precio final ─────────────────────────────────────────────────────────
+             # ── Precio final ─────────────────────────────────────────────────────────
     @rx.var
     def precio_total(self) -> int:
         try:
             return self.oferta_precio * int(self.personas)
-        except:
+        except Exception:
             return self.oferta_precio
 
     @rx.var
@@ -358,8 +390,6 @@ class CheckoutState(rx.State):
     @rx.var
     def ofertas_disponibles(self) -> list:
         return OFERTAS_POR_PAIS.get(self.pais_id, [])
-
-
 # ─────────────────────────────────────────────────────────────────────────────
 #  HELPERS DE UI
 # ─────────────────────────────────────────────────────────────────────────────
@@ -607,7 +637,7 @@ def summary_panel():
 
                     rx.text("TOTAL", color=TEXT_MUTED, font_weight="800"),
                     rx.text(
-                        "$" + CheckoutState.precio_total.to_string(),
+                        "$" + CheckoutState.oferta_precio.to_string(),
                         color=GOLD,
                         font_size="2rem",
                         font_weight="900",
@@ -1426,7 +1456,7 @@ def paso5() -> rx.Component:
                     ),
                     rx.spacer(),
                     rx.text(
-                        "$" + CheckoutState.precio_total.to_string() + " USD",
+                        "$" + CheckoutState.oferta_precio.to_string() + " USD",
                         color=GOLD,
                         font_size="2rem",
                         font_weight="900",
@@ -1575,7 +1605,7 @@ def paso6_success() -> rx.Component:
                         ),
                         rx.spacer(),
                         rx.text(
-                            "$" + CheckoutState.precio_total.to_string() + " USD",
+                            "$" + CheckoutState.oferta_precio.to_string() + " USD",
                             color=GOLD,
                             font_size="2rem",
                             font_weight="900",
@@ -1598,19 +1628,23 @@ def paso6_success() -> rx.Component:
                 box_shadow="0 16px 40px rgba(43,36,26,0.08)",
             ),
 
-            rx.button(
-                "📧 Enviar datos de la reserva al correo",
-                background=f"linear-gradient(135deg, {GOLD}, {GOLD_LT})",
-                color=TEXT_DARK,
-                border="none",
-                border_radius="999px",
-                padding="1rem 2rem",
-                font_weight="900",
-                font_size="1rem",
-                width="100%",
-                max_width="720px",
-                cursor="pointer",
-            ),
+    rx.link(
+    rx.button(
+        "📄 Descargar comprobante PDF",
+        background=f"linear-gradient(135deg, {GOLD}, {GOLD_LT})",
+        color=TEXT_DARK,
+        border="none",
+        border_radius="999px",
+        padding="1rem 2rem",
+        font_weight="900",
+        font_size="1rem",
+        width="100%",
+        cursor="pointer",
+    ),
+    href=CheckoutState.pdf_url,
+    width="100%",
+    max_width="720px",
+),
 
             rx.link(
                 rx.button(

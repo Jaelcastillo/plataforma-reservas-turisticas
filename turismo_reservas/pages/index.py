@@ -210,26 +210,27 @@ def hero_section() -> rx.Component:
     return rx.box(
         rx.html(
     """
-    <video id="heroVideo" autoplay muted loop playsinline preload="auto"
-        style="
-            position:absolute;
-            top:0;
-            left:0;
-            width:100%;
-            height:100%;
-            object-fit:cover;
-            z-index:0;
-        ">
-       <source src="/images/beach_video.mp4?v=1000" type="video/mp4">
-    </video>
+    <video class="autoVideo" autoplay muted loop playsinline preload="auto"
+    style="
+        position:absolute;
+        top:0;
+        left:0;
+        width:100%;
+        height:100%;
+        object-fit:cover;
+        z-index:0;
+    ">
+    <source src="/images/beach_video.mp4?v=100" type="video/mp4">
+</video>
 
-    <script>
-        const heroVideo = document.getElementById("heroVideo");
-        if (heroVideo) {
-            heroVideo.muted = true;
-            heroVideo.play().catch(() => {});
-        }
-    </script>
+<script>
+    document.querySelectorAll(".autoVideo").forEach((video) => {
+        video.muted = true;
+        video.setAttribute("muted", "");
+        video.setAttribute("playsinline", "");
+        video.play().catch(() => {});
+    });
+</script>
     """
 ),
 
@@ -575,23 +576,30 @@ def destination_card(dest: dict) -> rx.Component:
 def destinations_section() -> rx.Component:
     return rx.box(
 
-        # VIDEO DE FONDO
-        rx.html(
-            """
-            <video autoplay muted loop playsinline preload="auto"
-                style="
-                    position:absolute;
-                    top:0;
-                    left:0;
-                    width:100%;
-                    height:100%;
-                    object-fit:cover;
-                    z-index:0;
-                ">
-                <source src="/images/world_video.mp4" type="video/mp4">
-            </video>
-            """
-        ),
+        rx.html("""
+<video id="worldVideo" autoplay muted loop playsinline preload="auto"
+    style="
+        position:absolute;
+        top:0;
+        left:0;
+        width:100%;
+        height:100%;
+        object-fit:cover;
+        z-index:0;
+    ">
+    <source src="/images/world_video.mp4?v=1" type="video/mp4">
+</video>
+
+<script>
+window.addEventListener("load", () => {
+    const v = document.getElementById("worldVideo");
+    if(v){
+        v.muted = true;
+        v.play().catch(err => console.log(err));
+    }
+});
+</script>
+"""),
 
         # OVERLAY OSCURO
         rx.box(
