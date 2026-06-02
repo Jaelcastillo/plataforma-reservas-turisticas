@@ -7,9 +7,11 @@ Uso en tu app principal (travelworld.py o similar):
     from .pages.index import index
     app = rx.App()
     app.add_page(index, route="/")
+    
 """
 
 import reflex as rx
+from turismo_reservas.states.auth_state import AuthState
 
 # ─── Paleta de colores ────────────────────────────────────────────────────────
 DARK = "#1F2A35"
@@ -107,6 +109,109 @@ def section_header(tag: str, title_plain: str, title_accent: str) -> rx.Componen
 # ─────────────────────────────────────────────────────────────────────────────
 
 def navbar() -> rx.Component:
+    nav_links = rx.hstack(
+        rx.link("Destinos", href="#destinos", style=NAV_LINK),
+        rx.link("Ofertas", href="#ofertas", style=NAV_LINK),
+        rx.link("Resorts", href="#resorts", style=NAV_LINK),
+        rx.link("Tours", href="#tours", style=NAV_LINK),
+        rx.link("Disney", href="#disney", style=NAV_LINK),
+        spacing="7",
+        align="center",
+        margin_left="160px",
+    )
+
+    logged_buttons = rx.hstack(
+        rx.link(
+            rx.button(
+                "👤 " + AuthState.nombre,
+                background="white",
+                color=TEXT_DARK,
+                border=f"1px solid {GOLD_BOR}",
+                padding="0.5rem 1rem",
+                border_radius="25px",
+                font_weight="700",
+                font_size="0.8rem",
+                cursor="pointer",
+            ),
+            href="/mis-reservas",
+        ),
+        rx.button(
+            "Cerrar sesión",
+            on_click=AuthState.logout,
+            background="transparent",
+            color=TEXT_DARK,
+            border=f"1px solid {GOLD_BOR}",
+            padding="0.5rem 1rem",
+            border_radius="25px",
+            font_weight="700",
+            font_size="0.8rem",
+            cursor="pointer",
+        ),
+        rx.link(
+            rx.button(
+                "Reservar Ahora",
+                background=f"linear-gradient(135deg, {GOLD}, {GOLD_LT})",
+                color=DARK,
+                border="none",
+                padding="0.5rem 1.4rem",
+                border_radius="25px",
+                font_weight="700",
+                font_size="0.8rem",
+                cursor="pointer",
+            ),
+            href="/reservas",
+        ),
+        spacing="3",
+        align="center",
+    )
+
+    guest_buttons = rx.hstack(
+        rx.link(
+            rx.button(
+                "Iniciar sesión",
+                background="transparent",
+                color=TEXT_DARK,
+                border=f"1px solid {GOLD_BOR}",
+                padding="0.5rem 1rem",
+                border_radius="25px",
+                font_weight="700",
+                font_size="0.8rem",
+                cursor="pointer",
+            ),
+            href="/login",
+        ),
+        rx.link(
+            rx.button(
+                "Registrarse",
+                background="white",
+                color=TEXT_DARK,
+                border=f"1px solid {GOLD_BOR}",
+                padding="0.5rem 1rem",
+                border_radius="25px",
+                font_weight="700",
+                font_size="0.8rem",
+                cursor="pointer",
+            ),
+            href="/registro",
+        ),
+        rx.link(
+            rx.button(
+                "Reservar Ahora",
+                background=f"linear-gradient(135deg, {GOLD}, {GOLD_LT})",
+                color=DARK,
+                border="none",
+                padding="0.5rem 1.4rem",
+                border_radius="25px",
+                font_weight="700",
+                font_size="0.8rem",
+                cursor="pointer",
+            ),
+            href="/reservas",
+        ),
+        spacing="3",
+        align="center",
+    )
+
     return rx.box(
         rx.hstack(
             rx.text(
@@ -123,43 +228,15 @@ def navbar() -> rx.Component:
                     "cursor": "pointer",
                 },
             ),
-
+            nav_links,
             rx.spacer(),
-
-            rx.hstack(
-                rx.link("Destinos", href="#destinos", style=NAV_LINK),
-                rx.link("Ofertas", href="#ofertas", style=NAV_LINK),
-                rx.link("Resorts", href="#resorts", style=NAV_LINK),
-                rx.link("Tours", href="#tours", style=NAV_LINK),
-                rx.link("Disney", href="#disney", style=NAV_LINK),
-                spacing="7",
-                display=["none", "none", "flex"],
-            ),
-
-            rx.spacer(),
-
-            rx.link(
-                rx.button(
-                    "Reservar Ahora",
-                    background=f"linear-gradient(135deg, {GOLD}, {GOLD_LT})",
-                    color=DARK,
-                    border="none",
-                    padding="0.5rem 1.4rem",
-                    border_radius="25px",
-                    font_weight="700",
-                    font_size="0.8rem",
-                    cursor="pointer",
-                ),
-                href="/reservas",
-            ),
-
+            rx.cond(AuthState.esta_logueado, logged_buttons, guest_buttons),
             width="100%",
             align="center",
-            max_width="1200px",
+            max_width="1280px",
             margin="0 auto",
             padding="0 1rem",
         ),
-
         position="sticky",
         top="0",
         z_index="100",

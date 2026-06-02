@@ -2,6 +2,8 @@ import reflex as rx
 
 from turismo_reservas.pages.index import index
 from turismo_reservas.pages.reservas import reservas
+from turismo_reservas.pages.login import login
+from turismo_reservas.pages.registro import registro
 
 
 app = rx.App(
@@ -20,4 +22,16 @@ app.add_page(
     reservas,
     route="/reservas",
     title="Reservas - TravelWorld",
+)
+
+app.add_page(
+    login,
+    route="/login",
+    title="Iniciar Sesión - TravelWorld",
+)
+
+app.add_page(
+    registro,
+    route="/registro",
+    title="Registro - TravelWorld",
 )
