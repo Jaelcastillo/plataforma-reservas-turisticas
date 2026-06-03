@@ -39,8 +39,10 @@ def crear_reserva(
     personas,
     metodo_pago,
     comentarios,
+    total=0,
 ):
     db = get_db_connection()
+
     try:
         nueva_reserva = Reserva(
             nombre=nombre,
@@ -52,6 +54,7 @@ def crear_reserva(
             personas=personas,
             metodo_pago=metodo_pago,
             comentarios=comentarios,
+            total=total,
             estado="Pendiente",
         )
 

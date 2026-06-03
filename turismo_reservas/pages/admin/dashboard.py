@@ -1,15 +1,12 @@
 import reflex as rx
 from turismo_reservas.states.auth_state import AuthState
 
-DARK = "#1F2A35"
 CREAM = "#F5EFE6"
 GOLD = "#C9A84C"
 GOLD_LT = "#F0D080"
 GOLD_BOR = "rgba(201,168,76,0.35)"
 TEXT_DARK = "#1B1B1B"
 TEXT_SOFT = "#5E554D"
-TEAL = "#0B6E6E"
-CORAL = "#C9785B"
 
 ADMIN_CSS = """
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700;800&display=swap');
@@ -115,17 +112,34 @@ def stat_card(icon: str, label: str, value: str, accent: str) -> rx.Component:
     return rx.box(
         rx.hstack(
             rx.box(
-                rx.text(icon, font_size="1.55rem"),
-                width="54px",
-                height="54px",
-                border_radius="18px",
+                rx.center(
+                    rx.text(
+                        icon,
+                        font_size="1.7rem",
+                        line_height="1",
+                    ),
+                    width="100%",
+                    height="100%",
+                ),
+                width="64px",
+                height="64px",
+                border_radius="20px",
                 background=f"linear-gradient(135deg, {accent}, rgba(255,255,255,.35))",
                 display="flex",
-                align="center",
-                justify="center",
+                align_items="center",
+                justify_content="center",
+                flex_shrink="0",
             ),
+
             rx.vstack(
-                rx.text(label, color=TEXT_SOFT, font_size="0.78rem", font_weight="800", text_transform="uppercase", letter_spacing="1.2px"),
+                rx.text(
+                    label,
+                    color=TEXT_SOFT,
+                    font_size="0.78rem",
+                    font_weight="800",
+                    text_transform="uppercase",
+                    letter_spacing="1.2px",
+                ),
                 rx.heading(
                     value,
                     color=TEXT_DARK,
@@ -136,9 +150,11 @@ def stat_card(icon: str, label: str, value: str, accent: str) -> rx.Component:
                 spacing="0",
                 align="start",
             ),
+
             spacing="4",
             align="center",
         ),
+
         class_name="admin-card fade-up",
         padding="1.35rem",
         width="100%",
@@ -149,22 +165,65 @@ def action_card(icon: str, title: str, desc: str, href: str) -> rx.Component:
     return rx.link(
         rx.box(
             rx.vstack(
-                rx.text(icon, font_size="2.2rem"),
+                rx.center(
+                    rx.html(
+                        f"""
+                        <div style="
+                            width:72px;
+                            height:72px;
+                            border-radius:24px;
+                            background:rgba(201,168,76,0.10);
+                            border:1px solid {GOLD_BOR};
+                            display:flex;
+                            align-items:center;
+                            justify-content:center;
+                        ">
+                            <span style="
+                                display:flex;
+                                align-items:center;
+                                justify-content:center;
+                                width:72px;
+                                height:72px;
+                                font-size:2rem;
+                                font-weight:900;
+                                color:{GOLD};
+                                line-height:1;
+                                text-align:center;
+                                font-family:'DM Sans', sans-serif;
+                            ">{icon}</span>
+                        </div>
+                        """
+                    ),
+                    width="100%",
+                ),
                 rx.heading(
                     title,
                     color=TEXT_DARK,
                     font_size="1.35rem",
                     font_family="'Playfair Display', serif",
                     font_weight="900",
+                    text_align="center",
+                    width="100%",
                 ),
-                rx.text(desc, color=TEXT_SOFT, font_size="0.9rem", line_height="1.6"),
-                rx.button("Abrir panel →", class_name="admin-btn", margin_top="0.5rem"),
+                rx.text(
+                    desc,
+                    color=TEXT_SOFT,
+                    font_size="0.9rem",
+                    line_height="1.55",
+                    text_align="center",
+                ),
+                rx.center(
+                    rx.button("Abrir panel →", class_name="admin-btn"),
+                    width="100%",
+                ),
                 spacing="3",
-                align="start",
+                align="center",
+                width="100%",
             ),
             class_name="admin-action fade-up",
-            padding="1.6rem",
+            padding="1.5rem",
             height="100%",
+            text_align="center",
         ),
         href=href,
         text_decoration="none",
@@ -174,7 +233,6 @@ def action_card(icon: str, title: str, desc: str, href: str) -> rx.Component:
 def admin_content() -> rx.Component:
     return rx.box(
         rx.html(f"<style>{ADMIN_CSS}</style>"),
-
         rx.vstack(
             rx.box(
                 rx.box(
@@ -238,10 +296,10 @@ def admin_content() -> rx.Component:
             ),
 
             rx.grid(
-                stat_card("📅", "Reservas", "0", "rgba(201,168,76,.30)"),
-                stat_card("💰", "Ingresos", "$0", "rgba(11,110,110,.24)"),
-                stat_card("👥", "Clientes", "0", "rgba(201,120,91,.24)"),
-                stat_card("🏷️", "Ofertas", "0", "rgba(139,111,199,.22)"),
+stat_card("📅", "Reservas", AuthState.admin_total_reservas.to_string(), "rgba(201,168,76,.30)"),
+stat_card("💰", "Ingresos", "$" + AuthState.admin_total_ingresos.to_string(), "rgba(11,110,110,.24)"),
+stat_card("👥", "Clientes", AuthState.admin_total_clientes.to_string(), "rgba(201,120,91,.24)"),
+stat_card("🏷️", "Ofertas", AuthState.admin_total_ofertas.to_string(), "rgba(139,111,199,.22)"),
                 style={"gridTemplateColumns": "repeat(auto-fit, minmax(220px, 1fr))"},
                 gap="1rem",
                 width="100%",
@@ -249,25 +307,25 @@ def admin_content() -> rx.Component:
 
             rx.grid(
                 action_card(
-                    "📋",
+                    "R",
                     "Reservas",
                     "Ver, actualizar estados, revisar pagos y eliminar reservas de prueba.",
                     "/admin/reservas",
                 ),
                 action_card(
-                    "🏷️",
+                    "O",
                     "Ofertas",
                     "Agregar, editar, activar, desactivar y eliminar ofertas turísticas.",
                     "/admin/ofertas",
                 ),
                 action_card(
-                    "👥",
+                    "U",
                     "Usuarios",
                     "Consultar clientes registrados y diferenciar clientes de administradores.",
                     "/admin/usuarios",
                 ),
                 action_card(
-                    "🏝️",
+                    "D",
                     "Destinos",
                     "Administrar países, ciudades, imágenes y experiencias destacadas.",
                     "/admin/destinos",
@@ -309,7 +367,6 @@ def admin_content() -> rx.Component:
             margin="0 auto",
             padding="2rem",
         ),
-
         class_name="admin-page",
         width="100%",
     )

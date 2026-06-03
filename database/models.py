@@ -49,8 +49,10 @@ class Reserva(Base):
     metodo_pago = Column(String(50))
     estado = Column(String(50), default="Pendiente")
     comentarios = Column(Text)
-    created_at = Column(TIMESTAMP)
 
+    total = Column(DECIMAL(10, 2), default=0)
+
+    created_at = Column(TIMESTAMP)
 
 class Admin(Base):
     __tablename__ = "admins"

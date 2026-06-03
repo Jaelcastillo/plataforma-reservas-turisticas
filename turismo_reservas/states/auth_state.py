@@ -28,6 +28,11 @@ class AuthState(rx.State):
     rol: str = ""
     mensaje: str = ""
 
+    admin_total_reservas: int = 0
+    admin_total_clientes: int = 0
+    admin_total_ofertas: int = 0
+    admin_total_ingresos: float = 0.0
+
     @rx.var
     def esta_logueado(self) -> bool:
         return self.usuario_id != 0
@@ -77,6 +82,7 @@ class AuthState(rx.State):
                 self.rol = "cliente"
                 self.mensaje = "Cuenta creada correctamente."
 
+            conn.close()
             return rx.redirect("/")
 
         except pymysql.err.IntegrityError:
@@ -104,6 +110,8 @@ class AuthState(rx.State):
                 )
                 user = cur.fetchone()
 
+            conn.close()
+
             if not user:
                 self.mensaje = "Usuario no encontrado."
                 return
@@ -122,12 +130,34 @@ class AuthState(rx.State):
             self.mensaje = ""
 
             if self.rol == "admin":
+                self.cargar_dashboard_admin()
                 return rx.redirect("/admin/dashboard")
 
             return rx.redirect("/")
 
         except Exception as e:
             self.mensaje = f"Error: {str(e)}"
+
+    def cargar_dashboard_admin(self):
+        try:
+            conn = get_conn()
+            with conn.cursor() as cur:
+                cur.execute("SELECT COUNT(*) AS total FROM reservas")
+                self.admin_total_reservas = cur.fetchone()["total"]
+
+                cur.execute("SELECT COUNT(*) AS total FROM usuarios WHERE rol='cliente'")
+                self.admin_total_clientes = cur.fetchone()["total"]
+
+                cur.execute("SELECT COUNT(*) AS total FROM ofertas WHERE activo=1")
+                self.admin_total_ofertas = cur.fetchone()["total"]
+
+                cur.execute("SELECT COALESCE(SUM(total),0) AS total FROM reservas")
+                self.admin_total_ingresos = float(cur.fetchone()["total"])
+
+            conn.close()
+
+        except Exception as e:
+            self.mensaje = f"Error dashboard: {str(e)}"
 
     def logout(self):
         self.usuario_id = 0
@@ -137,4 +167,8 @@ class AuthState(rx.State):
         self.confirmar_password = ""
         self.rol = ""
         self.mensaje = ""
+        self.admin_total_reservas = 0
+        self.admin_total_clientes = 0
+        self.admin_total_ofertas = 0
+        self.admin_total_ingresos = 0.0
         return rx.redirect("/")

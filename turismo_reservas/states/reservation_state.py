@@ -9,6 +9,7 @@ class ReservationState(rx.State):
     telefono: str = ""
     pais_destino: str = ""
     oferta: str = ""
+    precio_oferta: float = 0.0
     fecha_viaje: str = ""
     personas: str = "1"
     metodo_pago: str = ""
@@ -30,6 +31,12 @@ class ReservationState(rx.State):
     def set_oferta(self, value: str):
         self.oferta = value
 
+    def set_precio_oferta(self, value):
+        try:
+            self.precio_oferta = float(value)
+        except:
+            self.precio_oferta = 0.0
+
     def set_fecha_viaje(self, value: str):
         self.fecha_viaje = value
 
@@ -48,6 +55,8 @@ class ReservationState(rx.State):
                 self.mensaje = "❌ Completa los campos obligatorios."
                 return
 
+            total = float(self.precio_oferta) * int(self.personas)
+
             crear_reserva(
                 nombre=self.nombre,
                 email=self.email,
@@ -58,6 +67,7 @@ class ReservationState(rx.State):
                 personas=int(self.personas),
                 metodo_pago=self.metodo_pago,
                 comentarios=self.comentarios,
+                total=total,
             )
 
             self.nombre = ""
@@ -65,6 +75,7 @@ class ReservationState(rx.State):
             self.telefono = ""
             self.pais_destino = ""
             self.oferta = ""
+            self.precio_oferta = 0.0
             self.fecha_viaje = ""
             self.personas = "1"
             self.metodo_pago = ""

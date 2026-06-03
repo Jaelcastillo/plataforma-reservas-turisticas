@@ -297,7 +297,7 @@ def hero_section() -> rx.Component:
         object-fit:cover;
         z-index:0;
     ">
-    <source src="/images/beach_video.mp4?v=100" type="video/mp4">
+    <source src="/images/beach_video.mp4?v=1000" type="video/mp4">
 </video>
 
 <script>

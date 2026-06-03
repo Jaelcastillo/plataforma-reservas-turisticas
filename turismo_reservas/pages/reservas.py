@@ -329,18 +329,19 @@ class CheckoutState(rx.State):
                 return
 
             crear_reserva(
-                nombre=self.nombre,
-                email=self.email,
-                telefono=self.telefono,
-                pais_destino=self.pais_nombre,
-                oferta=self.oferta_nombre,
-                fecha_viaje=datetime.strptime(
-                    self.fecha_viaje, "%Y-%m-%d"
-                ).date(),
-                personas=int(self.personas),
-                metodo_pago=self.metodo_pago,
-                comentarios=self.comentarios,
-            )
+            nombre=self.nombre,
+           email=self.email,
+    telefono=self.telefono,
+    pais_destino=self.pais_nombre,
+    oferta=self.oferta_nombre,
+    fecha_viaje=datetime.strptime(
+        self.fecha_viaje, "%Y-%m-%d"
+    ).date(),
+    personas=int(self.personas),
+    metodo_pago=self.metodo_pago,
+    comentarios=self.comentarios,
+    total=float(self.oferta_precio) * int(self.personas),
+)
 
             codigo = f"TW-{datetime.now().strftime('%Y%m%d%H%M%S')}"
 
