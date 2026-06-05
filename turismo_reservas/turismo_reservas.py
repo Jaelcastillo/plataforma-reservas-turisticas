@@ -5,6 +5,7 @@ from turismo_reservas.pages.reservas import reservas
 from turismo_reservas.pages.login import login
 from turismo_reservas.pages.registro import registro
 from turismo_reservas.pages.admin.dashboard import dashboard
+from turismo_reservas.pages.mis_reservas import mis_reservas
 
 
 app = rx.App(
@@ -41,4 +42,10 @@ app.add_page(
     dashboard,
     route="/admin/dashboard",
     title="Admin Dashboard - TravelWorld",
+)
+
+app.add_page(
+    mis_reservas,
+    route="/mis-reservas",
+    title="Mis Reservas - TravelWorld",
 )

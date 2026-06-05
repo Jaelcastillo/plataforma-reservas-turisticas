@@ -5,6 +5,7 @@ Archivo: pages/reservas.py
 Reemplaza completamente tu reservas.py actual con este archivo.
 """
 from utils.pdf_generator import generar_pdf_reserva
+from turismo_reservas.states.auth_state import AuthState
 import reflex as rx
 from turismo_reservas.states.reservation_state import ReservationState
 
@@ -328,22 +329,8 @@ class CheckoutState(rx.State):
                 self.mensaje = "❌ Completa los campos obligatorios."
                 return
 
-            crear_reserva(
-            nombre=self.nombre,
-           email=self.email,
-    telefono=self.telefono,
-    pais_destino=self.pais_nombre,
-    oferta=self.oferta_nombre,
-    fecha_viaje=datetime.strptime(
-        self.fecha_viaje, "%Y-%m-%d"
-    ).date(),
-    personas=int(self.personas),
-    metodo_pago=self.metodo_pago,
-    comentarios=self.comentarios,
-    total=float(self.oferta_precio) * int(self.personas),
-)
-
             codigo = f"TW-{datetime.now().strftime('%Y%m%d%H%M%S')}"
+            total = float(self.oferta_precio) * int(self.personas)
 
             self.pdf_url = generar_pdf_reserva({
                 "codigo_reserva": codigo,
@@ -360,12 +347,29 @@ class CheckoutState(rx.State):
                 "fecha_viaje": self.fecha_viaje,
                 "metodo_pago": self.metodo_pago,
                 "comentarios": self.comentarios,
-                "precio_base": float(self.oferta_precio) * int(self.personas),
+                "precio_base": total,
                 "descuento": 0,
                 "impuestos": 0,
-                "total_pagado": float(self.oferta_precio) * int(self.personas),
+                "total_pagado": total,
                 "moneda": "USD",
             })
+
+            crear_reserva(
+    nombre=self.nombre,
+    email=self.email,
+    telefono=self.telefono,
+    pais_destino=self.pais_nombre,
+    oferta=self.oferta_nombre,
+    fecha_viaje=datetime.strptime(self.fecha_viaje, "%Y-%m-%d").date(),
+    personas=int(self.personas),
+    metodo_pago=self.metodo_pago,
+    comentarios=self.comentarios,
+    total=total,
+    oferta_imagen=self.oferta_imagen,
+    pdf_url=self.pdf_url,
+    codigo_reserva=codigo,
+    usuario_id=AuthState.usuario_id,
+)
 
             self.reserva_ok = True
             self.mensaje = "✅ ¡Reserva confirmada! Descarga tu comprobante PDF."

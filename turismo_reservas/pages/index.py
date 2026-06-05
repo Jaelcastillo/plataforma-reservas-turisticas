@@ -121,20 +121,24 @@ def navbar() -> rx.Component:
     )
 
     logged_buttons = rx.hstack(
-        rx.link(
-            rx.button(
-                "👤 " + AuthState.nombre,
-                background="white",
-                color=TEXT_DARK,
-                border=f"1px solid {GOLD_BOR}",
-                padding="0.5rem 1rem",
-                border_radius="25px",
-                font_weight="700",
-                font_size="0.8rem",
-                cursor="pointer",
-            ),
-            href="/mis-reservas",
-        ),
+       rx.link(
+    rx.button(
+        "👤 " + AuthState.nombre,
+        background="white",
+        color=TEXT_DARK,
+        border=f"1px solid {GOLD_BOR}",
+        padding="0.5rem 1rem",
+        border_radius="25px",
+        font_weight="700",
+        font_size="0.8rem",
+        cursor="pointer",
+    ),
+    href=rx.cond(
+        AuthState.es_admin,
+        "/admin/dashboard",
+        "/mis-reservas",
+    ),
+),
         rx.button(
             "Cerrar sesión",
             on_click=AuthState.logout,

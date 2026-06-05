@@ -40,6 +40,10 @@ def crear_reserva(
     metodo_pago,
     comentarios,
     total=0,
+    oferta_imagen="",
+    pdf_url="",
+    codigo_reserva="",
+    usuario_id=None,
 ):
     db = get_db_connection()
 
@@ -55,6 +59,10 @@ def crear_reserva(
             metodo_pago=metodo_pago,
             comentarios=comentarios,
             total=total,
+            oferta_imagen=oferta_imagen,
+            pdf_url=pdf_url,
+            codigo_reserva=codigo_reserva,
+            usuario_id=usuario_id,
             estado="Pendiente",
         )
 

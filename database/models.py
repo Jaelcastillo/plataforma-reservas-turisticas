@@ -50,7 +50,11 @@ class Reserva(Base):
     estado = Column(String(50), default="Pendiente")
     comentarios = Column(Text)
 
+    usuario_id = Column(Integer)
     total = Column(DECIMAL(10, 2), default=0)
+    codigo_reserva = Column(String(50))
+    pdf_url = Column(String(255))
+    oferta_imagen = Column(String(255))
 
     created_at = Column(TIMESTAMP)
 

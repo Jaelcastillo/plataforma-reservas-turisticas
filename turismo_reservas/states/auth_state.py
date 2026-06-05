@@ -33,6 +33,8 @@ class AuthState(rx.State):
     admin_total_ofertas: int = 0
     admin_total_ingresos: float = 0.0
 
+    mis_reservas: list[dict] = []
+
     @rx.var
     def esta_logueado(self) -> bool:
         return self.usuario_id != 0
@@ -77,7 +79,6 @@ class AuthState(rx.State):
                     """,
                     (self.nombre, self.email, password_hash),
                 )
-
                 self.usuario_id = cur.lastrowid
                 self.rol = "cliente"
                 self.mensaje = "Cuenta creada correctamente."
@@ -123,6 +124,8 @@ class AuthState(rx.State):
                 self.mensaje = "Contraseña incorrecta."
                 return
 
+            print("ROL:", user["rol"])
+
             self.usuario_id = user["id"]
             self.nombre = user["nombre"]
             self.email = user["email"]
@@ -133,6 +136,7 @@ class AuthState(rx.State):
                 self.cargar_dashboard_admin()
                 return rx.redirect("/admin/dashboard")
 
+            self.cargar_mis_reservas()
             return rx.redirect("/")
 
         except Exception as e:
@@ -159,6 +163,27 @@ class AuthState(rx.State):
         except Exception as e:
             self.mensaje = f"Error dashboard: {str(e)}"
 
+    def cargar_mis_reservas(self):
+        try:
+            conn = get_conn()
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    SELECT id, pais_destino, oferta, fecha_viaje, personas,
+                           metodo_pago, estado, total, created_at
+                    FROM reservas
+                    WHERE email = %s
+                    ORDER BY id DESC
+                    """,
+                    (self.email,),
+                )
+                self.mis_reservas = cur.fetchall()
+
+            conn.close()
+
+        except Exception as e:
+            self.mensaje = f"Error cargando reservas: {str(e)}"
+
     def logout(self):
         self.usuario_id = 0
         self.nombre = ""
@@ -167,8 +192,12 @@ class AuthState(rx.State):
         self.confirmar_password = ""
         self.rol = ""
         self.mensaje = ""
+
         self.admin_total_reservas = 0
         self.admin_total_clientes = 0
         self.admin_total_ofertas = 0
         self.admin_total_ingresos = 0.0
+
+        self.mis_reservas = []
+
         return rx.redirect("/")
