@@ -1,11 +1,15 @@
 import reflex as rx
 
+from turismo_reservas.states.auth_state import AuthState
+
 from turismo_reservas.pages.index import index
 from turismo_reservas.pages.reservas import reservas
 from turismo_reservas.pages.login import login
 from turismo_reservas.pages.registro import registro
 from turismo_reservas.pages.admin.dashboard import dashboard
 from turismo_reservas.pages.mis_reservas import mis_reservas
+from turismo_reservas.pages.admin_reservas import admin_reservas
+from turismo_reservas.pages.admin_ofertas import admin_ofertas
 
 
 app = rx.App(
@@ -18,6 +22,7 @@ app.add_page(
     index,
     route="/",
     title="TravelWorld - Plataforma Turística Premium",
+    on_load=AuthState.cargar_ofertas_publicas,
 )
 
 app.add_page(
@@ -48,4 +53,16 @@ app.add_page(
     mis_reservas,
     route="/mis-reservas",
     title="Mis Reservas - TravelWorld",
+)
+
+app.add_page(
+    admin_reservas,
+    route="/admin/reservas",
+    title="Reservas Admin",
+)
+
+app.add_page(
+    admin_ofertas,
+    route="/admin/ofertas",
+    title="Ofertas Admin",
 )
