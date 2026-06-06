@@ -36,6 +36,7 @@ class AuthState(rx.State):
     mis_reservas: list[dict] = []
     admin_reservas: list[dict] = []
     admin_ofertas: list[dict] = []
+    admin_usuarios: list[dict] = []
     ofertas_publicas: list[dict] = []
 
     editando_oferta: bool = False
@@ -124,7 +125,10 @@ class AuthState(rx.State):
                 self.mensaje = "Usuario no encontrado."
                 return
 
-            if not bcrypt.checkpw(self.password.encode(), user["password_hash"].encode()):
+            if not bcrypt.checkpw(
+                self.password.encode(),
+                user["password_hash"].encode(),
+            ):
                 self.mensaje = "Contraseña incorrecta."
                 return
 
@@ -170,23 +174,23 @@ class AuthState(rx.State):
             conn = get_conn()
             with conn.cursor() as cur:
                 cur.execute(
-    """
-    SELECT
-        id,
-        titulo,
-        categoria,
-        descripcion,
-        precio,
-        precio_anterior,
-        descuento,
-        duracion,
-        rating,
-        CONCAT('/images/', imagen) AS imagen
-    FROM ofertas
-    WHERE activo=1
-    ORDER BY id DESC
-    """
-)
+                    """
+                    SELECT
+                        id,
+                        titulo,
+                        categoria,
+                        descripcion,
+                        precio,
+                        precio_anterior,
+                        descuento,
+                        duracion,
+                        rating,
+                        CONCAT('/images/', imagen) AS imagen
+                    FROM ofertas
+                    WHERE activo=1
+                    ORDER BY id DESC
+                    """
+                )
                 self.ofertas_publicas = cur.fetchall()
 
             conn.close()
@@ -238,10 +242,14 @@ class AuthState(rx.State):
         try:
             conn = get_conn()
             with conn.cursor() as cur:
-                cur.execute("UPDATE reservas SET estado='Confirmada' WHERE id=%s", (reserva_id,))
+                cur.execute(
+                    "UPDATE reservas SET estado='Confirmada' WHERE id=%s",
+                    (reserva_id,),
+                )
             conn.close()
             self.cargar_todas_reservas()
             self.cargar_dashboard_admin()
+
         except Exception as e:
             self.mensaje = str(e)
 
@@ -249,10 +257,14 @@ class AuthState(rx.State):
         try:
             conn = get_conn()
             with conn.cursor() as cur:
-                cur.execute("UPDATE reservas SET estado='Cancelada' WHERE id=%s", (reserva_id,))
+                cur.execute(
+                    "UPDATE reservas SET estado='Cancelada' WHERE id=%s",
+                    (reserva_id,),
+                )
             conn.close()
             self.cargar_todas_reservas()
             self.cargar_dashboard_admin()
+
         except Exception as e:
             self.mensaje = str(e)
 
@@ -260,10 +272,14 @@ class AuthState(rx.State):
         try:
             conn = get_conn()
             with conn.cursor() as cur:
-                cur.execute("DELETE FROM reservas WHERE id=%s", (reserva_id,))
+                cur.execute(
+                    "DELETE FROM reservas WHERE id=%s",
+                    (reserva_id,),
+                )
             conn.close()
             self.cargar_todas_reservas()
             self.cargar_dashboard_admin()
+
         except Exception as e:
             self.mensaje = str(e)
 
@@ -386,12 +402,92 @@ class AuthState(rx.State):
         try:
             conn = get_conn()
             with conn.cursor() as cur:
-                cur.execute("DELETE FROM ofertas WHERE id=%s", (oferta_id,))
+                cur.execute(
+                    "DELETE FROM ofertas WHERE id=%s",
+                    (oferta_id,),
+                )
 
             conn.close()
             self.cargar_ofertas_admin()
             self.cargar_dashboard_admin()
             self.cargar_ofertas_publicas()
+
+        except Exception as e:
+            self.mensaje = str(e)
+
+    def cargar_usuarios_admin(self):
+        try:
+            conn = get_conn()
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    SELECT id, nombre, email, rol, activo, creado_en
+                    FROM usuarios
+                    ORDER BY id DESC
+                    """
+                )
+                self.admin_usuarios = cur.fetchall()
+
+            conn.close()
+
+        except Exception as e:
+            self.mensaje = str(e)
+            print("ERROR USUARIOS:", e)
+
+    def toggle_usuario_admin(self, usuario_id: int):
+        try:
+            conn = get_conn()
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    UPDATE usuarios
+                    SET activo = NOT activo
+                    WHERE id = %s
+                    """,
+                    (usuario_id,),
+                )
+
+            conn.close()
+            self.cargar_usuarios_admin()
+            self.cargar_dashboard_admin()
+
+        except Exception as e:
+            self.mensaje = str(e)
+
+    def cambiar_rol_usuario_admin(self, usuario_id: int, rol_actual: str):
+        try:
+            nuevo_rol = "admin" if rol_actual == "cliente" else "cliente"
+
+            conn = get_conn()
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    UPDATE usuarios
+                    SET rol = %s
+                    WHERE id = %s
+                    """,
+                    (nuevo_rol, usuario_id),
+                )
+
+            conn.close()
+            self.cargar_usuarios_admin()
+            self.cargar_dashboard_admin()
+
+        except Exception as e:
+            self.mensaje = str(e)
+
+    def eliminar_usuario_admin(self, usuario_id: int):
+        try:
+            conn = get_conn()
+            with conn.cursor() as cur:
+                cur.execute(
+                    "DELETE FROM usuarios WHERE id=%s",
+                    (usuario_id,),
+                )
+
+            conn.close()
+            self.cargar_usuarios_admin()
+            self.cargar_dashboard_admin()
 
         except Exception as e:
             self.mensaje = str(e)
@@ -413,6 +509,7 @@ class AuthState(rx.State):
         self.mis_reservas = []
         self.admin_reservas = []
         self.admin_ofertas = []
+        self.admin_usuarios = []
         self.ofertas_publicas = []
 
         self.cancelar_edicion_oferta()

@@ -10,6 +10,9 @@ from turismo_reservas.pages.admin.dashboard import dashboard
 from turismo_reservas.pages.mis_reservas import mis_reservas
 from turismo_reservas.pages.admin_reservas import admin_reservas
 from turismo_reservas.pages.admin_ofertas import admin_ofertas
+from turismo_reservas.pages.ofertas import ofertas
+from turismo_reservas.pages.admin_usuarios import admin_usuarios
+from turismo_reservas.states.auth_state import AuthState
 
 
 app = rx.App(
@@ -65,4 +68,18 @@ app.add_page(
     admin_ofertas,
     route="/admin/ofertas",
     title="Ofertas Admin",
+)
+
+app.add_page(
+    ofertas,
+    route="/ofertas",
+    title="Todas las ofertas",
+    on_load=AuthState.cargar_ofertas_publicas,
+)
+
+app.add_page(
+    admin_usuarios,
+    route="/admin/usuarios",
+    title="Usuarios Admin",
+    on_load=AuthState.cargar_usuarios_admin,
 )

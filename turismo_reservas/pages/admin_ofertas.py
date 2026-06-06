@@ -87,7 +87,7 @@ def admin_input(label, value, on_change):
                 "caretColor": "#1B1B1B",
             },
         ),
-        spacing="2",
+        spacing="8",
         width="100%",
         align="start",
     )

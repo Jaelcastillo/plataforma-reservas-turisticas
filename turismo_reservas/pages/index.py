@@ -863,6 +863,24 @@ def offers_section() -> rx.Component:
             position="relative",
         ),
 
+        # 👇 BOTÓN NUEVO
+        rx.center(
+            rx.link(
+                rx.button(
+                    "Ver todas las ofertas →",
+                    background=f"linear-gradient(135deg, {GOLD}, {GOLD_LT})",
+                    color="#1B1B1B",
+                    border="none",
+                    border_radius="14px",
+                    font_weight="800",
+                    padding="0.9rem 1.8rem",
+                    cursor="pointer",
+                ),
+                href="/ofertas",
+            ),
+            margin_top="2rem",
+        ),
+
         id="ofertas",
         padding="5rem 2rem",
         background="""
@@ -875,7 +893,6 @@ def offers_section() -> rx.Component:
         border_top="1px solid rgba(201,168,76,0.15)",
         width="100%",
     )
-
 # ─────────────────────────────────────────────────────────────────────────────
 #  SECCIÓN DISNEY
 # ─────────────────────────────────────────────────────────────────────────────
