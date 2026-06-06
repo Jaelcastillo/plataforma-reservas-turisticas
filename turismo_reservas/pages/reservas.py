@@ -315,6 +315,25 @@ class CheckoutState(rx.State):
         self.oferta_imagen   = oferta["imagen"]
         self.paso = 3
 
+    def seleccionar_pais_db(self, pais: dict):
+        self.pais_id = str(pais["id"])
+        self.pais_nombre = pais["pais"] + " - " + pais["ciudad"]
+        self.pais_imagen = "/images/" + pais["imagen"]
+        self.oferta_id = ""
+
+        yield AuthState.cargar_ofertas_por_destino(int(pais["id"]))
+
+        self.paso = 2
+
+    def seleccionar_oferta_db(self, oferta: dict):
+       self.oferta_id = str(oferta["id"])
+       self.oferta_nombre = oferta["titulo"]
+       self.oferta_precio = float(oferta["precio"] or 0)
+       self.oferta_original = float(oferta["precio_anterior"] or oferta["precio"] or 0)
+       self.oferta_duracion = oferta["duracion"] or ""
+       self.oferta_imagen = oferta["imagen"] or ""
+       self.paso = 3
+
     def ir_paso(self, p: int):
         self.paso = p
 
@@ -729,6 +748,50 @@ def pais_card(p: dict) -> rx.Component:
         width="100%",
     )
 
+def pais_card_db(p) -> rx.Component:
+    is_selected = CheckoutState.pais_id == p["id"].to_string()
+
+    return rx.box(
+        rx.hstack(
+            rx.text("🌎", font_size="2rem"),
+            rx.vstack(
+                rx.text(
+                    p["pais"],
+                    color=rx.cond(is_selected, GOLD, TEXT_DARK),
+                    font_size="1rem",
+                    font_weight=rx.cond(is_selected, "800", "600"),
+                ),
+                rx.text(
+                    p["ciudad"],
+                    color=TEXT_MUTED,
+                    font_size="0.8rem",
+                ),
+                spacing="1",
+                align="start",
+            ),
+            rx.spacer(),
+            rx.cond(
+                is_selected,
+                rx.box(
+                    rx.text("✓", color=DARK, font_size="0.9rem", font_weight="900"),
+                    background=f"linear-gradient(135deg, {GOLD}, {GOLD_LT})",
+                    width="32px",
+                    height="32px",
+                    border_radius="50%",
+                    display="flex",
+                    align_items="center",
+                    justify_content="center",
+                ),
+                rx.box(),
+            ),
+            spacing="4",
+            align="center",
+            width="100%",
+        ),
+        class_name=rx.cond(is_selected, "country-card selected", "country-card"),
+        on_click=lambda: CheckoutState.seleccionar_pais_db(p),
+        width="100%",
+    )
 
 def paso1() -> rx.Component:
     return rx.vstack(
@@ -760,10 +823,10 @@ def paso1() -> rx.Component:
             width="100%",
         ),
         rx.vstack(
-            *[pais_card(p) for p in PAISES],
+            rx.foreach(AuthState.destinos_reserva, pais_card_db),
             spacing="3",
             width="100%",
-        ),
+        ),    
         class_name="step-panel",
         spacing="6",
         width="100%",
@@ -878,20 +941,131 @@ def oferta_card_item(o: dict) -> rx.Component:
         width="100%",
     )
 
+def oferta_card_db(o) -> rx.Component:
+    is_selected = CheckoutState.oferta_id == o["id"].to_string()
+
+    return rx.box(
+        rx.box(
+            rx.box(
+                position="absolute",
+                inset="0",
+                background="linear-gradient(180deg, rgba(13,27,42,0.1) 0%, rgba(13,27,42,0.8) 100%)",
+                z_index="1",
+            ),
+            rx.box(
+                rx.text(
+                    rx.fragment("⏱ ", o["duracion"]),
+                    color=TEXT_DARK,
+                    font_size="0.72rem",
+                    font_weight="600",
+                ),
+                background="rgba(255,255,255,0.85)",
+                border="1px solid rgba(255,255,255,0.15)",
+                padding="4px 10px",
+                border_radius="999px",
+                position="absolute",
+                top="12px",
+                left="12px",
+                z_index="2",
+            ),
+            rx.cond(
+                is_selected,
+                rx.box(
+                    rx.text("✓ Seleccionado", color=DARK, font_size="0.7rem", font_weight="800"),
+                    background=f"linear-gradient(135deg, {GOLD}, {GOLD_LT})",
+                    padding="4px 10px",
+                    border_radius="999px",
+                    position="absolute",
+                    top="12px",
+                    right="12px",
+                    z_index="2",
+                ),
+                rx.box(),
+            ),
+            rx.image(
+                src=o["imagen"],
+                width="100%",
+                height="160px",
+                object_fit="cover",
+            ),
+            height="160px",
+            position="relative",
+            overflow="hidden",
+        ),
+
+        rx.vstack(
+            rx.text(
+                o["titulo"],
+                color=TEXT_DARK,
+                font_size="0.95rem",
+                font_weight="800",
+                font_family="'Playfair Display', serif",
+            ),
+            rx.text(
+                rx.fragment("★ ", o["rating"].to_string()),
+                color=GOLD,
+                font_size="0.75rem",
+            ),
+            rx.hstack(
+                rx.text(
+                    rx.fragment("$", o["precio"].to_string()),
+                    style={
+                        "fontFamily": "'Playfair Display', serif",
+                        "fontSize": "1.5rem",
+                        "fontWeight": "900",
+                        "background": f"linear-gradient(135deg, {GOLD}, {GOLD_LT})",
+                        "WebkitBackgroundClip": "text",
+                        "WebkitTextFillColor": "transparent",
+                        "backgroundClip": "text",
+                    },
+                ),
+                rx.text(
+                    rx.fragment("$", o["precio_anterior"].to_string()),
+                    color=TEXT_MUTED,
+                    text_decoration="line-through",
+                    font_size="0.85rem",
+                    align_self="end",
+                    margin_bottom="4px",
+                ),
+                rx.spacer(),
+                rx.text(
+                    rx.fragment("-", o["descuento"].to_string(), "%"),
+                    color=CORAL,
+                    font_size="0.78rem",
+                    font_weight="800",
+                    align_self="end",
+                    margin_bottom="6px",
+                ),
+                width="100%",
+                align="end",
+                spacing="2",
+            ),
+            spacing="2",
+            padding="1rem 1.1rem 1.1rem",
+            align="start",
+            width="100%",
+        ),
+
+        class_name=rx.cond(is_selected, "offer-card selected", "offer-card"),
+        on_click=lambda: CheckoutState.seleccionar_oferta_db(o),
+        cursor="pointer",
+        width="100%",
+    )
+
 
 def paso2() -> rx.Component:
     return rx.vstack(
         rx.hstack(
             rx.button(
-    "← Volver",
-    on_click=CheckoutState.ir_paso(1),
-    background="white",
-    color=TEXT_DARK,
-    border=f"1px solid {GOLD_BOR}",
-    border_radius="999px",
-    padding="0.5rem 1rem",
-    font_weight="800",
-),
+                "← Volver",
+                on_click=CheckoutState.ir_paso(1),
+                background="white",
+                color=TEXT_DARK,
+                border=f"1px solid {GOLD_BOR}",
+                border_radius="999px",
+                padding="0.5rem 1rem",
+                font_weight="800",
+            ),
             rx.vstack(
                 rx.text(
                     "Paso 2 de 5",
@@ -925,45 +1099,24 @@ def paso2() -> rx.Component:
         ),
 
         rx.cond(
-            CheckoutState.pais_id == "rd",
+            AuthState.ofertas_reserva.length() > 0,
             rx.grid(
-                *[oferta_card_item(o) for o in OFERTAS_POR_PAIS["rd"]],
+                rx.foreach(AuthState.ofertas_reserva, oferta_card_db),
                 style={"gridTemplateColumns": "repeat(auto-fit, minmax(260px, 1fr))"},
                 gap="1rem",
                 width="100%",
             ),
-            rx.cond(
-                CheckoutState.pais_id == "pr",
-                rx.grid(
-                    *[oferta_card_item(o) for o in OFERTAS_POR_PAIS["pr"]],
-                    style={"gridTemplateColumns": "repeat(auto-fit, minmax(260px, 1fr))"},
-                    gap="1rem",
-                    width="100%",
+            rx.box(
+                rx.text(
+                    "No hay ofertas activas para este destino.",
+                    color=TEXT_MUTED,
+                    font_weight="800",
                 ),
-                rx.cond(
-                    CheckoutState.pais_id == "co",
-                    rx.grid(
-                        *[oferta_card_item(o) for o in OFERTAS_POR_PAIS["co"]],
-                        style={"gridTemplateColumns": "repeat(auto-fit, minmax(260px, 1fr))"},
-                        gap="1rem",
-                        width="100%",
-                    ),
-                    rx.cond(
-                        CheckoutState.pais_id == "mx",
-                        rx.grid(
-                            *[oferta_card_item(o) for o in OFERTAS_POR_PAIS["mx"]],
-                            style={"gridTemplateColumns": "repeat(auto-fit, minmax(260px, 1fr))"},
-                            gap="1rem",
-                            width="100%",
-                        ),
-                        rx.grid(
-                            *[oferta_card_item(o) for o in OFERTAS_POR_PAIS["us"]],
-                            style={"gridTemplateColumns": "repeat(auto-fit, minmax(260px, 1fr))"},
-                            gap="1rem",
-                            width="100%",
-                        ),
-                    ),
-                ),
+                background="white",
+                border=f"1px solid {GOLD_BOR}",
+                border_radius="18px",
+                padding="1.5rem",
+                width="100%",
             ),
         ),
 

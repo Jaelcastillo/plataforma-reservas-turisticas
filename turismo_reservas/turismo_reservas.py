@@ -13,6 +13,7 @@ from turismo_reservas.pages.admin_ofertas import admin_ofertas
 from turismo_reservas.pages.ofertas import ofertas
 from turismo_reservas.pages.admin_usuarios import admin_usuarios
 from turismo_reservas.states.auth_state import AuthState
+from turismo_reservas.pages.admin_destinos import admin_destinos
 
 
 app = rx.App(
@@ -32,6 +33,7 @@ app.add_page(
     reservas,
     route="/reservas",
     title="Reservas - TravelWorld",
+    on_load=AuthState.cargar_destinos_reserva,
 )
 
 app.add_page(
@@ -82,4 +84,11 @@ app.add_page(
     route="/admin/usuarios",
     title="Usuarios Admin",
     on_load=AuthState.cargar_usuarios_admin,
+)
+
+app.add_page(
+    admin_destinos,
+    route="/admin/destinos",
+    title="Destinos Admin",
+    on_load=AuthState.cargar_destinos_admin,
 )

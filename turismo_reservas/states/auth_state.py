@@ -38,6 +38,16 @@ class AuthState(rx.State):
     admin_ofertas: list[dict] = []
     admin_usuarios: list[dict] = []
     ofertas_publicas: list[dict] = []
+    admin_destinos: list[dict] = []
+    destinos_reserva: list[dict] = []
+    ofertas_reserva: list[dict] = []
+    destinos_destacados: list[dict] = []
+
+    nuevo_pais_destino: str = ""
+    nuevo_ciudad_destino: str = ""
+    nuevo_titulo_destino: str = ""
+    nuevo_descripcion_destino: str = ""
+    nuevo_imagen_destino: str = ""
 
     editando_oferta: bool = False
     edit_oferta_id: int = 0
@@ -492,6 +502,168 @@ class AuthState(rx.State):
         except Exception as e:
             self.mensaje = str(e)
 
+
+# ==========================
+    # DESTINOS ADMIN
+    # ==========================
+
+    def set_nuevo_pais_destino(self, v):
+        self.nuevo_pais_destino = v
+
+    def set_nuevo_ciudad_destino(self, v):
+        self.nuevo_ciudad_destino = v
+
+    def set_nuevo_titulo_destino(self, v):
+        self.nuevo_titulo_destino = v
+
+    def set_nuevo_descripcion_destino(self, v):
+        self.nuevo_descripcion_destino = v
+
+    def set_nuevo_imagen_destino(self, v):
+        self.nuevo_imagen_destino = v
+
+    def cargar_destinos_admin(self):
+        try:
+            conn = get_conn()
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    SELECT id, pais, ciudad, titulo, descripcion, imagen, destacado, activo
+                    FROM destinos
+                    ORDER BY id DESC
+                    """
+                )
+                self.admin_destinos = cur.fetchall()
+
+            conn.close()
+
+        except Exception as e:
+            self.mensaje = str(e)
+
+    def crear_destino_admin(self):
+        try:
+            conn = get_conn()
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    INSERT INTO destinos
+                    (pais, ciudad, titulo, descripcion, imagen, destacado, activo)
+                    VALUES (%s, %s, %s, %s, %s, 0, 1)
+                    """,
+                    (
+                        self.nuevo_pais_destino,
+                        self.nuevo_ciudad_destino,
+                        self.nuevo_titulo_destino,
+                        self.nuevo_descripcion_destino,
+                        self.nuevo_imagen_destino,
+                    ),
+                )
+
+            conn.close()
+
+            self.nuevo_pais_destino = ""
+            self.nuevo_ciudad_destino = ""
+            self.nuevo_titulo_destino = ""
+            self.nuevo_descripcion_destino = ""
+            self.nuevo_imagen_destino = ""
+
+            self.cargar_destinos_admin()
+
+        except Exception as e:
+            self.mensaje = str(e)
+
+    def toggle_destino_admin(self, destino_id: int):
+        try:
+            conn = get_conn()
+            with conn.cursor() as cur:
+                cur.execute(
+                    "UPDATE destinos SET activo = NOT activo WHERE id=%s",
+                    (destino_id,),
+                )
+
+            conn.close()
+            self.cargar_destinos_admin()
+
+        except Exception as e:
+            self.mensaje = str(e)
+
+    def toggle_destacado_destino_admin(self, destino_id: int):
+        try:
+            conn = get_conn()
+            with conn.cursor() as cur:
+                cur.execute(
+                    "UPDATE destinos SET destacado = NOT destacado WHERE id=%s",
+                    (destino_id,),
+                )
+
+            conn.close()
+            self.cargar_destinos_admin()
+
+        except Exception as e:
+            self.mensaje = str(e)
+
+    def eliminar_destino_admin(self, destino_id: int):
+        try:
+            conn = get_conn()
+            with conn.cursor() as cur:
+                cur.execute(
+                    "DELETE FROM destinos WHERE id=%s",
+                    (destino_id,),
+                )
+
+            conn.close()
+            self.cargar_destinos_admin()
+
+        except Exception as e:
+            self.mensaje = str(e)
+
+
+    def cargar_destinos_reserva(self):
+        try:
+            conn = get_conn()
+            with conn.cursor() as cur:
+                cur.execute(
+                """
+                SELECT id, pais, ciudad, titulo, descripcion, imagen
+                FROM destinos
+                WHERE activo=1
+                ORDER BY pais, ciudad
+                """
+              )
+            self.destinos_reserva = cur.fetchall()
+            conn.close()
+
+        except Exception as e:
+            self.mensaje = str(e)
+
+    def cargar_ofertas_por_destino(self, destino_id: int):
+        try:
+            conn = get_conn()
+            with conn.cursor() as cur:
+                cur.execute(
+                """
+                SELECT
+                    id,
+                    titulo,
+                    precio,
+                    COALESCE(precio_anterior, precio) AS precio_anterior,
+                    duracion,
+                    rating,
+                    descuento,
+                    CONCAT('/images/', imagen) AS imagen
+                FROM ofertas
+                WHERE activo=1 AND destino_id=%s
+                ORDER BY id DESC
+                """,
+                (destino_id,),
+            )
+            self.ofertas_reserva = cur.fetchall()
+
+            conn.close()
+
+        except Exception as e:
+            self.mensaje = str(e)
+
     def logout(self):
         self.usuario_id = 0
         self.nombre = ""
@@ -511,6 +683,7 @@ class AuthState(rx.State):
         self.admin_ofertas = []
         self.admin_usuarios = []
         self.ofertas_publicas = []
+        self.admin_destinos = []
 
         self.cancelar_edicion_oferta()
 
