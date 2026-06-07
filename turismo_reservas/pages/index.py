@@ -406,63 +406,46 @@ def hero_section() -> rx.Component:
 
             rx.box(
                 rx.hstack(
-                    rx.vstack(
-                        rx.text(
-                            "Encuentra tu próxima aventura",
-                            color=GOLD,
-                            font_size="0.75rem",
-                            text_transform="uppercase",
-                            letter_spacing="2px",
-                            font_weight="800",
-                        ),
-                        rx.text(
-                            "Explora destinos, ofertas y experiencias disponibles para reservar.",
-                            color="white",
-                            font_size="1rem",
-                            font_weight="600",
-                        ),
-                        spacing="1",
-                        align="start",
+                    rx.text(
+                        "✈️ Explora más destinos exclusivos",
+                        color="white",
+                        font_size="1rem",
+                        font_weight="800",
                     ),
 
                     rx.spacer(),
 
                     rx.link(
                         rx.button(
-                            "Buscar destinos →",
+                            "Reservar ahora",
                             background=f"linear-gradient(135deg, {CORAL}, {GOLD})",
                             color="white",
                             border="none",
-                            padding="0.9rem 2rem",
-                            border_radius="16px",
+                            border_radius="999px",
+                            padding="0.8rem 1.8rem",
                             font_weight="900",
-                            font_size="0.95rem",
                             cursor="pointer",
-                            _hover={
-                                "transform": "translateY(-2px)",
-                                "box_shadow": "0 8px 25px rgba(201,168,76,0.4)",
-                            },
-                            transition="all 0.15s",
                         ),
                         href="/reservas",
                     ),
 
-                    spacing="5",
+                    spacing="4",
                     align="center",
                     width="100%",
                     flex_wrap="wrap",
                 ),
-                background=GLASS_BG,
+
+                background="rgba(255,255,255,0.12)",
                 style={
-                    "backdropFilter": "blur(20px)",
+                    "backdropFilter": "blur(18px)",
                     "animation": "fadeInUp 0.9s ease 0.3s both",
                 },
-                border=f"1px solid {GLASS_BOR}",
-                border_radius="24px",
-                padding="1.5rem 1.8rem",
-                max_width="760px",
+                border="1px solid rgba(255,255,255,0.2)",
+                border_radius="20px",
+                padding="1rem 1.5rem",
+                max_width="700px",
                 width="100%",
-                box_shadow="0 20px 60px rgba(0,0,0,0.45)",
+                box_shadow="0 18px 45px rgba(0,0,0,0.35)",
             ),
 
             spacing="7",
