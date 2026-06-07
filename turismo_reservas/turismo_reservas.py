@@ -26,7 +26,7 @@ app.add_page(
     index,
     route="/",
     title="TravelWorld - Plataforma Turística Premium",
-    on_load=AuthState.cargar_ofertas_publicas,
+    on_load=AuthState.cargar_home,
 )
 
 app.add_page(
@@ -90,5 +90,12 @@ app.add_page(
     admin_destinos,
     route="/admin/destinos",
     title="Destinos Admin",
+    on_load=AuthState.cargar_destinos_admin,
+)
+
+app.add_page(
+    admin_ofertas,
+    route="/admin/ofertas",
+    title="Ofertas Admin",
     on_load=AuthState.cargar_destinos_admin,
 )

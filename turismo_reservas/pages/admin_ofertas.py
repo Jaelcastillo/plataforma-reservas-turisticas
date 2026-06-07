@@ -58,12 +58,7 @@ CSS = """
 
 def admin_input(label, value, on_change):
     return rx.vstack(
-        rx.text(
-            label,
-            color=TEXT_DARK,
-            font_weight="900",
-            font_size="0.85rem",
-        ),
+        rx.text(label, color=TEXT_DARK, font_weight="900", font_size="0.85rem"),
         rx.input(
             value=value,
             on_change=on_change,
@@ -77,26 +72,205 @@ def admin_input(label, value, on_change):
             font_size="1rem",
             font_weight="700",
             line_height="1.2",
-            _placeholder={"color": "#8A7E70"},
-            _focus={
-                "border": f"1px solid {GOLD}",
-                "box_shadow": "0 0 0 3px rgba(201,168,76,.18)",
-                "outline": "none",
-            },
-            style={
-                "caretColor": "#1B1B1B",
-            },
         ),
-        spacing="8",
+        spacing="2",
+        width="100%",
+        align="start",
+    )
+
+def admin_select(label, value, on_change, items):
+    return rx.vstack(
+        rx.text(label, color=TEXT_DARK, font_weight="900", font_size="0.85rem"),
+        rx.select(
+            items,
+            value=value,
+            on_change=on_change,
+            placeholder=f"Selecciona {label.lower()}",
+            background="#FFFFFF",
+            color="#1B1B1B",
+            border=f"1px solid {GOLD_BOR}",
+            border_radius="14px",
+            height="48px",
+            width="100%",
+            font_size="1rem",
+            font_weight="700",
+        ),
+        spacing="2",
         width="100%",
         align="start",
     )
 
 
-def edit_form():
+def destino_option(d):
+    return rx.fragment(
+        d["id"].to_string(),
+        " - ",
+        d["pais"],
+        " - ",
+        d["ciudad"],
+        " - ",
+        d["titulo"],
+    )
+
+def crear_oferta_form():
     return rx.box(
         rx.vstack(
-            rx.hstack(
+            rx.heading(
+                "Agregar nueva oferta",
+                color=TEXT_DARK,
+                font_family="'Playfair Display', serif",
+                font_size="2rem",
+                font_weight="900",
+            ),
+
+            rx.text(
+                "Completa los datos de la oferta. Elige primero el destino al que pertenece.",
+                color=TEXT_SOFT,
+                font_weight="700",
+            ),
+
+            rx.grid(
+                rx.vstack(
+                    rx.text("Destino", color=TEXT_DARK, font_weight="900", font_size="0.85rem"),
+                    rx.select.root(
+                        rx.select.trigger(
+                            placeholder="Selecciona un destino",
+                            width="100%",
+                        ),
+                        rx.select.content(
+                            rx.foreach(
+                                AuthState.admin_destinos,
+                                lambda d: rx.select.item(
+                                    rx.fragment(
+                                        "ID ",
+                                        d["id"].to_string(),
+                                        " · ",
+                                        d["pais"],
+                                        " · ",
+                                        d["ciudad"],
+                                        " · ",
+                                        d["titulo"],
+                                    ),
+                                    value=d["id"].to_string(),
+                                ),
+                            ),
+                        ),
+                        value=AuthState.nuevo_oferta_destino_id,
+                        on_change=AuthState.set_nuevo_oferta_destino_id,
+                        width="100%",
+                    ),
+                    spacing="2",
+                    width="100%",
+                    align="start",
+                ),
+
+                admin_select(
+                    "Categoría",
+                    AuthState.nuevo_oferta_categoria,
+                    AuthState.set_nuevo_oferta_categoria,
+                    ["Hotel", "Resort", "Tour", "Excursión", "Parque", "Aventura", "Paquete completo"],
+                ),
+
+                admin_input(
+                    "Título",
+                    AuthState.nuevo_oferta_titulo,
+                    AuthState.set_nuevo_oferta_titulo,
+                ),
+
+                admin_input(
+                    "Precio actual. Ej: 350",
+                    AuthState.nuevo_oferta_precio,
+                    AuthState.set_nuevo_oferta_precio,
+                ),
+
+                admin_input(
+                    "Precio anterior. Ej: 499",
+                    AuthState.nuevo_oferta_precio_anterior,
+                    AuthState.set_nuevo_oferta_precio_anterior,
+                ),
+
+               
+
+                admin_select(
+                    "Duración",
+                    AuthState.nuevo_oferta_duracion,
+                    AuthState.set_nuevo_oferta_duracion,
+                    ["1 día", "4 horas", "8 horas", "3 noches", "5 noches", "7 noches", "Paquete completo"],
+                ),
+
+                admin_select(
+                    "Rating",
+                    AuthState.nuevo_oferta_rating,
+                    AuthState.set_nuevo_oferta_rating,
+                    ["4.5", "4.6", "4.7", "4.8", "4.9", "5.0"],
+                ),
+
+                admin_input(
+                    "Imagen. Ej: hotel_rd.jpg",
+                    AuthState.nuevo_oferta_imagen,
+                    AuthState.set_nuevo_oferta_imagen,
+                ),
+
+                style={"gridTemplateColumns": "repeat(auto-fit, minmax(250px, 1fr))"},
+                gap="1rem",
+                width="100%",
+            ),
+
+            rx.vstack(
+                rx.text("Descripción", color=TEXT_DARK, font_weight="900", font_size="0.85rem"),
+                rx.text_area(
+                    value=AuthState.nuevo_oferta_descripcion,
+                    on_change=AuthState.set_nuevo_oferta_descripcion,
+                    placeholder="Ej: Paquete todo incluido con hotel, desayuno, traslado y actividades.",
+                    background="white",
+                    color=TEXT_DARK,
+                    border=f"1px solid {GOLD_BOR}",
+                    border_radius="14px",
+                    padding="1rem",
+                    width="100%",
+                    min_height="110px",
+                ),
+                spacing="2",
+                width="100%",
+                align="start",
+            ),
+
+            rx.box(
+                rx.vstack(
+                    rx.text("Ayuda rápida", color=GOLD, font_weight="900"),
+                    rx.text("• La imagen debe existir en assets/images o en tu carpeta pública de imágenes.", color=TEXT_SOFT),
+                    rx.text("• Ejemplo de imagen: punta_cana.png, hotel_rd.jpg, disney.jpg.", color=TEXT_SOFT),
+                    rx.text("• El destino elegido conecta esta oferta con Reservar Ahora.", color=TEXT_SOFT),
+                    spacing="1",
+                    align="start",
+                ),
+                background="#FFF8E8",
+                border=f"1px solid {GOLD_BOR}",
+                border_radius="18px",
+                padding="1rem",
+                width="100%",
+            ),
+
+            rx.button(
+                "➕ Crear oferta",
+                on_click=AuthState.crear_oferta_admin,
+                class_name="gold-btn",
+            ),
+
+            spacing="4",
+            align="start",
+            width="100%",
+        ),
+        class_name="edit-card",
+        padding="1.5rem",
+        width="100%",
+    )
+
+
+def edit_form():
+        return rx.box(
+            rx.vstack(
+               rx.hstack(
                 rx.vstack(
                     rx.text(
                         "Editando oferta seleccionada",
@@ -113,6 +287,11 @@ def edit_form():
                         font_size="2rem",
                         font_weight="900",
                     ),
+                    rx.text(
+                        "El descuento se calcula automáticamente con el precio anterior guardado.",
+                        color=TEXT_SOFT,
+                        font_weight="700",
+                    ),
                     spacing="1",
                     align="start",
                 ),
@@ -127,42 +306,41 @@ def edit_form():
             ),
 
             rx.grid(
-                admin_input(
-                    "Título",
-                    AuthState.edit_titulo_oferta,
-                    AuthState.set_edit_titulo_oferta,
-                ),
-                admin_input(
+                admin_input("Título", AuthState.edit_titulo_oferta, AuthState.set_edit_titulo_oferta),
+                admin_select(
                     "Categoría",
                     AuthState.edit_categoria_oferta,
                     AuthState.set_edit_categoria_oferta,
+                    ["Hotel", "Resort", "Tour", "Excursión", "Parque", "Aventura", "Paquete completo"],
                 ),
-                admin_input(
-                    "Precio",
-                    AuthState.edit_precio_oferta,
-                    AuthState.set_edit_precio_oferta,
-                ),
-                admin_input(
-                    "Descuento",
-                    AuthState.edit_descuento_oferta,
-                    AuthState.set_edit_descuento_oferta,
-                ),
-                style={"gridTemplateColumns": "repeat(2, minmax(0, 1fr))"},
+                admin_input("Precio actual", AuthState.edit_precio_oferta, AuthState.set_edit_precio_oferta),
+                style={"gridTemplateColumns": "repeat(auto-fit, minmax(220px, 1fr))"},
                 gap="1rem",
                 width="100%",
             ),
 
+            admin_input(
+              "Precio anterior",
+               AuthState.edit_precio_anterior_oferta,
+               AuthState.set_edit_precio_anterior_oferta,
+            ),
+
+            rx.box(
+                rx.text(
+                    "Nota: el porcentaje de descuento se recalcula solo al guardar.",
+                    color=TEXT_SOFT,
+                    font_weight="800",
+                ),
+                background="#FFF8E8",
+                border=f"1px solid {GOLD_BOR}",
+                border_radius="18px",
+                padding="1rem",
+                width="100%",
+            ),
+
             rx.hstack(
-                rx.button(
-                    "Guardar cambios",
-                    on_click=AuthState.actualizar_oferta_admin,
-                    class_name="gold-btn",
-                ),
-                rx.button(
-                    "Cancelar",
-                    on_click=AuthState.cancelar_edicion_oferta,
-                    class_name="outline-btn",
-                ),
+                rx.button("Guardar cambios", on_click=AuthState.actualizar_oferta_admin, class_name="gold-btn"),
+                rx.button("Cancelar", on_click=AuthState.cancelar_edicion_oferta, class_name="outline-btn"),
                 spacing="3",
             ),
 
@@ -174,7 +352,6 @@ def edit_form():
         padding="1.5rem",
         width="100%",
     )
-
 
 def oferta_card(o):
     return rx.box(
@@ -197,22 +374,13 @@ def oferta_card(o):
                 rx.text(o["categoria"], color=TEXT_SOFT, font_weight="800"),
                 rx.hstack(
                     rx.text("$", color=GOLD, font_size="1.6rem", font_weight="900"),
-                    rx.text(
-                        o["precio"].to_string(),
-                        color=GOLD,
-                        font_size="1.6rem",
-                        font_weight="900",
-                    ),
+                    rx.text(o["precio"].to_string(), color=GOLD, font_size="1.6rem", font_weight="900"),
                     rx.text("USD", color=TEXT_SOFT),
                     spacing="1",
                 ),
                 rx.hstack(
                     rx.text("Descuento:", color=TEXT_SOFT),
-                    rx.text(
-                        o["descuento"].to_string(),
-                        color=TEXT_DARK,
-                        font_weight="900",
-                    ),
+                    rx.text(o["descuento"].to_string(), color=TEXT_DARK, font_weight="900"),
                     rx.text("%", color=TEXT_DARK, font_weight="900"),
                     spacing="1",
                 ),
@@ -284,10 +452,10 @@ def admin_ofertas():
                             font_weight="900",
                         ),
                         rx.text(
-                            "Edita, activa, desactiva o elimina ofertas turísticas.",
+                            "Crea, edita, activa, desactiva o elimina ofertas turísticas.",
                             color=TEXT_SOFT,
                         ),
-                        spacing="2",
+                        spacing="6",
                         align="start",
                     ),
                     rx.spacer(),
@@ -305,6 +473,8 @@ def admin_ofertas():
                     edit_form(),
                     rx.box(),
                 ),
+
+                crear_oferta_form(),
 
                 rx.cond(
                     AuthState.admin_ofertas.length() > 0,

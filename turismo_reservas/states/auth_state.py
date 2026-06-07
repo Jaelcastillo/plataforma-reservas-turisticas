@@ -49,11 +49,23 @@ class AuthState(rx.State):
     nuevo_descripcion_destino: str = ""
     nuevo_imagen_destino: str = ""
 
+    nuevo_oferta_destino_id: str = ""
+    nuevo_oferta_titulo: str = ""
+    nuevo_oferta_categoria: str = ""
+    nuevo_oferta_descripcion: str = ""
+    nuevo_oferta_precio: str = ""
+    nuevo_oferta_precio_anterior: str = ""
+    nuevo_oferta_descuento: str = "0"
+    nuevo_oferta_duracion: str = ""
+    nuevo_oferta_rating: str = "5.0"
+    nuevo_oferta_imagen: str = ""
+
     editando_oferta: bool = False
     edit_oferta_id: int = 0
     edit_titulo_oferta: str = ""
     edit_categoria_oferta: str = ""
     edit_precio_oferta: str = ""
+    edit_precio_anterior_oferta: str = ""
     edit_descuento_oferta: str = ""
 
     @rx.var
@@ -64,17 +76,33 @@ class AuthState(rx.State):
     def es_admin(self) -> bool:
         return self.rol == "admin"
 
-    def set_nombre(self, v):
-        self.nombre = v
+    def set_nombre(self, v): self.nombre = v
+    def set_email(self, v): self.email = v
+    def set_password(self, v): self.password = v
+    def set_confirmar_password(self, v): self.confirmar_password = v
 
-    def set_email(self, v):
-        self.email = v
+    def set_nuevo_oferta_destino_id(self, v): self.nuevo_oferta_destino_id = v
+    def set_nuevo_oferta_titulo(self, v): self.nuevo_oferta_titulo = v
+    def set_nuevo_oferta_categoria(self, v): self.nuevo_oferta_categoria = v
+    def set_nuevo_oferta_descripcion(self, v): self.nuevo_oferta_descripcion = v
+    def set_nuevo_oferta_precio(self, v): self.nuevo_oferta_precio = v
+    def set_nuevo_oferta_precio_anterior(self, v): self.nuevo_oferta_precio_anterior = v
+    def set_nuevo_oferta_descuento(self, v): self.nuevo_oferta_descuento = v
+    def set_nuevo_oferta_duracion(self, v): self.nuevo_oferta_duracion = v
+    def set_nuevo_oferta_rating(self, v): self.nuevo_oferta_rating = v
+    def set_nuevo_oferta_imagen(self, v): self.nuevo_oferta_imagen = v
 
-    def set_password(self, v):
-        self.password = v
+    def set_edit_titulo_oferta(self, v): self.edit_titulo_oferta = v
+    def set_edit_categoria_oferta(self, v): self.edit_categoria_oferta = v
+    def set_edit_precio_oferta(self, v): self.edit_precio_oferta = v
+    def set_edit_precio_anterior_oferta(self, v): self.edit_precio_anterior_oferta = v
+    def set_edit_descuento_oferta(self, v): self.edit_descuento_oferta = v
 
-    def set_confirmar_password(self, v):
-        self.confirmar_password = v
+    def set_nuevo_pais_destino(self, v): self.nuevo_pais_destino = v
+    def set_nuevo_ciudad_destino(self, v): self.nuevo_ciudad_destino = v
+    def set_nuevo_titulo_destino(self, v): self.nuevo_titulo_destino = v
+    def set_nuevo_descripcion_destino(self, v): self.nuevo_descripcion_destino = v
+    def set_nuevo_imagen_destino(self, v): self.nuevo_imagen_destino = v
 
     def registrar(self):
         if not self.nombre or not self.email or not self.password:
@@ -135,10 +163,7 @@ class AuthState(rx.State):
                 self.mensaje = "Usuario no encontrado."
                 return
 
-            if not bcrypt.checkpw(
-                self.password.encode(),
-                user["password_hash"].encode(),
-            ):
+            if not bcrypt.checkpw(self.password.encode(), user["password_hash"].encode()):
                 self.mensaje = "Contraseña incorrecta."
                 return
 
@@ -179,23 +204,24 @@ class AuthState(rx.State):
         except Exception as e:
             self.mensaje = f"Error dashboard: {str(e)}"
 
+    def cargar_home(self):
+        self.cargar_ofertas_publicas()
+        self.cargar_destinos_destacados()
+
+    def cargar_admin_ofertas_page(self):
+        self.cargar_ofertas_admin()
+        self.cargar_destinos_admin()
+
     def cargar_ofertas_publicas(self):
         try:
             conn = get_conn()
             with conn.cursor() as cur:
                 cur.execute(
                     """
-                    SELECT
-                        id,
-                        titulo,
-                        categoria,
-                        descripcion,
-                        precio,
-                        precio_anterior,
-                        descuento,
-                        duracion,
-                        rating,
-                        CONCAT('/images/', imagen) AS imagen
+                    SELECT id, titulo, categoria, descripcion, precio,
+                           COALESCE(precio_anterior, precio) AS precio_anterior,
+                           descuento, duracion, rating,
+                           CONCAT('/images/', imagen) AS imagen
                     FROM ofertas
                     WHERE activo=1
                     ORDER BY id DESC
@@ -252,10 +278,7 @@ class AuthState(rx.State):
         try:
             conn = get_conn()
             with conn.cursor() as cur:
-                cur.execute(
-                    "UPDATE reservas SET estado='Confirmada' WHERE id=%s",
-                    (reserva_id,),
-                )
+                cur.execute("UPDATE reservas SET estado='Confirmada' WHERE id=%s", (reserva_id,))
             conn.close()
             self.cargar_todas_reservas()
             self.cargar_dashboard_admin()
@@ -267,10 +290,7 @@ class AuthState(rx.State):
         try:
             conn = get_conn()
             with conn.cursor() as cur:
-                cur.execute(
-                    "UPDATE reservas SET estado='Cancelada' WHERE id=%s",
-                    (reserva_id,),
-                )
+                cur.execute("UPDATE reservas SET estado='Cancelada' WHERE id=%s", (reserva_id,))
             conn.close()
             self.cargar_todas_reservas()
             self.cargar_dashboard_admin()
@@ -282,10 +302,7 @@ class AuthState(rx.State):
         try:
             conn = get_conn()
             with conn.cursor() as cur:
-                cur.execute(
-                    "DELETE FROM reservas WHERE id=%s",
-                    (reserva_id,),
-                )
+                cur.execute("DELETE FROM reservas WHERE id=%s", (reserva_id,))
             conn.close()
             self.cargar_todas_reservas()
             self.cargar_dashboard_admin()
@@ -299,7 +316,9 @@ class AuthState(rx.State):
             with conn.cursor() as cur:
                 cur.execute(
                     """
-                    SELECT id, titulo, categoria, precio, descuento, activo
+                    SELECT id, titulo, categoria, precio,
+                           COALESCE(precio_anterior, precio) AS precio_anterior,
+                           descuento, activo
                     FROM ofertas
                     ORDER BY id DESC
                     """
@@ -315,10 +334,7 @@ class AuthState(rx.State):
         try:
             conn = get_conn()
             with conn.cursor() as cur:
-                cur.execute(
-                    "UPDATE ofertas SET activo = NOT activo WHERE id = %s",
-                    (oferta_id,),
-                )
+                cur.execute("UPDATE ofertas SET activo = NOT activo WHERE id = %s", (oferta_id,))
 
             conn.close()
             self.cargar_ofertas_admin()
@@ -328,25 +344,13 @@ class AuthState(rx.State):
         except Exception as e:
             self.mensaje = str(e)
 
-    def set_edit_titulo_oferta(self, v):
-        self.edit_titulo_oferta = v
-
-    def set_edit_categoria_oferta(self, v):
-        self.edit_categoria_oferta = v
-
-    def set_edit_precio_oferta(self, v):
-        self.edit_precio_oferta = v
-
-    def set_edit_descuento_oferta(self, v):
-        self.edit_descuento_oferta = v
-
     def cargar_oferta_para_editar(self, oferta_id: int):
         try:
             conn = get_conn()
             with conn.cursor() as cur:
                 cur.execute(
                     """
-                    SELECT id, titulo, categoria, precio, descuento
+                    SELECT id, titulo, categoria, precio, precio_anterior, descuento
                     FROM ofertas
                     WHERE id=%s
                     LIMIT 1
@@ -363,6 +367,7 @@ class AuthState(rx.State):
                 self.edit_titulo_oferta = oferta["titulo"]
                 self.edit_categoria_oferta = oferta["categoria"]
                 self.edit_precio_oferta = str(oferta["precio"])
+                self.edit_precio_anterior_oferta = str(oferta["precio_anterior"] or oferta["precio"])
                 self.edit_descuento_oferta = str(oferta["descuento"])
 
         except Exception as e:
@@ -374,10 +379,18 @@ class AuthState(rx.State):
         self.edit_titulo_oferta = ""
         self.edit_categoria_oferta = ""
         self.edit_precio_oferta = ""
+        self.edit_precio_anterior_oferta = ""
         self.edit_descuento_oferta = ""
 
     def actualizar_oferta_admin(self):
         try:
+            precio_actual = float(self.edit_precio_oferta)
+            precio_anterior = float(self.edit_precio_anterior_oferta or precio_actual)
+
+            descuento_auto = 0
+            if precio_anterior > precio_actual:
+                descuento_auto = round((1 - precio_actual / precio_anterior) * 100)
+
             conn = get_conn()
             with conn.cursor() as cur:
                 cur.execute(
@@ -386,24 +399,29 @@ class AuthState(rx.State):
                     SET titulo=%s,
                         categoria=%s,
                         precio=%s,
+                        precio_anterior=%s,
                         descuento=%s
                     WHERE id=%s
                     """,
                     (
                         self.edit_titulo_oferta,
                         self.edit_categoria_oferta,
-                        float(self.edit_precio_oferta),
-                        int(self.edit_descuento_oferta),
+                        precio_actual,
+                        precio_anterior,
+                        descuento_auto,
                         self.edit_oferta_id,
                     ),
                 )
 
             conn.close()
+
             self.cancelar_edicion_oferta()
             self.cargar_ofertas_admin()
             self.cargar_dashboard_admin()
             self.cargar_ofertas_publicas()
-            return rx.redirect("/")
+
+            self.mensaje = f"Oferta actualizada. Descuento calculado: {descuento_auto}%"
+            return rx.redirect("/admin/ofertas")
 
         except Exception as e:
             self.mensaje = str(e)
@@ -412,12 +430,68 @@ class AuthState(rx.State):
         try:
             conn = get_conn()
             with conn.cursor() as cur:
+                cur.execute("DELETE FROM ofertas WHERE id=%s", (oferta_id,))
+
+            conn.close()
+            self.cargar_ofertas_admin()
+            self.cargar_dashboard_admin()
+            self.cargar_ofertas_publicas()
+
+        except Exception as e:
+            self.mensaje = str(e)
+
+    def crear_oferta_admin(self):
+        try:
+            if not self.nuevo_oferta_destino_id or not self.nuevo_oferta_titulo or not self.nuevo_oferta_precio:
+                self.mensaje = "Completa destino, título y precio."
+                return
+
+            precio_actual = float(self.nuevo_oferta_precio)
+            precio_anterior = float(self.nuevo_oferta_precio_anterior or self.nuevo_oferta_precio)
+
+            descuento_auto = 0
+            if precio_anterior > precio_actual:
+                descuento_auto = round((1 - precio_actual / precio_anterior) * 100)
+
+            conn = get_conn()
+            with conn.cursor() as cur:
                 cur.execute(
-                    "DELETE FROM ofertas WHERE id=%s",
-                    (oferta_id,),
+                    """
+                    INSERT INTO ofertas
+                    (destino_id, titulo, categoria, descripcion, precio,
+                     precio_anterior, descuento, duracion, rating, imagen, activo)
+                    VALUES
+                    (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 1)
+                    """,
+                    (
+                        int(self.nuevo_oferta_destino_id),
+                        self.nuevo_oferta_titulo,
+                        self.nuevo_oferta_categoria,
+                        self.nuevo_oferta_descripcion,
+                        precio_actual,
+                        precio_anterior,
+                        descuento_auto,
+                        self.nuevo_oferta_duracion,
+                        float(self.nuevo_oferta_rating or 5.0),
+                        self.nuevo_oferta_imagen,
+                    ),
                 )
 
             conn.close()
+
+            self.nuevo_oferta_destino_id = ""
+            self.nuevo_oferta_titulo = ""
+            self.nuevo_oferta_categoria = ""
+            self.nuevo_oferta_descripcion = ""
+            self.nuevo_oferta_precio = ""
+            self.nuevo_oferta_precio_anterior = ""
+            self.nuevo_oferta_descuento = "0"
+            self.nuevo_oferta_duracion = ""
+            self.nuevo_oferta_rating = "5.0"
+            self.nuevo_oferta_imagen = ""
+
+            self.mensaje = f"Oferta creada correctamente. Descuento calculado: {descuento_auto}%"
+
             self.cargar_ofertas_admin()
             self.cargar_dashboard_admin()
             self.cargar_ofertas_publicas()
@@ -442,20 +516,12 @@ class AuthState(rx.State):
 
         except Exception as e:
             self.mensaje = str(e)
-            print("ERROR USUARIOS:", e)
 
     def toggle_usuario_admin(self, usuario_id: int):
         try:
             conn = get_conn()
             with conn.cursor() as cur:
-                cur.execute(
-                    """
-                    UPDATE usuarios
-                    SET activo = NOT activo
-                    WHERE id = %s
-                    """,
-                    (usuario_id,),
-                )
+                cur.execute("UPDATE usuarios SET activo = NOT activo WHERE id = %s", (usuario_id,))
 
             conn.close()
             self.cargar_usuarios_admin()
@@ -471,11 +537,7 @@ class AuthState(rx.State):
             conn = get_conn()
             with conn.cursor() as cur:
                 cur.execute(
-                    """
-                    UPDATE usuarios
-                    SET rol = %s
-                    WHERE id = %s
-                    """,
+                    "UPDATE usuarios SET rol = %s WHERE id = %s",
                     (nuevo_rol, usuario_id),
                 )
 
@@ -490,10 +552,7 @@ class AuthState(rx.State):
         try:
             conn = get_conn()
             with conn.cursor() as cur:
-                cur.execute(
-                    "DELETE FROM usuarios WHERE id=%s",
-                    (usuario_id,),
-                )
+                cur.execute("DELETE FROM usuarios WHERE id=%s", (usuario_id,))
 
             conn.close()
             self.cargar_usuarios_admin()
@@ -501,26 +560,6 @@ class AuthState(rx.State):
 
         except Exception as e:
             self.mensaje = str(e)
-
-
-# ==========================
-    # DESTINOS ADMIN
-    # ==========================
-
-    def set_nuevo_pais_destino(self, v):
-        self.nuevo_pais_destino = v
-
-    def set_nuevo_ciudad_destino(self, v):
-        self.nuevo_ciudad_destino = v
-
-    def set_nuevo_titulo_destino(self, v):
-        self.nuevo_titulo_destino = v
-
-    def set_nuevo_descripcion_destino(self, v):
-        self.nuevo_descripcion_destino = v
-
-    def set_nuevo_imagen_destino(self, v):
-        self.nuevo_imagen_destino = v
 
     def cargar_destinos_admin(self):
         try:
@@ -576,13 +615,11 @@ class AuthState(rx.State):
         try:
             conn = get_conn()
             with conn.cursor() as cur:
-                cur.execute(
-                    "UPDATE destinos SET activo = NOT activo WHERE id=%s",
-                    (destino_id,),
-                )
+                cur.execute("UPDATE destinos SET activo = NOT activo WHERE id=%s", (destino_id,))
 
             conn.close()
             self.cargar_destinos_admin()
+            self.cargar_destinos_destacados()
 
         except Exception as e:
             self.mensaje = str(e)
@@ -591,13 +628,11 @@ class AuthState(rx.State):
         try:
             conn = get_conn()
             with conn.cursor() as cur:
-                cur.execute(
-                    "UPDATE destinos SET destacado = NOT destacado WHERE id=%s",
-                    (destino_id,),
-                )
+                cur.execute("UPDATE destinos SET destacado = NOT destacado WHERE id=%s", (destino_id,))
 
             conn.close()
             self.cargar_destinos_admin()
+            self.cargar_destinos_destacados()
 
         except Exception as e:
             self.mensaje = str(e)
@@ -606,31 +641,29 @@ class AuthState(rx.State):
         try:
             conn = get_conn()
             with conn.cursor() as cur:
-                cur.execute(
-                    "DELETE FROM destinos WHERE id=%s",
-                    (destino_id,),
-                )
+                cur.execute("DELETE FROM destinos WHERE id=%s", (destino_id,))
 
             conn.close()
             self.cargar_destinos_admin()
+            self.cargar_destinos_destacados()
 
         except Exception as e:
             self.mensaje = str(e)
-
 
     def cargar_destinos_reserva(self):
         try:
             conn = get_conn()
             with conn.cursor() as cur:
                 cur.execute(
-                """
-                SELECT id, pais, ciudad, titulo, descripcion, imagen
-                FROM destinos
-                WHERE activo=1
-                ORDER BY pais, ciudad
-                """
-              )
-            self.destinos_reserva = cur.fetchall()
+                    """
+                    SELECT id, pais, ciudad, titulo, descripcion, imagen
+                    FROM destinos
+                    WHERE activo=1
+                    ORDER BY pais, ciudad
+                    """
+                )
+                self.destinos_reserva = cur.fetchall()
+
             conn.close()
 
         except Exception as e:
@@ -641,23 +674,38 @@ class AuthState(rx.State):
             conn = get_conn()
             with conn.cursor() as cur:
                 cur.execute(
-                """
-                SELECT
-                    id,
-                    titulo,
-                    precio,
-                    COALESCE(precio_anterior, precio) AS precio_anterior,
-                    duracion,
-                    rating,
-                    descuento,
-                    CONCAT('/images/', imagen) AS imagen
-                FROM ofertas
-                WHERE activo=1 AND destino_id=%s
-                ORDER BY id DESC
-                """,
-                (destino_id,),
-            )
-            self.ofertas_reserva = cur.fetchall()
+                    """
+                    SELECT id, titulo, precio,
+                           COALESCE(precio_anterior, precio) AS precio_anterior,
+                           duracion, rating, descuento,
+                           CONCAT('/images/', imagen) AS imagen
+                    FROM ofertas
+                    WHERE activo=1 AND destino_id=%s
+                    ORDER BY id DESC
+                    """,
+                    (destino_id,),
+                )
+                self.ofertas_reserva = cur.fetchall()
+
+            conn.close()
+
+        except Exception as e:
+            self.mensaje = str(e)
+
+    def cargar_destinos_destacados(self):
+        try:
+            conn = get_conn()
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    SELECT id, pais, ciudad, titulo, descripcion,
+                           CONCAT('/images/', imagen) AS imagen
+                    FROM destinos
+                    WHERE activo=1 AND destacado=1
+                    ORDER BY id DESC
+                    """
+                )
+                self.destinos_destacados = cur.fetchall()
 
             conn.close()
 
@@ -684,6 +732,9 @@ class AuthState(rx.State):
         self.admin_usuarios = []
         self.ofertas_publicas = []
         self.admin_destinos = []
+        self.destinos_reserva = []
+        self.ofertas_reserva = []
+        self.destinos_destacados = []
 
         self.cancelar_edicion_oferta()
 

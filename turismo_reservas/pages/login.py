@@ -3,7 +3,6 @@ from turismo_reservas.states.auth_state import AuthState
 
 GOLD = "#C9A84C"
 GOLD_LT = "#E8C96A"
-TEXT_D = "#2A1F14"
 TEXT_S = "#6B5A45"
 
 LOGIN_CSS = """
@@ -79,23 +78,26 @@ LOGIN_CSS = """
 }
 
 .auth-right {
+    width: 100%;
+    max-width: 620px;
     background:
-        radial-gradient(circle at top right, rgba(201,168,76,.16), transparent 35%),
+        radial-gradient(circle at top right, rgba(201,168,76,0.13), transparent 35%),
         linear-gradient(180deg, #FAF9F6, #F4F1EA);
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 2.5rem;
+    min-height: 100vh;
 }
 
 .auth-card {
     width: 100%;
-    max-width: 450px;
-    background: rgba(255,255,255,.86);
-    border: 1px solid rgba(201,168,76,.30);
-    border-radius: 30px;
-    padding: 2.8rem 2.4rem;
-    box-shadow: 0 28px 80px rgba(43,36,26,.16);
+    max-width: 440px;
+    background: rgba(255,255,255,0.86);
+    border: 1px solid rgba(201,168,76,0.28);
+    border-radius: 28px;
+    padding: 2.6rem 2.3rem;
+    box-shadow: 0 24px 70px rgba(43,36,26,0.13);
 }
 
 .tw-field {
@@ -130,6 +132,7 @@ LOGIN_CSS = """
 .tw-input-styled:focus {
     border-color: #C9A84C !important;
     box-shadow: 0 0 0 4px rgba(201,168,76,.13) !important;
+    outline: none !important;
 }
 
 .btn-gold {
@@ -176,11 +179,13 @@ LOGIN_CSS = """
     border-radius: 12px;
     text-align: center;
     font-weight: 700;
+    width: 100%;
 }
 
 @media (max-width: 850px) {
     .auth-wrap { grid-template-columns: 1fr; }
     .auth-left { min-height: 360px; padding: 2rem; }
+    .auth-right { max-width: none; }
 }
 """
 
@@ -221,21 +226,22 @@ def login() -> rx.Component:
                 ),
                 class_name="auth-left",
             ),
+
             rx.box(
                 rx.vstack(
                     rx.vstack(
-                       rx.box(
-    rx.text( font_size="1.35rem", line_height="1"),
-    width="62px",
-    height="62px",
-    border_radius="50%",
-    background="rgba(201,168,76,0.12)",
-    border=f"1px solid {GOLD}",
-    display="flex",
-    align="center",
-    justify="center",
-    
-),
+                        rx.box(
+                            rx.text("🔐", font_size="1.5rem"),
+                            width="58px",
+                            height="58px",
+                            border_radius="50%",
+                            background="rgba(201,168,76,0.12)",
+                            border=f"1px solid {GOLD}",
+                            display="flex",
+                            align_items="center",
+                            justify_content="center",
+                            margin="0 auto",
+                        ),
                         rx.heading(
                             "Bienvenido de nuevo",
                             style={
@@ -243,14 +249,15 @@ def login() -> rx.Component:
                                 "fontSize": "2.45rem",
                                 "fontWeight": "900",
                                 "color": "#1F160F",
-                                "textAlign": "center",
                                 "lineHeight": "1.05",
+                                "textAlign": "center",
                             },
                         ),
                         rx.box(
                             width="120px",
                             height="2px",
                             background=f"linear-gradient(90deg, transparent, {GOLD}, transparent)",
+                            margin="0.35rem auto",
                         ),
                         rx.text(
                             "Accede a tu cuenta TravelWorld",
@@ -262,23 +269,26 @@ def login() -> rx.Component:
                         align="center",
                         width="100%",
                     ),
+
                     rx.vstack(
                         _field("📧", "Correo electrónico", AuthState.email, AuthState.set_email, "email"),
                         _field("🔒", "Contraseña", AuthState.password, AuthState.set_password, "password"),
                         spacing="4",
                         width="100%",
                     ),
+
                     rx.cond(
                         AuthState.mensaje != "",
                         rx.box(rx.text(AuthState.mensaje), class_name="msg-ok"),
                         rx.box(),
                     ),
+
                     rx.button(
                         "🗝 Iniciar sesión",
                         on_click=AuthState.login,
                         class_name="btn-gold",
-                        width="100%",
                     ),
+
                     rx.html(
                         '<div class="auth-divider">'
                         '<div class="auth-divider-line"></div>'
@@ -286,25 +296,34 @@ def login() -> rx.Component:
                         '<div class="auth-divider-line"></div>'
                         '</div>'
                     ),
+
                     rx.link(
                         rx.text(
                             "¿No tienes cuenta? ",
-                            rx.text.span("Regístrate", color=GOLD, font_weight="900", text_decoration="underline"),
+                            rx.text.span(
+                                "Regístrate",
+                                color=GOLD,
+                                font_weight="900",
+                                text_decoration="underline",
+                            ),
                             color=TEXT_S,
                             text_align="center",
                         ),
                         href="/registro",
                     ),
+
                     rx.link(
                         rx.html('<button class="btn-back">← Volver al inicio</button>'),
                         href="/",
                     ),
+
                     spacing="5",
                     width="100%",
                     class_name="auth-card",
                 ),
                 class_name="auth-right",
             ),
+
             class_name="auth-wrap",
         ),
         width="100%",

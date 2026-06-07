@@ -286,34 +286,57 @@ def search_field(label: str, placeholder: str) -> rx.Component:
         min_width="110px",
     )
 
+def date_search_field(label: str, input_id: str) -> rx.Component:
+    return rx.vstack(
+        rx.text(
+            label,
+            font_size="0.62rem",
+            text_transform="uppercase",
+            letter_spacing="1.2px",
+            color=GOLD,
+            font_weight="700",
+        ),
+        rx.input(
+            id=input_id,
+            type="date",
+            read_only=True,
+            on_focus=rx.call_script(f"document.getElementById('{input_id}').showPicker()"),
+            on_click=rx.call_script(f"document.getElementById('{input_id}').showPicker()"),
+            background="transparent",
+            border="none",
+            border_bottom="1px solid rgba(255,255,255,0.2)",
+            border_radius="0",
+            color="white",
+            font_size="0.88rem",
+            padding="0.3rem 0",
+            width="100%",
+            cursor="pointer",
+        ),
+        spacing="1",
+        flex="1",
+        min_width="110px",
+    )
+
 
 def hero_section() -> rx.Component:
     return rx.box(
         rx.html(
-    """
-    <video class="autoVideo" autoplay muted loop playsinline preload="auto"
-    style="
-        position:absolute;
-        top:0;
-        left:0;
-        width:100%;
-        height:100%;
-        object-fit:cover;
-        z-index:0;
-    ">
-    <source src="/images/beach_video.mp4?v=1000" type="video/mp4">
-</video>
+            """
+            <video class="autoVideo" autoplay muted loop playsinline preload="auto"
+            style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;z-index:0;">
+                <source src="/images/beach_video.mp4?v=1000" type="video/mp4">
+            </video>
 
-<script>
-    document.querySelectorAll(".autoVideo").forEach((video) => {
-        video.muted = true;
-        video.setAttribute("muted", "");
-        video.setAttribute("playsinline", "");
-        video.play().catch(() => {});
-    });
-</script>
-    """
-),
+            <script>
+                document.querySelectorAll(".autoVideo").forEach((video) => {
+                    video.muted = true;
+                    video.setAttribute("muted", "");
+                    video.setAttribute("playsinline", "");
+                    video.play().catch(() => {});
+                });
+            </script>
+            """
+        ),
 
         rx.box(
             position="absolute",
@@ -371,9 +394,9 @@ def hero_section() -> rx.Component:
             ),
 
             rx.text(
-    "Destinos únicos, resorts de lujo, tours extremos y experiencias mágicas. "
-    "Tu aventura perfecta comienza aquí.",
-    color="#F8F1E7",
+                "Destinos únicos, resorts de lujo, tours extremos y experiencias mágicas. "
+                "Tu aventura perfecta comienza aquí.",
+                color="#F8F1E7",
                 font_size="1.05rem",
                 text_align="center",
                 max_width="520px",
@@ -383,45 +406,49 @@ def hero_section() -> rx.Component:
 
             rx.box(
                 rx.hstack(
-                    search_field("Destino", "¿A dónde quieres ir?"),
-                    rx.divider(
-                        orientation="vertical",
-                        height="44px",
-                        border_color="rgba(255,255,255,0.15)",
+                    rx.vstack(
+                        rx.text(
+                            "Encuentra tu próxima aventura",
+                            color=GOLD,
+                            font_size="0.75rem",
+                            text_transform="uppercase",
+                            letter_spacing="2px",
+                            font_weight="800",
+                        ),
+                        rx.text(
+                            "Explora destinos, ofertas y experiencias disponibles para reservar.",
+                            color="white",
+                            font_size="1rem",
+                            font_weight="600",
+                        ),
+                        spacing="1",
+                        align="start",
                     ),
-                    search_field("Llegada", "Fecha de llegada"),
-                    rx.divider(
-                        orientation="vertical",
-                        height="44px",
-                        border_color="rgba(255,255,255,0.15)",
+
+                    rx.spacer(),
+
+                    rx.link(
+                        rx.button(
+                            "Buscar destinos →",
+                            background=f"linear-gradient(135deg, {CORAL}, {GOLD})",
+                            color="white",
+                            border="none",
+                            padding="0.9rem 2rem",
+                            border_radius="16px",
+                            font_weight="900",
+                            font_size="0.95rem",
+                            cursor="pointer",
+                            _hover={
+                                "transform": "translateY(-2px)",
+                                "box_shadow": "0 8px 25px rgba(201,168,76,0.4)",
+                            },
+                            transition="all 0.15s",
+                        ),
+                        href="/reservas",
                     ),
-                    search_field("Salida", "Fecha de salida"),
-                    rx.divider(
-                        orientation="vertical",
-                        height="44px",
-                        border_color="rgba(255,255,255,0.15)",
-                    ),
-                    search_field("Viajeros", "2 adultos"),
-                    rx.button(
-                        "Buscar",
-                        background=f"linear-gradient(135deg, {CORAL}, {GOLD})",
-                        color="white",
-                        border="none",
-                        padding="0.75rem 1.75rem",
-                        border_radius="12px",
-                        font_weight="700",
-                        font_size="0.85rem",
-                        white_space="nowrap",
-                        align_self="end",
-                        cursor="pointer",
-                        _hover={
-                            "transform": "translateY(-2px)",
-                            "box_shadow": "0 8px 25px rgba(201,168,76,0.4)",
-                        },
-                        transition="all 0.15s",
-                    ),
-                    spacing="4",
-                    align="end",
+
+                    spacing="5",
+                    align="center",
                     width="100%",
                     flex_wrap="wrap",
                 ),
@@ -431,8 +458,8 @@ def hero_section() -> rx.Component:
                     "animation": "fadeInUp 0.9s ease 0.3s both",
                 },
                 border=f"1px solid {GLASS_BOR}",
-                border_radius="20px",
-                padding="1.4rem 1.8rem",
+                border_radius="24px",
+                padding="1.5rem 1.8rem",
                 max_width="760px",
                 width="100%",
                 box_shadow="0 20px 60px rgba(0,0,0,0.45)",
@@ -449,7 +476,7 @@ def hero_section() -> rx.Component:
             margin="0 auto",
         ),
 
-            position="relative",
+        position="relative",
         min_height="100vh",
         display="flex",
         align="center",
@@ -457,9 +484,6 @@ def hero_section() -> rx.Component:
         overflow="hidden",
         width="100%",
     )
-
-
-
 # ─────────────────────────────────────────────────────────────────────────────
 #  STATS BAR
 # ─────────────────────────────────────────────────────────────────────────────
@@ -602,25 +626,35 @@ DESTINATIONS = [
     },
 ]
 
-def destination_card(dest: dict) -> rx.Component:
+def destination_card_db(dest) -> rx.Component:
     return rx.box(
-        # Fondo con imagen o gradiente
-        rx.box(
-            position="absolute", inset="0",
-            style={"background": dest["bg"], "transition": "transform 0.4s"},
+        rx.image(
+            src=dest["imagen"],
+            width="100%",
+            height="100%",
+            object_fit="cover",
+            position="absolute",
+            inset="0",
         ),
-        # Overlay oscuro inferior
+
         rx.box(
-            position="absolute", inset="0",
-            style={"background": "linear-gradient(180deg, transparent 35%, rgba(0,0,0,0.88) 100%)"},
+            position="absolute",
+            inset="0",
+            style={
+                "background": "linear-gradient(180deg, transparent 35%, rgba(0,0,0,0.88) 100%)"
+            },
         ),
-        # Contenido
+
         rx.box(
             rx.box(
-                rx.text(dest["badge"],
-                        font_size="0.6rem", font_weight="700",
-                        color=DARK, letter_spacing="0.5px",
-                        text_transform="uppercase"),
+                rx.text(
+                    "⭐ DESTACADO",
+                    font_size="0.6rem",
+                    font_weight="700",
+                    color=DARK,
+                    letter_spacing="0.5px",
+                    text_transform="uppercase",
+                ),
                 background="rgba(201,168,76,0.92)",
                 padding="3px 10px",
                 border_radius="20px",
@@ -628,22 +662,35 @@ def destination_card(dest: dict) -> rx.Component:
                 margin_bottom="0.5rem",
             ),
             rx.heading(
-                dest["name"],
-                style={"fontFamily": "'Playfair Display', serif",
-                       "fontSize": "1.2rem", "fontWeight": "700",
-                      "color": TEXT_DARK, "lineHeight": "1.2"},
+                dest["ciudad"],
+                style={
+                    "fontFamily": "'Playfair Display', serif",
+                    "fontSize": "1.2rem",
+                    "fontWeight": "700",
+                    "color": "white",
+                    "lineHeight": "1.2",
+                },
             ),
-            rx.text(dest["country"], font_size="0.72rem",
-                    color="rgba(255,255,255,0.62)", margin_top="2px"),
             rx.text(
-                rx.fragment("Desde ", rx.text.span(dest["price"],
-                    color=GOLD, font_weight="700", font_size="1rem")),
-                font_size="0.78rem", color="rgba(255,255,255,0.55)",
+                dest["pais"],
+                font_size="0.72rem",
+                color="rgba(255,255,255,0.75)",
+                margin_top="2px",
+            ),
+            rx.text(
+                dest["titulo"],
+                font_size="0.78rem",
+                color=GOLD,
+                font_weight="700",
                 margin_top="0.5rem",
             ),
-            position="absolute", bottom="0", left="0", right="0",
+            position="absolute",
+            bottom="0",
+            left="0",
+            right="0",
             padding="1.25rem",
         ),
+
         position="relative",
         border_radius="20px",
         overflow="hidden",
@@ -704,20 +751,27 @@ window.addEventListener("load", () => {
                 "Exclusivos"
             ),
 
-            rx.grid(
-                *[destination_card(d) for d in DESTINATIONS],
-
-                columns="5",
-                spacing="4",
-
-                max_width="1200px",
-                margin="0 auto",
-
-                style={
-                    "gridTemplateColumns":
-                    "repeat(auto-fit, minmax(210px, 1fr))"
-                },
-            ),
+            rx.cond(
+    AuthState.destinos_destacados.length() > 0,
+    rx.grid(
+        rx.foreach(AuthState.destinos_destacados, destination_card_db),
+        columns="5",
+        spacing="4",
+        max_width="1200px",
+        margin="0 auto",
+        style={
+            "gridTemplateColumns": "repeat(auto-fit, minmax(210px, 1fr))"
+        },
+    ),
+    rx.center(
+        rx.text(
+            "No hay destinos destacados todavía.",
+            color="white",
+            font_weight="800",
+        ),
+        padding="2rem",
+    ),
+),
 
             position="relative",
             z_index="2",
