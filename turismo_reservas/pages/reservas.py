@@ -365,6 +365,9 @@ class CheckoutState(rx.State):
        self.oferta_original = float(oferta["precio_anterior"] or oferta["precio"] or 0)
        self.oferta_duracion = oferta["duracion"] or ""
        self.oferta_imagen = oferta["imagen"] or ""
+
+       self.cargar_datos_usuario()
+
        self.paso = 3
 
     def ir_paso(self, p: int):
@@ -400,6 +403,9 @@ class CheckoutState(rx.State):
         yield AuthState.cargar_ofertas_por_destino(2)
         yield rx.redirect("/reservas")
 
+    def cargar_datos_usuario(self):
+       self.nombre = str(AuthState.nombre)
+       self.email = str(AuthState.email)
 
 
    # ── Confirmar reserva ────────────────────────────────────────────────────
@@ -464,11 +470,11 @@ class CheckoutState(rx.State):
 
              # ── Precio final ─────────────────────────────────────────────────────────
     @rx.var
-    def precio_total(self) -> int:
+    def precio_total(self) -> float:
         try:
-            return self.oferta_precio * int(self.personas)
+            return float(self.oferta_precio) * int(self.personas)
         except Exception:
-            return self.oferta_precio
+            return float(self.oferta_precio or 0)
 
     @rx.var
     def descuento_pct(self) -> int:
@@ -1293,10 +1299,27 @@ def paso3() -> rx.Component:
                 "Teléfono",
                 styled_input("+1 (000) 000-0000", CheckoutState.telefono, CheckoutState.set_telefono, "tel"),
             ),
-            field(
-                "Fecha de viaje *",
-                styled_input("", CheckoutState.fecha_viaje, CheckoutState.set_fecha, "date"),
-            ),
+          field(
+    "Fecha de viaje *",
+    rx.input(
+        type="date",
+        value=CheckoutState.fecha_viaje,
+        on_change=CheckoutState.set_fecha,
+        min="2026-06-11",
+        style={
+            "background": "#FFFFFF",
+            "border": "1.5px solid #D8CBB6",
+            "borderRadius": "14px",
+            "color": "#2B241A",
+            "fontSize": "1.15rem",
+            "fontWeight": "700",
+            "height": "58px",
+            "padding": "1rem 1.2rem",
+            "width": "100%",
+            "cursor": "pointer",
+        },
+    ),
+),
             field(
                 "Cantidad de personas",
                 rx.select(
