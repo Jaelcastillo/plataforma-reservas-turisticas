@@ -404,9 +404,8 @@ class CheckoutState(rx.State):
         yield rx.redirect("/reservas")
 
     def cargar_datos_usuario(self):
-       self.nombre = str(AuthState.nombre)
-       self.email = str(AuthState.email)
-
+        self.nombre = str(AuthState.nombre)
+        self.email = str(AuthState.email)
 
    # ── Confirmar reserva ────────────────────────────────────────────────────
     def confirmar_reserva(self):
@@ -445,8 +444,8 @@ class CheckoutState(rx.State):
             })
 
             crear_reserva(
-    nombre=self.nombre,
-    email=self.email,
+    nombre=AuthState.nombre,
+email=AuthState.email,
     telefono=self.telefono,
     pais_destino=self.pais_nombre,
     oferta=self.oferta_nombre,
@@ -1288,13 +1287,13 @@ def paso3() -> rx.Component:
 
         rx.grid(
             field(
-                "Nombre completo *",
-                styled_input("Ej: Juan García", CheckoutState.nombre, CheckoutState.set_nombre),
-            ),
-            field(
-                "Correo electrónico *",
-                styled_input("tu@email.com", CheckoutState.email, CheckoutState.set_email, "email"),
-            ),
+    "Nombre completo *",
+    styled_input("Ej: Juan García", AuthState.nombre, AuthState.set_nombre),
+),
+field(
+    "Correo electrónico *",
+    styled_input("tu@email.com", AuthState.email, AuthState.set_email, "email"),
+),
             field(
                 "Teléfono",
                 styled_input("+1 (000) 000-0000", CheckoutState.telefono, CheckoutState.set_telefono, "tel"),
