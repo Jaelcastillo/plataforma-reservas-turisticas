@@ -1373,6 +1373,7 @@ RESORTS = [
         "type": "All-Inclusive",
         "amenities": ["🏊 Infinity Pool", "🍽 Gourmet"],
         "image": "url('/images/resort_cap_cana.jpg') center/cover no-repeat",
+        "action": "cap_cana",
     },
     {
         "name": "Hard Rock Cancún",
@@ -1382,6 +1383,7 @@ RESORTS = [
         "type": "All-Inclusive",
         "amenities": ["🎰 Casino", "🎵 Shows"],
         "image": "url('/images/resort_hardrock.jpg') center/cover no-repeat",
+        "action": "cancun",
     },
     {
         "name": "Dorado Beach, Ritz-Carlton",
@@ -1391,8 +1393,54 @@ RESORTS = [
         "type": "Ultra Premium",
         "amenities": ["⛳ Golf", "🧖 Spa"],
         "image": "url('/images/resort_ritz.jpg') center/cover no-repeat",
+        "action": "puerto_rico",
     },
 ]
+
+
+def resort_reserva_button(resort: dict) -> rx.Component:
+    return rx.cond(
+        resort["action"] == "cap_cana",
+        rx.button(
+            "Ver disponibilidad",
+            width="100%",
+            background=f"linear-gradient(135deg, {GOLD}, {CORAL})",
+            color="white",
+            border="none",
+            border_radius="14px",
+            padding="0.75rem",
+            font_weight="800",
+            cursor="pointer",
+            on_click=CheckoutState.ir_cap_cana,
+        ),
+        rx.cond(
+            resort["action"] == "cancun",
+            rx.button(
+                "Ver disponibilidad",
+                width="100%",
+                background=f"linear-gradient(135deg, {GOLD}, {CORAL})",
+                color="white",
+                border="none",
+                border_radius="14px",
+                padding="0.75rem",
+                font_weight="800",
+                cursor="pointer",
+                on_click=CheckoutState.ir_resort_cancun,
+            ),
+            rx.button(
+                "Ver disponibilidad",
+                width="100%",
+                background=f"linear-gradient(135deg, {GOLD}, {CORAL})",
+                color="white",
+                border="none",
+                border_radius="14px",
+                padding="0.75rem",
+                font_weight="800",
+                cursor="pointer",
+                on_click=CheckoutState.ir_dorado_pr,
+            ),
+        ),
+    )
 
 
 def resort_card(resort: dict) -> rx.Component:
@@ -1489,17 +1537,7 @@ def resort_card(resort: dict) -> rx.Component:
                 align="end",
             ),
 
-            rx.button(
-                "Ver disponibilidad",
-                width="100%",
-                background=f"linear-gradient(135deg, {GOLD}, {CORAL})",
-                color="white",
-                border="none",
-                border_radius="14px",
-                padding="0.75rem",
-                font_weight="800",
-                cursor="pointer",
-            ),
+            resort_reserva_button(resort),
 
             spacing="3",
             padding="1.3rem",
@@ -1557,7 +1595,6 @@ def resorts_section() -> rx.Component:
         position="relative",
         overflow="hidden",
     )
-
 # ─────────────────────────────────────────────────────────────────────────────
 #  FOOTER
 # ─────────────────────────────────────────────────────────────────────────────

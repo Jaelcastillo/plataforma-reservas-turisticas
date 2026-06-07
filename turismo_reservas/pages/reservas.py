@@ -316,6 +316,8 @@ class CheckoutState(rx.State):
         yield AuthState.cargar_ofertas_por_destino(1)
         yield rx.redirect("/reservas")
 
+
+
     # ── Setters simples ──────────────────────────────────────────────────────
     def set_nombre(self, v):    self.nombre = v
     def set_email(self, v):     self.email = v
@@ -367,6 +369,36 @@ class CheckoutState(rx.State):
 
     def ir_paso(self, p: int):
         self.paso = p
+
+    def ir_cap_cana(self):
+        self.pais_id = "1"
+        self.pais_nombre = "República Dominicana - Punta Cana"
+        self.pais_imagen = "/images/rd.jpg"
+        self.oferta_id = ""
+        self.paso = 2
+
+        yield AuthState.cargar_ofertas_por_destino(1)
+        yield rx.redirect("/reservas")
+
+    def ir_resort_cancun(self):
+        self.pais_id = "4"
+        self.pais_nombre = "México - Cancún"
+        self.pais_imagen = "/images/cancun.jpg"
+        self.oferta_id = ""
+        self.paso = 2
+
+        yield AuthState.cargar_ofertas_por_destino(4)
+        yield rx.redirect("/reservas")
+
+    def ir_dorado_pr(self):
+        self.pais_id = "2"
+        self.pais_nombre = "Puerto Rico - San Juan"
+        self.pais_imagen = "/images/pr.jpg"
+        self.oferta_id = ""
+        self.paso = 2
+
+        yield AuthState.cargar_ofertas_por_destino(2)
+        yield rx.redirect("/reservas")
 
 
 
