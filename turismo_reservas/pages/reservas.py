@@ -9,6 +9,7 @@ from turismo_reservas.states.auth_state import AuthState
 import reflex as rx
 from turismo_reservas.states.reservation_state import ReservationState
 
+
 # ─── Paleta (igual que index.py) ──────────────────────────────────────────────
 DARK       = "#FDF9F3"
 DARK2      = "#F5EFE6"
@@ -285,6 +286,36 @@ class CheckoutState(rx.State):
     reserva_ok: bool = False
     pdf_url: str = ""
 
+    def ir_disney(self):
+        self.pais_id = "5"
+        self.pais_nombre = "Estados Unidos - Orlando"
+        self.pais_imagen = "/images/disney.jpg"
+        self.oferta_id = ""
+        self.paso = 2
+
+        yield AuthState.cargar_ofertas_por_destino(5)
+        yield rx.redirect("/reservas")
+
+    def ir_cancun(self):
+        self.pais_id = "4"
+        self.pais_nombre = "México - Cancún"
+        self.pais_imagen = "/images/cancun.jpg"
+        self.oferta_id = ""
+        self.paso = 2
+
+        yield AuthState.cargar_ofertas_por_destino(4)
+        yield rx.redirect("/reservas")
+
+    def ir_punta_cana(self):
+        self.pais_id = "1"
+        self.pais_nombre = "República Dominicana - Punta Cana"
+        self.pais_imagen = "/images/rd.jpg"
+        self.oferta_id = ""
+        self.paso = 2
+
+        yield AuthState.cargar_ofertas_por_destino(1)
+        yield rx.redirect("/reservas")
+
     # ── Setters simples ──────────────────────────────────────────────────────
     def set_nombre(self, v):    self.nombre = v
     def set_email(self, v):     self.email = v
@@ -336,6 +367,8 @@ class CheckoutState(rx.State):
 
     def ir_paso(self, p: int):
         self.paso = p
+
+
 
    # ── Confirmar reserva ────────────────────────────────────────────────────
     def confirmar_reserva(self):

@@ -12,6 +12,8 @@ Uso en tu app principal (travelworld.py o similar):
 
 import reflex as rx
 from turismo_reservas.states.auth_state import AuthState
+from turismo_reservas.pages.reservas import CheckoutState
+from turismo_reservas.pages.reservas import CheckoutState
 
 # ─── Paleta de colores ────────────────────────────────────────────────────────
 DARK = "#1F2A35"
@@ -1105,24 +1107,26 @@ def disney_section() -> rx.Component:
                     align="start",
                 ),
 
-                rx.button(
-                    "Ver Paquetes Disney ✨",
-                    background=f"linear-gradient(135deg, {GOLD}, {CORAL})",
-                    color="white",
-                    border="none",
-                    padding="0.8rem 2.2rem",
-                    border_radius="30px",
-                    font_weight="800",
-                    font_size="0.95rem",
-                    letter_spacing="0.5px",
-                    cursor="pointer",
-                    box_shadow="0 12px 30px rgba(0,0,0,0.35)",
-                    _hover={
-                        "opacity": "0.92",
-                        "transform": "translateY(-2px)",
-                    },
-                    transition="all 0.2s",
-                ),
+                
+rx.button(
+    "Ver Paquetes Disney ✨",
+    background=f"linear-gradient(135deg, {GOLD}, {CORAL})",
+    color="white",
+    border="none",
+    padding="0.8rem 2.2rem",
+    border_radius="30px",
+    font_weight="800",
+    font_size="0.95rem",
+    letter_spacing="0.5px",
+    cursor="pointer",
+    box_shadow="0 12px 30px rgba(0,0,0,0.35)",
+    _hover={
+        "opacity": "0.92",
+        "transform": "translateY(-2px)",
+    },
+    transition="all 0.2s",
+    on_click=CheckoutState.ir_disney,
+),
 
                 spacing="5",
                 align="start",
@@ -1175,6 +1179,7 @@ BUGGY_TOURS = [
         "location": "Cancún · 6 horas",
         "price": "$79 / persona",
         "image": "buggy_cenotes.jpg",
+        "action": "cancun",
     },
     {
         "label": "Más Vendido",
@@ -1182,6 +1187,7 @@ BUGGY_TOURS = [
         "location": "Punta Cana · 8 horas · Todo incluido",
         "price": "$89 / persona",
         "image": "buggy_punta_cana.jpg",
+        "action": "punta_cana",
     },
     {
         "label": "Aventura Nocturna",
@@ -1189,8 +1195,37 @@ BUGGY_TOURS = [
         "location": "Punta Cana · 4 horas",
         "price": "$65 / persona",
         "image": "buggy_night.jpg",
+        "action": "punta_cana",
     },
 ]
+
+
+def buggy_reserva_button(tour: dict) -> rx.Component:
+    return rx.cond(
+        tour["action"] == "cancun",
+        rx.button(
+            "Reservar ahora",
+            background=f"linear-gradient(135deg, {GOLD}, {GOLD_LT})",
+            color="#1F2A35",
+            border="none",
+            padding="0.7rem 1.7rem",
+            border_radius="26px",
+            font_weight="900",
+            cursor="pointer",
+            on_click=CheckoutState.ir_cancun,
+        ),
+        rx.button(
+            "Reservar ahora",
+            background=f"linear-gradient(135deg, {GOLD}, {GOLD_LT})",
+            color="#1F2A35",
+            border="none",
+            padding="0.7rem 1.7rem",
+            border_radius="26px",
+            font_weight="900",
+            cursor="pointer",
+            on_click=CheckoutState.ir_punta_cana,
+        ),
+    )
 
 
 def buggy_tour_card(tour: dict, index: int) -> rx.Component:
@@ -1248,16 +1283,7 @@ def buggy_tour_card(tour: dict, index: int) -> rx.Component:
 
             rx.cond(
                 is_selected,
-                rx.button(
-                    "Reservar ahora",
-                    background=f"linear-gradient(135deg, {GOLD}, {GOLD_LT})",
-                    color="#1F2A35",
-                    border="none",
-                    padding="0.7rem 1.7rem",
-                    border_radius="26px",
-                    font_weight="900",
-                    cursor="pointer",
-                ),
+                buggy_reserva_button(tour),
                 rx.box(),
             ),
 
@@ -1315,7 +1341,6 @@ def tours_section() -> rx.Component:
                 buggy_tour_card(BUGGY_TOURS[0], 0),
                 buggy_tour_card(BUGGY_TOURS[1], 1),
                 buggy_tour_card(BUGGY_TOURS[2], 2),
-
                 style={
                     "gridTemplateColumns": "0.8fr 1.35fr 0.8fr",
                     "alignItems": "center",
