@@ -567,7 +567,9 @@ class AuthState(rx.State):
             with conn.cursor() as cur:
                 cur.execute(
                     """
-                    SELECT id, pais, ciudad, titulo, descripcion, imagen, destacado, activo
+                    SELECT id, pais, ciudad, titulo, descripcion,
+                           CONCAT('/images/', imagen) AS imagen,
+                           destacado, activo
                     FROM destinos
                     ORDER BY id DESC
                     """

@@ -1599,20 +1599,29 @@ def resorts_section() -> rx.Component:
 #  FOOTER
 # ─────────────────────────────────────────────────────────────────────────────
 
-def footer_col(title: str, links: list[str]) -> rx.Component:
+def footer_col(title: str, links: list[dict]) -> rx.Component:
     return rx.vstack(
-        rx.text(title, font_size="0.72rem", text_transform="uppercase",
-                letter_spacing="1.5px", color=GOLD, font_weight="600"),
+        rx.text(
+            title,
+            font_size="0.72rem",
+            text_transform="uppercase",
+            letter_spacing="1.5px",
+            color=GOLD,
+            font_weight="600",
+        ),
         *[
-            rx.text(
-                lnk,
-                font_size="0.78rem",
-                color="rgba(255,255,255,0.42)",
-                cursor="pointer",
-                _hover={"color": "white"},
-                transition="color 0.2s",
+            rx.link(
+                rx.text(
+                    item["label"],
+                    font_size="0.78rem",
+                    color="rgba(255,255,255,0.42)",
+                    cursor="pointer",
+                    _hover={"color": "white"},
+                    transition="color 0.2s",
+                ),
+                href=item["href"],
             )
-            for lnk in links
+            for item in links
         ],
         spacing="3",
         align="start",
@@ -1621,9 +1630,7 @@ def footer_col(title: str, links: list[str]) -> rx.Component:
 
 def footer() -> rx.Component:
     return rx.box(
-        # Filas principales
         rx.grid(
-            # Marca
             rx.vstack(
                 rx.text(
                     "TravelWorld",
@@ -1639,29 +1646,51 @@ def footer() -> rx.Component:
                     },
                 ),
                 rx.text(
-                    "La plataforma turística premium del Caribe y las Américas. "
-                    "Conectamos viajeros con experiencias inolvidables.",
+                    "TravelWorld conecta viajeros con experiencias premium "
+                    "en República Dominicana, Puerto Rico, Colombia, México "
+                    "y Estados Unidos.",
                     font_size="0.78rem",
                     color="rgba(255,255,255,0.4)",
                     line_height="1.7",
-                    max_width="240px",
+                    max_width="280px",
                     margin_top="0.5rem",
                 ),
                 spacing="2",
                 align="start",
             ),
-            footer_col("Destinos", [
-                "Punta Cana", "Cancún", "Puerto Rico",
-                "Colombia", "Orlando",
-            ]),
-            footer_col("Servicios", [
-                "Vuelos + Hotel", "Tours & Excursiones",
-                "Traslados", "Seguros de viaje", "Grupos",
-            ]),
-            footer_col("Empresa", [
-                "Sobre nosotros", "Trabaja con nosotros",
-                "Blog de viajes", "Afiliados", "Contacto",
-            ]),
+
+            footer_col(
+                "Destinos",
+                [
+                    {"label": "Punta Cana", "href": "/reservas"},
+                    {"label": "Cancún", "href": "/reservas"},
+                    {"label": "Puerto Rico", "href": "/reservas"},
+                    {"label": "Colombia", "href": "/reservas"},
+                    {"label": "Orlando", "href": "/reservas"},
+                ],
+            ),
+
+            footer_col(
+                "Servicios",
+                [
+                    {"label": "Reservas turísticas", "href": "/reservas"},
+                    {"label": "Tours & Excursiones", "href": "/#tours"},
+                    {"label": "Resorts Premium", "href": "/#resorts"},
+                    {"label": "Atención personalizada", "href": "/sobre-nosotros"},
+                ],
+            ),
+
+            footer_col(
+                "Empresa",
+                [
+                    {"label": "Sobre TravelWorld", "href": "/sobre-nosotros"},
+                    {"label": "Cómo trabajamos", "href": "/sobre-nosotros"},
+                    {"label": "Socios fundadores", "href": "/sobre-nosotros"},
+                    {"label": "Oficina BlueMall", "href": "/sobre-nosotros"},
+                    {"label": "Contacto", "href": "/sobre-nosotros"},
+                ],
+            ),
+
             style={"gridTemplateColumns": "2fr 1fr 1fr 1fr"},
             gap="2rem",
             max_width="1100px",
@@ -1669,10 +1698,10 @@ def footer() -> rx.Component:
             padding_bottom="2rem",
             border_bottom="1px solid rgba(255,255,255,0.07)",
         ),
-        # Barra inferior
+
         rx.hstack(
             rx.text(
-                "© 2024 TravelWorld. Todos los derechos reservados. · Términos · Privacidad",
+                "© 2026 TravelWorld Premium. Todos los derechos reservados. · Términos · Privacidad",
                 font_size="0.7rem",
                 color="rgba(255,255,255,0.28)",
             ),
@@ -1680,9 +1709,14 @@ def footer() -> rx.Component:
             rx.hstack(
                 *[
                     rx.box(
-                        rx.text(s, font_size="0.68rem",
-                                color="rgba(255,255,255,0.48)"),
-                        width="32px", height="32px",
+                        rx.text(
+                            s,
+                            font_size="0.68rem",
+                            color="rgba(255,255,255,0.48)",
+                            font_weight="700",
+                        ),
+                        width="32px",
+                        height="32px",
                         border_radius="50%",
                         background="rgba(255,255,255,0.06)",
                         border="1px solid rgba(255,255,255,0.12)",
@@ -1696,7 +1730,7 @@ def footer() -> rx.Component:
                         },
                         transition="all 0.2s",
                     )
-                    for s in ["ig", "fb", "tw", "yt"]
+                    for s in ["ig", "fb", "tt", "yt"]
                 ],
                 spacing="2",
             ),
@@ -1706,13 +1740,12 @@ def footer() -> rx.Component:
             flex_wrap="wrap",
             gap="1rem",
         ),
+
         padding="3rem 2rem 1.5rem",
         background="#060F18",
         border_top=f"1px solid {GOLD_BOR}",
         width="100%",
     )
-
-
 # ─────────────────────────────────────────────────────────────────────────────
 #  CSS GLOBAL (fuentes + animaciones)
 # ─────────────────────────────────────────────────────────────────────────────

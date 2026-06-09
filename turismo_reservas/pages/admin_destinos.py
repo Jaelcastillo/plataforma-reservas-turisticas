@@ -6,8 +6,6 @@ GOLD_LT = "#F0D080"
 GOLD_BOR = "rgba(201,168,76,0.35)"
 TEXT_DARK = "#1B1B1B"
 TEXT_SOFT = "#5E554D"
-TEAL = "#0B6E6E"
-TEAL_LT = "#1A9E9E"
 CORAL = "#C9785B"
 
 CSS = """
@@ -96,7 +94,7 @@ def crear_destino_form():
                 admin_input("País", AuthState.nuevo_pais_destino, AuthState.set_nuevo_pais_destino, "República Dominicana"),
                 admin_input("Ciudad", AuthState.nuevo_ciudad_destino, AuthState.set_nuevo_ciudad_destino, "Punta Cana"),
                 admin_input("Título", AuthState.nuevo_titulo_destino, AuthState.set_nuevo_titulo_destino, "Paraíso Caribeño"),
-                admin_input("Imagen", AuthState.nuevo_imagen_destino, AuthState.set_nuevo_imagen_destino, "punta_cana.png"),
+                admin_input("Imagen", AuthState.nuevo_imagen_destino, AuthState.set_nuevo_imagen_destino, "offer_punta_cana.jpg"),
                 style={"gridTemplateColumns": "repeat(auto-fit, minmax(220px, 1fr))"},
                 gap="1rem",
                 width="100%",
@@ -143,15 +141,11 @@ def destino_card(d):
     return rx.box(
         rx.box(
             rx.image(
-                src=rx.cond(
-                    d["imagen"] != "",
-                    rx.fragment("/images/", d["imagen"]),
-                    "/images/punta_cana.png",
-                ),
-                width="100%",
-                height="230px",
-                object_fit="cover",
-            ),
+              src=d["imagen"],
+              width="100%",
+              height="230px",
+              object_fit="cover",
+),
             rx.box(
                 rx.text(
                     rx.cond(d["destacado"], "⭐ Destacado", "Destino"),
@@ -168,6 +162,7 @@ def destino_card(d):
             ),
             position="relative",
         ),
+
         rx.vstack(
             rx.text(
                 rx.fragment(d["pais"], " · ", d["ciudad"]),
@@ -231,6 +226,7 @@ def destino_card(d):
             align="start",
             width="100%",
         ),
+
         class_name="destino-card",
         width="100%",
     )
@@ -263,7 +259,7 @@ def admin_destinos():
                             "Agrega países, ciudades, imágenes y destinos destacados.",
                             color=TEXT_SOFT,
                         ),
-                        spacing="6",
+                        spacing="3",
                         align="start",
                     ),
                     rx.spacer(),
@@ -275,7 +271,9 @@ def admin_destinos():
                     width="100%",
                     align="center",
                 ),
+
                 crear_destino_form(),
+
                 rx.cond(
                     AuthState.admin_destinos.length() > 0,
                     rx.grid(
@@ -297,10 +295,12 @@ def admin_destinos():
                         width="100%",
                     ),
                 ),
+
                 rx.link(
                     rx.button("← Volver Dashboard", class_name="outline-btn"),
                     href="/admin/dashboard",
                 ),
+
                 spacing="6",
                 max_width="1200px",
                 width="100%",

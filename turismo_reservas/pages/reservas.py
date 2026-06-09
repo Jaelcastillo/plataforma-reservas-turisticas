@@ -365,9 +365,6 @@ class CheckoutState(rx.State):
        self.oferta_original = float(oferta["precio_anterior"] or oferta["precio"] or 0)
        self.oferta_duracion = oferta["duracion"] or ""
        self.oferta_imagen = oferta["imagen"] or ""
-
-       self.cargar_datos_usuario()
-
        self.paso = 3
 
     def ir_paso(self, p: int):
@@ -403,9 +400,7 @@ class CheckoutState(rx.State):
         yield AuthState.cargar_ofertas_por_destino(2)
         yield rx.redirect("/reservas")
 
-    def cargar_datos_usuario(self):
-        self.nombre = str(AuthState.nombre)
-        self.email = str(AuthState.email)
+    
 
    # ── Confirmar reserva ────────────────────────────────────────────────────
     def confirmar_reserva(self):
@@ -444,8 +439,8 @@ class CheckoutState(rx.State):
             })
 
             crear_reserva(
-    nombre=AuthState.nombre,
-email=AuthState.email,
+    nombre=self.nombre,
+    email=self.email,
     telefono=self.telefono,
     pais_destino=self.pais_nombre,
     oferta=self.oferta_nombre,
@@ -1286,13 +1281,13 @@ def paso3() -> rx.Component:
         ),
 
         rx.grid(
-            field(
-    "Nombre completo *",
-    styled_input("Ej: Juan García", AuthState.nombre, AuthState.set_nombre),
+    field(
+       "Nombre completo *",
+     styled_input("Ej: Juan García", CheckoutState.nombre, CheckoutState.set_nombre),
 ),
-field(
-    "Correo electrónico *",
-    styled_input("tu@email.com", AuthState.email, AuthState.set_email, "email"),
+   field(
+       "Correo electrónico *",
+       styled_input("tu@email.com", CheckoutState.email, CheckoutState.set_email, "email"),
 ),
             field(
                 "Teléfono",
